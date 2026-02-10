@@ -1,0 +1,17 @@
+﻿using Pausalio.Shared.Enums;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Pausalio.Application.DTOs.Reminder
+{
+    public class AddReminderDto
+    {
+        public string Title { get; set; } = null!;
+        public string? Description { get; set; }
+        public ReminderType ReminderType { get; set; } = ReminderType.Other;
+        public DateTime DueDate { get; set; }
+    }
+}

@@ -1,0 +1,69 @@
+# ==========================================
+# IDE / User-specific files
+# ==========================================
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+.idea/
+*.sln.iml
+.vs/
+.vscode/
+
+# ==========================================
+# Build / Output
+# ==========================================
+bin/
+obj/
+out/
+
+# ==========================================
+# NuGet / Paket Menadžer
+# ==========================================
+*.nupkg
+*.snupkg
+packages/
+*.nuget.props
+*.nuget.targets
+
+# ==========================================
+# Logs / Databases / Temporary files
+# ==========================================
+*.log
+*.db
+*.local
+*.tmp
+*.bak
+*.swp
+
+# ==========================================
+# Secrets / Environment
+# ==========================================
+secrets.json           # User Secrets
+.env
+.env.*.local
+appsettings.Local.json
+appsettings.Development.json  # lokalne dev konfiguracije, ne pushovati
+
+# ==========================================
+# EF Core / Migrations
+# ==========================================
+# migrations fajlovi idu u repo
+# snapshot fajlovi koji se regenerišu automatski mogu biti ignorisani
+*ModelSnapshot.cs
+
+# ==========================================
+# Docker / Containers
+# ==========================================
+*.dockerfile
+docker-compose.override.yml
+*.env.docker
+
+# ==========================================
+# OS / Misc
+# ==========================================
+Thumbs.db
+.DS_Store
+desktop.ini
