@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Pausalio.Domain\Pausalio.Domain.csproj" />
+    <ProjectReference Include="..\Pausalio.Infrastructure\Pausalio.Infrastructure.csproj" />
     <ProjectReference Include="..\Pausalio.Shared\Pausalio.Shared.csproj" />
   </ItemGroup>
 

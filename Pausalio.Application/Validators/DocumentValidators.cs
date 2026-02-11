@@ -1,38 +1,38 @@
 ﻿using FluentValidation;
 using Pausalio.Application.DTOs.Document;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Pausalio.Shared.Localization;
 
 namespace Pausalio.Application.Validators
 {
     public class AddDocumentDtoValidator : AbstractValidator<AddDocumentDto>
     {
-        public AddDocumentDtoValidator()
+
+        public AddDocumentDtoValidator(ILocalizationHelper _localizationHelper)
         {
+
             RuleFor(x => x.DocumentNumber)
-                .NotEmpty().WithMessage("Broj dokumenta je obavezan")
-                .MaximumLength(50).WithMessage("Broj dokumenta ne može biti duži od 50 karaktera");
+                .NotEmpty().WithMessage(_localizationHelper.DocumentNumberRequired)
+                .MaximumLength(50).WithMessage(_localizationHelper.DocumentNumberMaxLength);
 
             RuleFor(x => x.FilePath)
-                .NotEmpty().WithMessage("Putanja do fajla je obavezna")
-                .MaximumLength(500).WithMessage("Putanja do fajla ne može biti duža od 500 karaktera");
+                .NotEmpty().WithMessage(_localizationHelper.DocumentFilePathRequired)
+                .MaximumLength(500).WithMessage(_localizationHelper.DocumentFilePathMaxLength);
         }
     }
 
     public class UpdateDocumentDtoValidator : AbstractValidator<UpdateDocumentDto>
     {
-        public UpdateDocumentDtoValidator()
+
+        public UpdateDocumentDtoValidator(ILocalizationHelper _localizationHelper)
         {
+
             RuleFor(x => x.DocumentNumber)
-                .NotEmpty().WithMessage("Broj dokumenta je obavezan")
-                .MaximumLength(50).WithMessage("Broj dokumenta ne može biti duži od 50 karaktera");
+                .NotEmpty().WithMessage(_localizationHelper.DocumentNumberRequired)
+                .MaximumLength(50).WithMessage(_localizationHelper.DocumentNumberMaxLength);
 
             RuleFor(x => x.FilePath)
-                .NotEmpty().WithMessage("Putanja do fajla je obavezna")
-                .MaximumLength(500).WithMessage("Putanja do fajla ne može biti duža od 500 karaktera");
+                .NotEmpty().WithMessage(_localizationHelper.DocumentFilePathRequired)
+                .MaximumLength(500).WithMessage(_localizationHelper.DocumentFilePathMaxLength);
         }
     }
 }

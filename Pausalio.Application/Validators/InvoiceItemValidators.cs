@@ -1,48 +1,53 @@
 ﻿using FluentValidation;
 using Pausalio.Application.DTOs.InvoiceItem;
+using Pausalio.Shared.Localization;
 
 namespace Pausalio.Application.Validators
 {
     public class AddInvoiceItemDtoValidator : AbstractValidator<AddInvoiceItemDto>
     {
-        public AddInvoiceItemDtoValidator()
+
+        public AddInvoiceItemDtoValidator(ILocalizationHelper _localizationHelper)
         {
+
             RuleFor(x => x.InvoiceId)
-                .NotEmpty().WithMessage("InvoiceId je obavezan.");
+                .NotEmpty().WithMessage(_localizationHelper.InvoiceItemInvoiceIdRequired);
 
             RuleFor(x => x.Name)
-                .NotEmpty().WithMessage("Naziv stavke je obavezan.")
-                .MaximumLength(100).WithMessage("Naziv stavke ne sme imati više od 100 karaktera.");
+                .NotEmpty().WithMessage(_localizationHelper.InvoiceItemNameRequired)
+                .MaximumLength(100).WithMessage(_localizationHelper.InvoiceItemNameMaxLength);
 
             RuleFor(x => x.Description)
-                .MaximumLength(500).WithMessage("Opis ne sme imati više od 500 karaktera.")
+                .MaximumLength(500).WithMessage(_localizationHelper.InvoiceItemDescriptionMaxLength)
                 .When(x => !string.IsNullOrEmpty(x.Description));
 
             RuleFor(x => x.Quantity)
-                .GreaterThan(0).WithMessage("Količina mora biti veća od 0.");
+                .GreaterThan(0).WithMessage(_localizationHelper.InvoiceItemQuantityGreaterThanZero);
 
             RuleFor(x => x.UnitPrice)
-                .GreaterThanOrEqualTo(0).WithMessage("Cena po jedinici mora biti najmanje 0.");
+                .GreaterThanOrEqualTo(0).WithMessage(_localizationHelper.InvoiceItemUnitPriceMinZero);
         }
     }
 
     public class UpdateInvoiceItemDtoValidator : AbstractValidator<UpdateInvoiceItemDto>
     {
-        public UpdateInvoiceItemDtoValidator()
+
+        public UpdateInvoiceItemDtoValidator(ILocalizationHelper _localizationHelper)
         {
+
             RuleFor(x => x.Name)
-                .NotEmpty().WithMessage("Naziv stavke je obavezan.")
-                .MaximumLength(100).WithMessage("Naziv stavke ne sme imati više od 100 karaktera.");
+                .NotEmpty().WithMessage(_localizationHelper.InvoiceItemNameRequired)
+                .MaximumLength(100).WithMessage(_localizationHelper.InvoiceItemNameMaxLength);
 
             RuleFor(x => x.Description)
-                .MaximumLength(500).WithMessage("Opis ne sme imati više od 500 karaktera.")
+                .MaximumLength(500).WithMessage(_localizationHelper.InvoiceItemDescriptionMaxLength)
                 .When(x => !string.IsNullOrEmpty(x.Description));
 
             RuleFor(x => x.Quantity)
-                .GreaterThan(0).WithMessage("Količina mora biti veća od 0.");
+                .GreaterThan(0).WithMessage(_localizationHelper.InvoiceItemQuantityGreaterThanZero);
 
             RuleFor(x => x.UnitPrice)
-                .GreaterThanOrEqualTo(0).WithMessage("Cena po jedinici mora biti najmanje 0.");
+                .GreaterThanOrEqualTo(0).WithMessage(_localizationHelper.InvoiceItemUnitPriceMinZero);
         }
     }
 }

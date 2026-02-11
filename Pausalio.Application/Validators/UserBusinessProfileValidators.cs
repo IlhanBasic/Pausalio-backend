@@ -1,35 +1,39 @@
 ﻿using FluentValidation;
 using Pausalio.Application.DTOs.UserBusinessProfile;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Pausalio.Shared.Localization;
 
 namespace Pausalio.Application.Validators
 {
-    public class AddUserBusinessProfileDtoValidator : AbstractValidator<AddUserBusinessProfileDto>
+    public class AddUserBusinessProfileDtoValidator 
+        : AbstractValidator<AddUserBusinessProfileDto>
     {
-        public AddUserBusinessProfileDtoValidator()
+        public AddUserBusinessProfileDtoValidator(
+            ILocalizationHelper _localizationHelper)
         {
+
             RuleFor(x => x.UserId)
-                .NotEmpty().WithMessage("ID korisnika je obavezan");
+                .NotEmpty()
+                .WithMessage(_localizationHelper.UserIdRequired);
 
             RuleFor(x => x.BusinessProfileId)
-                .NotEmpty().WithMessage("ID business profila je obavezan");
+                .NotEmpty()
+                .WithMessage(_localizationHelper.BusinessProfileIdRequired);
 
             RuleFor(x => x.Role)
-                .NotEmpty().WithMessage("Uloga korisnika je obavezna");
+                .NotEmpty()
+                .WithMessage(_localizationHelper.UserBusinessRoleRequired);
         }
-
     }
-    public class UpdateUserBusinessProfileDtoValidator : AbstractValidator<UpdateUserBusinessProfileDto>
+
+    public class UpdateUserBusinessProfileDtoValidator 
+        : AbstractValidator<UpdateUserBusinessProfileDto>
     {
-        public UpdateUserBusinessProfileDtoValidator()
+        public UpdateUserBusinessProfileDtoValidator(
+            ILocalizationHelper _localizationHelper)
         {
             RuleFor(x => x.Role)
-                .NotEmpty().WithMessage("Uloga korisnika je obavezna");
+                .NotEmpty()
+                .WithMessage(_localizationHelper.UserBusinessRoleRequired);
         }
-
     }
 }

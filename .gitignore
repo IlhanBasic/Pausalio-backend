@@ -32,6 +32,7 @@ packages/
 # Logs / Databases / Temporary files
 # ==========================================
 *.log
+Logs/
 *.db
 *.local
 *.tmp

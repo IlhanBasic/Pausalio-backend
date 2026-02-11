@@ -1,91 +1,100 @@
 ﻿using FluentValidation;
 using Pausalio.Application.DTOs.Client;
 using Pausalio.Shared.Enums;
+using Pausalio.Shared.Localization;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Pausalio.Application.Validators
 {
     public class AddClientDtoValidator : AbstractValidator<AddClientDto>
     {
-        public AddClientDtoValidator()
+
+        public AddClientDtoValidator(ILocalizationHelper _localizationHelper)
         {
+
             RuleFor(x => x.Name)
-                .NotEmpty().WithMessage("Ime klijenta je obavezno")
-                .MaximumLength(100).WithMessage("Ime klijenta ne može biti duže od 100 karaktera");
+                .NotEmpty().WithMessage(_localizationHelper.ClientNameRequired)
+                .MaximumLength(100).WithMessage(_localizationHelper.ClientNameMaxLength);
 
             RuleFor(x => x.PIB)
-                .Matches(@"^\d{9}$").WithMessage("PIB mora imati tačno 9 cifara")
-                .When(x => !string.IsNullOrEmpty(x.PIB) && x.ClientType == ClientType.Domestic);
+                .Matches(@"^\d{9}$")
+                .When(x => !string.IsNullOrEmpty(x.PIB) && x.ClientType == ClientType.Domestic)
+                .WithMessage(_localizationHelper.ClientPIBLength);
 
             RuleFor(x => x.MB)
-                .Matches(@"^\d{8}$").WithMessage("MB mora imati tačno 8 cifara")
-                .When(x => !string.IsNullOrEmpty(x.MB) && x.ClientType == ClientType.Domestic);
+                .Matches(@"^\d{8}$")
+                .When(x => !string.IsNullOrEmpty(x.MB) && x.ClientType == ClientType.Domestic)
+                .WithMessage(_localizationHelper.ClientMBLength);
 
             RuleFor(x => x.Address)
-                .NotEmpty().WithMessage("Adresa je obavezna")
-                .MaximumLength(200).WithMessage("Adresa ne može biti duža od 200 karaktera");
+                .NotEmpty().WithMessage(_localizationHelper.ClientAddressRequired)
+                .MaximumLength(200).WithMessage(_localizationHelper.ClientAddressMaxLength);
 
             RuleFor(x => x.City)
-                .NotEmpty().WithMessage("Grad je obavezan")
-                .MaximumLength(50).WithMessage("Grad ne može biti duži od 50 karaktera");
+                .NotEmpty().WithMessage(_localizationHelper.ClientCityRequired)
+                .MaximumLength(50).WithMessage(_localizationHelper.ClientCityMaxLength);
 
             RuleFor(x => x.Email)
-                .NotEmpty().WithMessage("Email je obavezan")
-                .EmailAddress().WithMessage("Email nije u validnom formatu")
-                .MaximumLength(100).WithMessage("Email ne može biti duži od 100 karaktera");
+                .NotEmpty().WithMessage(_localizationHelper.ClientEmailRequired)
+                .EmailAddress().WithMessage(_localizationHelper.ClientEmailInvalid)
+                .MaximumLength(100).WithMessage(_localizationHelper.ClientEmailMaxLength);
 
             RuleFor(x => x.Phone)
-                .Matches(@"^[\+]?[0-9\s\-\(\)]{6,15}$").WithMessage("Telefon nije u validnom formatu")
-                .MaximumLength(15).WithMessage("Telefon ne može biti duži od 15 karaktera")
-                .When(x => !string.IsNullOrEmpty(x.Phone));
+                .Matches(@"^[\+]?[0-9\s\-\(\)]{6,15}$")
+                .When(x => !string.IsNullOrEmpty(x.Phone))
+                .WithMessage(_localizationHelper.ClientPhoneInvalid)
+                .MaximumLength(15).WithMessage(_localizationHelper.ClientPhoneMaxLength);
 
             RuleFor(x => x.Country)
-                .MaximumLength(50).WithMessage("Država ne može biti duža od 50 karaktera")
-                .When(x => !string.IsNullOrEmpty(x.Country));
+                .MaximumLength(50)
+                .When(x => !string.IsNullOrEmpty(x.Country))
+                .WithMessage(_localizationHelper.ClientCountryMaxLength);
         }
     }
 
     public class UpdateClientDtoValidator : AbstractValidator<UpdateClientDto>
     {
-        public UpdateClientDtoValidator()
+
+        public UpdateClientDtoValidator(ILocalizationHelper _localizationHelper)
         {
+
             RuleFor(x => x.Name)
-                .NotEmpty().WithMessage("Ime klijenta je obavezno")
-                .MaximumLength(100).WithMessage("Ime klijenta ne može biti duže od 100 karaktera");
+                .NotEmpty().WithMessage(_localizationHelper.ClientNameRequired)
+                .MaximumLength(100).WithMessage(_localizationHelper.ClientNameMaxLength);
 
             RuleFor(x => x.PIB)
-                .Matches(@"^\d{9}$").WithMessage("PIB mora imati tačno 9 cifara")
-                .When(x => !string.IsNullOrEmpty(x.PIB) && x.ClientType == ClientType.Domestic);
+                .Matches(@"^\d{9}$")
+                .When(x => !string.IsNullOrEmpty(x.PIB) && x.ClientType == ClientType.Domestic)
+                .WithMessage(_localizationHelper.ClientPIBLength);
 
             RuleFor(x => x.MB)
-                .Matches(@"^\d{8}$").WithMessage("MB mora imati tačno 8 cifara")
-                .When(x => !string.IsNullOrEmpty(x.MB) && x.ClientType == ClientType.Domestic);
+                .Matches(@"^\d{8}$")
+                .When(x => !string.IsNullOrEmpty(x.MB) && x.ClientType == ClientType.Domestic)
+                .WithMessage(_localizationHelper.ClientMBLength);
 
             RuleFor(x => x.Address)
-                .NotEmpty().WithMessage("Adresa je obavezna")
-                .MaximumLength(200).WithMessage("Adresa ne može biti duža od 200 karaktera");
+                .NotEmpty().WithMessage(_localizationHelper.ClientAddressRequired)
+                .MaximumLength(200).WithMessage(_localizationHelper.ClientAddressMaxLength);
 
             RuleFor(x => x.City)
-                .NotEmpty().WithMessage("Grad je obavezan")
-                .MaximumLength(50).WithMessage("Grad ne može biti duži od 50 karaktera");
+                .NotEmpty().WithMessage(_localizationHelper.ClientCityRequired)
+                .MaximumLength(50).WithMessage(_localizationHelper.ClientCityMaxLength);
 
             RuleFor(x => x.Email)
-                .NotEmpty().WithMessage("Email je obavezan")
-                .EmailAddress().WithMessage("Email nije u validnom formatu")
-                .MaximumLength(100).WithMessage("Email ne može biti duži od 100 karaktera");
+                .NotEmpty().WithMessage(_localizationHelper.ClientEmailRequired)
+                .EmailAddress().WithMessage(_localizationHelper.ClientEmailInvalid)
+                .MaximumLength(100).WithMessage(_localizationHelper.ClientEmailMaxLength);
 
             RuleFor(x => x.Phone)
-                .Matches(@"^[\+]?[0-9\s\-\(\)]{6,15}$").WithMessage("Telefon nije u validnom formatu")
-                .MaximumLength(15).WithMessage("Telefon ne može biti duži od 15 karaktera")
-                .When(x => !string.IsNullOrEmpty(x.Phone));
+                .Matches(@"^[\+]?[0-9\s\-\(\)]{6,15}$")
+                .When(x => !string.IsNullOrEmpty(x.Phone))
+                .WithMessage(_localizationHelper.ClientPhoneInvalid)
+                .MaximumLength(15).WithMessage(_localizationHelper.ClientPhoneMaxLength);
 
             RuleFor(x => x.Country)
-                .MaximumLength(50).WithMessage("Država ne može biti duža od 50 karaktera")
-                .When(x => !string.IsNullOrEmpty(x.Country));
+                .MaximumLength(50)
+                .When(x => !string.IsNullOrEmpty(x.Country))
+                .WithMessage(_localizationHelper.ClientCountryMaxLength);
         }
     }
 }
