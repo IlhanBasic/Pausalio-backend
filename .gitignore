@@ -68,3 +68,4 @@ docker-compose.override.yml
 Thumbs.db
 .DS_Store
 desktop.ini
+appsettings.json

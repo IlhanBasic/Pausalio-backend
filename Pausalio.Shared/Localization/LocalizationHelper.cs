@@ -14,6 +14,34 @@ namespace Pausalio.Shared.Localization
         {
             _localizer = localizer;
         }
+        public string InvalidPassword => _localizer["InvalidPassword"];
+        public string LoginSuccessfull => _localizer["LoginSuccessfull"];
+        public string PasswordRegex => _localizer["PasswordRegex"];
+        public string Register => _localizer["Register"];
+        public string InviteTokenFooter => _localizer["InviteTokenFooter"];
+        public string InviteTokenPageTitle => _localizer["InviteTokenPageTitle"];
+        public string BusinesProfileNotFound => _localizer["BusinesProfileNotFound"];
+        public string InviteTokenDismatch => _localizer["InviteTokenDismatch"];
+        public string InviteTokenDoesNotExist => _localizer["InviteTokenDoesNotExist"];
+        public string CompanyAlreadyExists => _localizer["CompanyAlreadyExists"];
+        public string InvalidRequest => _localizer["InvalidRequest"];
+        public string UserNotFound => _localizer["UserNotFound"];
+        public string InvalidOrExpiredToken => _localizer["InvalidOrExpiredToken"];
+        public string EmailVerify => _localizer["EmailVerify"];
+        public string EmailVerifyGreeting => _localizer["EmailVerifyGreeting"];
+        public string EmailVerifyText => _localizer["EmailVerifyText"];
+        public string EmailVerifyButton => _localizer["EmailVerifyButton"];
+        public string EmailVerifyFallback => _localizer["EmailVerifyFallback"];
+        public string EmailVerifyFooter => _localizer["EmailVerifyFooter"];
+        public string ConfirmEmail => _localizer["ConfirmEmail"];
+        public string RegistrationFailed => _localizer["RegistrationFailed"];
+        public string UserAlreadyExists => _localizer["UserAlreadyExists"];
+        public string InviteTokenRequired => _localizer["InviteTokenRequired"];
+        public string ExpiresAtFuture => _localizer["ExpiresAtFuture"];
+        public string InviteExpiresAtFuture => _localizer["InviteExpiresAtFuture"];
+        public string BusinessProfileIdInvalid => _localizer["BusinessProfileIdInvalid"];
+        public string ClientCountryInvalid => _localizer["ClientCountryInvalid"];
+        public string ActivityCodeRequired => _localizer["ActivityCodeRequired"];
         public string BankNameRequired => _localizer["BankNameRequired"];
 
         public string AccountNumberRequired => _localizer["AccountNumberRequired"];
@@ -127,6 +155,48 @@ namespace Pausalio.Shared.Localization
         public string ServerError => _localizer["ServerError"];
         public string UserProfileCreationFailed => _localizer["UserProfileCreationFailed"];
 
+        public string EmailVerifiedSuccessfully => _localizer["EmailVerifiedSuccessfully"];
 
+        public string VerificationSuccessTitle => _localizer["VerificationSuccessTitle"];
+
+        public string VerificationSuccessHeading => _localizer["VerificationSuccessHeading"];
+
+        public string VerificationSuccessMessage => _localizer["VerificationSuccessMessage"];
+
+        public string GoToLogin => _localizer["GoToLogin"];
+
+        public string VerificationErrorTitle => _localizer["VerificationErrorTitle"];
+
+        public string VerificationErrorHeading => _localizer["VerificationErrorHeading"];
+
+        public string ResendVerificationEmail => _localizer["ResendVerificationEmail"];
+
+        public string GoToHome => _localizer["GoToHome"];
+
+        public string EmailAlreadyVerified => _localizer["EmailAlreadyVerified"];
+
+        public string VerificationEmailResent => _localizer["VerificationEmailResent"];
+
+        public string RegistrationSuccessful => _localizer["RegistrationSuccessful"];
+
+        public string InviteTokenPageMessage => _localizer["InviteTokenPageMessage"];
+
+        public string InviteTokenTitle => _localizer["InviteTokenTitle"];
+
+        public string InvalidCredentials => _localizer["InvalidCredentials"];
+
+        public string EmailNotVerified => _localizer["EmailNotVerified"];
+
+        public string UserInactive => _localizer["UserInactive"];
+
+        public string UserEmailNotProvided => _localizer["UserEmailNotProvided"];
+
+        public string InviteTokenAlreadyExists => _localizer["InviteTokenAlreadyExists"];
+
+        public string InviteTokenCreateFail => _localizer["InviteTokenCreateFail"];
+
+        public string InvalidCompanyId => _localizer["InvalidCompanyId"];
+
+        public string UserCompanyNotFound => _localizer["UserCompanyNotFound"];
     }
 }

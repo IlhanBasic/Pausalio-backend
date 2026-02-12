@@ -13,6 +13,7 @@
 
     <!-- FluentValidation -->
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.0" />
 
     <!-- Entity Framework Core -->
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
@@ -41,5 +42,20 @@
     <ProjectReference Include="..\Pausalio.Infrastructure\Pausalio.Infrastructure.csproj" />
     <ProjectReference Include="..\Pausalio.Shared\Pausalio.Shared.csproj" />
   </ItemGroup>
+
+	<ItemGroup>
+		<None Update="Templates\VerifyEmail.html">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Templates\VerificationSuccess.html">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Templates\VerificationError.html">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Templates\InviteTokenEmail.html">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 
 </Project>

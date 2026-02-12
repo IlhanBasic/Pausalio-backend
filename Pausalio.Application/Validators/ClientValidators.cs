@@ -2,16 +2,13 @@
 using Pausalio.Application.DTOs.Client;
 using Pausalio.Shared.Enums;
 using Pausalio.Shared.Localization;
-using System;
 
 namespace Pausalio.Application.Validators
 {
     public class AddClientDtoValidator : AbstractValidator<AddClientDto>
     {
-
         public AddClientDtoValidator(ILocalizationHelper _localizationHelper)
         {
-
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage(_localizationHelper.ClientNameRequired)
                 .MaximumLength(100).WithMessage(_localizationHelper.ClientNameMaxLength);
@@ -45,19 +42,17 @@ namespace Pausalio.Application.Validators
                 .WithMessage(_localizationHelper.ClientPhoneInvalid)
                 .MaximumLength(15).WithMessage(_localizationHelper.ClientPhoneMaxLength);
 
-            RuleFor(x => x.Country)
-                .MaximumLength(50)
-                .When(x => !string.IsNullOrEmpty(x.Country))
-                .WithMessage(_localizationHelper.ClientCountryMaxLength);
+            RuleFor(x => x.CountryId)
+                .Must(id => id != Guid.Empty)
+                .When(x => x.CountryId.HasValue)
+                .WithMessage(_localizationHelper.ClientCountryInvalid);
         }
     }
 
     public class UpdateClientDtoValidator : AbstractValidator<UpdateClientDto>
     {
-
         public UpdateClientDtoValidator(ILocalizationHelper _localizationHelper)
         {
-
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage(_localizationHelper.ClientNameRequired)
                 .MaximumLength(100).WithMessage(_localizationHelper.ClientNameMaxLength);
@@ -91,10 +86,10 @@ namespace Pausalio.Application.Validators
                 .WithMessage(_localizationHelper.ClientPhoneInvalid)
                 .MaximumLength(15).WithMessage(_localizationHelper.ClientPhoneMaxLength);
 
-            RuleFor(x => x.Country)
-                .MaximumLength(50)
-                .When(x => !string.IsNullOrEmpty(x.Country))
-                .WithMessage(_localizationHelper.ClientCountryMaxLength);
+            RuleFor(x => x.CountryId)
+                .Must(id => id != Guid.Empty)
+                .When(x => x.CountryId.HasValue)
+                .WithMessage(_localizationHelper.ClientCountryInvalid);
         }
     }
 }

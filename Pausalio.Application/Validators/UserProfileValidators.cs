@@ -23,9 +23,10 @@ namespace Pausalio.Application.Validators
                 .Matches(@"^[^@\s]+@[^@\s]+\.[^@\s]+$").WithMessage(_ => _localizationHelper.UserEmailInvalid)
                 .MaximumLength(100).WithMessage(_ => _localizationHelper.UserEmailMaxLength);
 
-            RuleFor(x => x.PasswordHash)
+            RuleFor(x => x.Password)
                 .NotEmpty().WithMessage(_ => _localizationHelper.UserPasswordRequired)
-                .MaximumLength(255).WithMessage(_ => _localizationHelper.UserPasswordMaxLength);
+                .Matches(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-+={}[\];:'""<>.,?/\\|]).{8,}$")
+                .WithMessage(_ => _localizationHelper.PasswordRegex);
 
             RuleFor(x => x.ProfilePicture)
                 .MaximumLength(500).WithMessage(_ => _localizationHelper.UserProfilePictureMaxLength)
@@ -75,4 +76,40 @@ namespace Pausalio.Application.Validators
                 .When(x => !string.IsNullOrEmpty(x.Address));
         }
     }
+    public class RegisterOwnerDtoValidator : AbstractValidator<RegisterOwnerDto>
+    {
+        public RegisterOwnerDtoValidator(AddUserProfileDtoValidator userValidator,
+                                         AddBusinessProfileDtoValidator businessValidator)
+        {
+            RuleFor(x => x.User).SetValidator(userValidator);
+            RuleFor(x => x.Business).SetValidator(businessValidator);
+        }
+    }
+    public class RegisterAssistantDtoValidator : AbstractValidator<RegisterAssistantDto>
+    {
+        public RegisterAssistantDtoValidator(AddUserProfileDtoValidator userValidator, ILocalizationHelper _localizationHelper)
+        {
+            RuleFor(x => x.InviteToken)
+                .NotEmpty().WithMessage(_ => _localizationHelper.InviteTokenRequired);
+            RuleFor(x => x.User).SetValidator(userValidator);
+        }
+    }
+
+    public class LoginDtoValidator : AbstractValidator<LoginDto>
+    {
+        public LoginDtoValidator(ILocalizationHelper _localizationHelper)
+        {
+            RuleFor(x => x.Email)
+               .NotEmpty().WithMessage(_ => _localizationHelper.UserEmailRequired)
+               .Matches(@"^[^@\s]+@[^@\s]+\.[^@\s]+$").WithMessage(_ => _localizationHelper.UserEmailInvalid)
+               .MaximumLength(100).WithMessage(_ => _localizationHelper.UserEmailMaxLength);
+
+            RuleFor(x => x.Password)
+                .NotEmpty().WithMessage(_ => _localizationHelper.UserPasswordRequired)
+                .Matches(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-+={}[\];:'""<>.,?/\\|]).{8,}$")
+                .WithMessage(_ => _localizationHelper.PasswordRegex);
+
+        }
+    }
+
 }

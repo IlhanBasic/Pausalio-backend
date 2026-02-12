@@ -1,6 +1,7 @@
-﻿using Pausalio.Infrastructure.Persistence;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using Pausalio.Infrastructure.Persistence;
 using Pausalio.Infrastructure.Repositories.Interfaces;
-using System.Threading.Tasks;
+
 
 namespace Pausalio.Infrastructure.Repositories.Implementations
 {
@@ -24,6 +25,7 @@ namespace Pausalio.Infrastructure.Repositories.Implementations
         public IReminderRepository ReminderRepository { get; }
         public ITaxObligationRepository TaxObligationRepository { get; }
         public IUserProfileRepository UserProfileRepository { get; }
+        public IBusinessInviteRepository BusinessInviteRepository { get; }
 
         public UnitOfWork(
             PausalioDbContext context,
@@ -42,7 +44,8 @@ namespace Pausalio.Infrastructure.Repositories.Implementations
             IPaymentRepository paymentRepository,
             IReminderRepository reminderRepository,
             ITaxObligationRepository taxObligationRepository,
-            IUserProfileRepository userProfileRepository
+            IUserProfileRepository userProfileRepository,
+            IBusinessInviteRepository businessInviteRepository
         )
         {
             _context = context;
@@ -63,11 +66,16 @@ namespace Pausalio.Infrastructure.Repositories.Implementations
             ReminderRepository = reminderRepository;
             TaxObligationRepository = taxObligationRepository;
             UserProfileRepository = userProfileRepository;
+            BusinessInviteRepository = businessInviteRepository;
         }
 
         public async Task<int> SaveChangesAsync()
         {
             return await _context.SaveChangesAsync();
+        }
+        public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
+        {
+            return await _context.Database.BeginTransactionAsync(cancellationToken);
         }
     }
 }

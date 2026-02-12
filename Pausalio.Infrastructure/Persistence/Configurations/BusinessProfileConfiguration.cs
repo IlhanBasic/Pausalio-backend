@@ -10,6 +10,7 @@ namespace Pausalio.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<BusinessProfile> builder)
         {
             builder.ToTable("BusinessProfiles");
+
             builder.ToTable(t =>
             {
                 t.HasCheckConstraint(
@@ -34,10 +35,6 @@ namespace Pausalio.Infrastructure.Persistence.Configurations
 
             builder.Property(x => x.MB)
                 .HasMaxLength(20);
-
-            builder.Property(x => x.ActivityCode)
-                .HasMaxLength(50)
-                .IsRequired();
 
             builder.Property(x => x.City)
                 .HasMaxLength(100)
@@ -73,8 +70,13 @@ namespace Pausalio.Infrastructure.Persistence.Configurations
 
             builder.HasIndex(x => x.PIB).IsUnique();
             builder.HasIndex(x => x.MB).IsUnique();
-            builder.HasIndex(x => x.ActivityCode);
+            builder.HasIndex(x => x.ActivityCodeId);
             builder.HasIndex(x => new { x.City, x.IsActive });
+
+            builder.HasOne(b => b.ActivityCode)
+                   .WithMany()
+                   .HasForeignKey(b => b.ActivityCodeId)
+                   .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasMany(x => x.UserBusinessProfiles)
                 .WithOne(x => x.BusinessProfile)
@@ -117,6 +119,16 @@ namespace Pausalio.Infrastructure.Persistence.Configurations
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasMany(x => x.Reminders)
+                .WithOne(x => x.BusinessProfile)
+                .HasForeignKey(x => x.BusinessProfileId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasMany(x => x.Items)
+                .WithOne(x => x.BusinessProfile)
+                .HasForeignKey(x => x.BusinessProfileId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasMany(x => x.BusinessInvites)
                 .WithOne(x => x.BusinessProfile)
                 .HasForeignKey(x => x.BusinessProfileId)
                 .OnDelete(DeleteBehavior.Cascade);

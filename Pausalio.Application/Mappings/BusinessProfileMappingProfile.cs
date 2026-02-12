@@ -13,7 +13,11 @@ namespace Pausalio.Application.Mappings
     {
         public BusinessProfileMappingProfile()
         {
-            CreateMap<BusinessProfile, BusinessProfileToReturnDto>();
+            CreateMap<BusinessProfile, BusinessProfileToReturnDto>()
+                .ForMember(
+                    dest => dest.ActivityCode,
+                    opt => opt.MapFrom(src => src.ActivityCode.Description)
+                );
             CreateMap<AddBusinessProfileDto, BusinessProfile>();
             CreateMap<UpdateBusinessProfileDto, BusinessProfile>();
         }

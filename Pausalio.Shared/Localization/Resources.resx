@@ -1,558 +1,696 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-	<!-- 
-		Microsoft ResX Schema
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
 
-		Version 1.3
-
-		The primary goals of this format is to allow a simple XML format 
-		that is mostly human readable. The generation and parsing of the 
-		various data types are done through the TypeConverter classes 
-		associated with the data types.
-
-		Example:
-
-		... ado.net/XML headers & schema ...
-		<resheader name="resmimetype">text/microsoft-resx</resheader>
-		<resheader name="version">1.3</resheader>
-		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
-		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-		<data name="Name1">this is my long string</data>
-		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-			[base64 mime encoded serialized .NET Framework object]
-		</data>
-		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-			[base64 mime encoded string representing a byte array form of the .NET Framework object]
-		</data>
-
-		There are any number of "resheader" rows that contain simple 
-		name/value pairs.
-
-		Each data row contains a name, and value. The row also contains a 
-		type or mimetype. Type corresponds to a .NET class that support 
-		text/value conversion through the TypeConverter architecture. 
-		Classes that don't support this are serialized and stored with the 
-		mimetype set.
-
-		The mimetype is used for serialized objects, and tells the 
-		ResXResourceReader how to depersist the object. This is currently not 
-		extensible. For a given mimetype the value must be set accordingly:
-
-		Note - application/x-microsoft.net.object.binary.base64 is the format 
-		that the ResXResourceWriter will generate, however the reader can 
-		read any of the formats listed below.
-
-		mimetype: application/x-microsoft.net.object.binary.base64
-		value   : The object must be serialized with 
-			: System.Serialization.Formatters.Binary.BinaryFormatter
-			: and then encoded with base64 encoding.
-
-		mimetype: application/x-microsoft.net.object.soap.base64
-		value   : The object must be serialized with 
-			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-			: and then encoded with base64 encoding.
-
-		mimetype: application/x-microsoft.net.object.bytearray.base64
-		value   : The object must be serialized into a byte array 
-			: using a System.ComponentModel.TypeConverter
-			: and then encoded with base64 encoding.
-	-->
-	
-	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-		<xsd:element name="root" msdata:IsDataSet="true">
-			<xsd:complexType>
-				<xsd:choice maxOccurs="unbounded">
-					<xsd:element name="data">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
-							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="resheader">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" use="required" />
-						</xsd:complexType>
-					</xsd:element>
-				</xsd:choice>
-			</xsd:complexType>
-		</xsd:element>
-	</xsd:schema>
-	<resheader name="resmimetype">
-		<value>text/microsoft-resx</value>
-	</resheader>
-	<resheader name="version">
-		<value>1.3</value>
-	</resheader>
-	<resheader name="reader">
-		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<resheader name="writer">
-		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<data name="BankNameRequired" xml:space="preserve">
-    	<value>Naziv banke je obavezan.</value>
-    	<comment>Poruka kada korisnik ne unese naziv banke</comment>
-	</data>
-
-	<data name="AccountNumberRequired" xml:space="preserve">
-		<value>Broj računa je obavezan.</value>
-		<comment>Poruka kada korisnik ne unese broj računa</comment>
-	</data>
-
-	<data name="UnknownCurrency" xml:space="preserve">
-		<value>Nepoznata valuta.</value>
-		<comment>Poruka kada valuta nije prepoznata</comment>
-	</data>
-
-	<data name="InvalidIBAN" xml:space="preserve">
-		<value>Neispravan IBAN format.</value>
-		<comment>Poruka kada IBAN nije u validnom formatu</comment>
-	</data>
-
-	<data name="InvalidSWIFT" xml:space="preserve">
-		<value>Neispravan SWIFT/BIC format.</value>
-		<comment>Poruka kada SWIFT/BIC nije validan</comment>
-	</data>
-
-	<data name="BankNameMaxLength" xml:space="preserve">
-		<value>Naziv banke ne sme imati više od 100 karaktera.</value>
-		<comment>Poruka kada naziv banke prelazi maksimalnu dužinu</comment>
-	</data>
-
-	<data name="AccountNumberLength" xml:space="preserve">
-		<value>Broj računa mora imati između 10 i 20 cifara.</value>
-		<comment>Poruka kada broj računa nije validan po dužini</comment>
-	</data>
-
-	<data name="BusinessNameRequired" xml:space="preserve">
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="BankNameRequired" xml:space="preserve">
+    <value>Naziv banke je obavezan.</value>
+    <comment>Poruka kada korisnik ne unese naziv banke</comment>
+  </data>
+  <data name="AccountNumberRequired" xml:space="preserve">
+    <value>Broj računa je obavezan.</value>
+    <comment>Poruka kada korisnik ne unese broj računa</comment>
+  </data>
+  <data name="UnknownCurrency" xml:space="preserve">
+    <value>Nepoznata valuta.</value>
+    <comment>Poruka kada valuta nije prepoznata</comment>
+  </data>
+  <data name="InvalidIBAN" xml:space="preserve">
+    <value>Neispravan IBAN format.</value>
+    <comment>Poruka kada IBAN nije u validnom formatu</comment>
+  </data>
+  <data name="InvalidSWIFT" xml:space="preserve">
+    <value>Neispravan SWIFT/BIC format.</value>
+    <comment>Poruka kada SWIFT/BIC nije validan</comment>
+  </data>
+  <data name="BankNameMaxLength" xml:space="preserve">
+    <value>Naziv banke ne sme imati više od 100 karaktera.</value>
+    <comment>Poruka kada naziv banke prelazi maksimalnu dužinu</comment>
+  </data>
+  <data name="AccountNumberLength" xml:space="preserve">
+    <value>Broj računa mora imati između 10 i 20 cifara.</value>
+    <comment>Poruka kada broj računa nije validan po dužini</comment>
+  </data>
+  <data name="BusinessNameRequired" xml:space="preserve">
     <value>Naziv firme je obavezan.</value>
     <comment>Poruka kada korisnik ne unese naziv firme</comment>
-	</data>
-	
-	<data name="BusinessNameMaxLength" xml:space="preserve">
-		<value>Naziv firme ne može biti duži od 100 karaktera.</value>
-		<comment>Poruka kada naziv firme prelazi maksimalnu dužinu</comment>
-	</data>
-	<data name="PIBRequired" xml:space="preserve">
-		<value>PIB je obavezan.</value>
-		<comment>Poruka kada korisnik ne unese PIB</comment>
-	</data>
-	<data name="PIBLength" xml:space="preserve">
-		<value>PIB mora imati tačno 9 cifara.</value>
-		<comment>Poruka kada PIB nije tačno 9 cifara</comment>
-	</data>
-	<data name="MBLength" xml:space="preserve">
-		<value>MB mora imati tačno 8 cifara.</value>
-		<comment>Poruka kada MB nije tačno 8 cifara</comment>
-	</data>
-	<data name="ActivityCodeMaxLength" xml:space="preserve">
-		<value>Šifra delatnosti ne može biti duža od 5 karaktera.</value>
-		<comment>Poruka kada šifra delatnosti prelazi maksimalnu dužinu</comment>
-	</data>
-	<data name="CityRequired" xml:space="preserve">
-		<value>Grad je obavezan.</value>
-		<comment>Poruka kada korisnik ne unese grad</comment>
-	</data>
-	<data name="CityMaxLength" xml:space="preserve">
-		<value>Grad ne može biti duži od 50 karaktera.</value>
-		<comment>Poruka kada grad prelazi maksimalnu dužinu</comment>
-	</data>
-	<data name="AddressRequired" xml:space="preserve">
-		<value>Adresa je obavezna.</value>
-		<comment>Poruka kada korisnik ne unese adresu</comment>
-	</data>
-	<data name="AddressMaxLength" xml:space="preserve">
-		<value>Adresa ne može biti duža od 200 karaktera.</value>
-		<comment>Poruka kada adresa prelazi maksimalnu dužinu</comment>
-	</data>
-	<data name="EmailRequired" xml:space="preserve">
-		<value>Email je obavezan.</value>
-		<comment>Poruka kada korisnik ne unese email</comment>
-	</data>
-	<data name="EmailInvalid" xml:space="preserve">
-		<value>Email nije u validnom formatu.</value>
-		<comment>Poruka kada email nije u validnom formatu</comment>
-	</data>
-	<data name="EmailMaxLength" xml:space="preserve">
-		<value>Email ne može biti duži od 100 karaktera.</value>
-		<comment>Poruka kada email prelazi maksimalnu dužinu</comment>
-	</data>
-	<data name="PhoneInvalid" xml:space="preserve">
-		<value>Telefon nije u validnom formatu.</value>
-		<comment>Poruka kada telefon nije u validnom formatu</comment>
-	</data>
-	<data name="PhoneMaxLength" xml:space="preserve">
-		<value>Telefon ne može biti duži od 15 karaktera.</value>
-		<comment>Poruka kada telefon prelazi maksimalnu dužinu</comment>
-	</data>
-	<data name="WebsiteInvalid" xml:space="preserve">
-		<value>Website nije u validnom formatu.</value>
-		<comment>Poruka kada website nije u validnom formatu</comment>
-	</data>
-	<data name="WebsiteMaxLength" xml:space="preserve">
-		<value>Website ne može biti duži od 200 karaktera.</value>
-		<comment>Poruka kada website prelazi maksimalnu dužinu</comment>
-	</data>
-	<data name="CompanyLogoMaxLength" xml:space="preserve">
-		<value>Logo putanja ne može biti duža od 500 karaktera.</value>
-		<comment>Poruka kada putanja do logotipa prelazi maksimalnu dužinu</comment>
-	</data>
-	<data name="ClientNameRequired" xml:space="preserve">
+  </data>
+  <data name="BusinessNameMaxLength" xml:space="preserve">
+    <value>Naziv firme ne može biti duži od 100 karaktera.</value>
+    <comment>Poruka kada naziv firme prelazi maksimalnu dužinu</comment>
+  </data>
+  <data name="PIBRequired" xml:space="preserve">
+    <value>PIB je obavezan.</value>
+    <comment>Poruka kada korisnik ne unese PIB</comment>
+  </data>
+  <data name="PIBLength" xml:space="preserve">
+    <value>PIB mora imati tačno 9 cifara.</value>
+    <comment>Poruka kada PIB nije tačno 9 cifara</comment>
+  </data>
+  <data name="MBLength" xml:space="preserve">
+    <value>MB mora imati tačno 8 cifara.</value>
+    <comment>Poruka kada MB nije tačno 8 cifara</comment>
+  </data>
+  <data name="ActivityCodeMaxLength" xml:space="preserve">
+    <value>Šifra delatnosti ne može biti duža od 5 karaktera.</value>
+    <comment>Poruka kada šifra delatnosti prelazi maksimalnu dužinu</comment>
+  </data>
+  <data name="CityRequired" xml:space="preserve">
+    <value>Grad je obavezan.</value>
+    <comment>Poruka kada korisnik ne unese grad</comment>
+  </data>
+  <data name="CityMaxLength" xml:space="preserve">
+    <value>Grad ne može biti duži od 50 karaktera.</value>
+    <comment>Poruka kada grad prelazi maksimalnu dužinu</comment>
+  </data>
+  <data name="AddressRequired" xml:space="preserve">
+    <value>Adresa je obavezna.</value>
+    <comment>Poruka kada korisnik ne unese adresu</comment>
+  </data>
+  <data name="AddressMaxLength" xml:space="preserve">
+    <value>Adresa ne može biti duža od 200 karaktera.</value>
+    <comment>Poruka kada adresa prelazi maksimalnu dužinu</comment>
+  </data>
+  <data name="EmailRequired" xml:space="preserve">
+    <value>Email je obavezan.</value>
+    <comment>Poruka kada korisnik ne unese email</comment>
+  </data>
+  <data name="EmailInvalid" xml:space="preserve">
+    <value>Email nije u validnom formatu.</value>
+    <comment>Poruka kada email nije u validnom formatu</comment>
+  </data>
+  <data name="EmailMaxLength" xml:space="preserve">
+    <value>Email ne može biti duži od 100 karaktera.</value>
+    <comment>Poruka kada email prelazi maksimalnu dužinu</comment>
+  </data>
+  <data name="PhoneInvalid" xml:space="preserve">
+    <value>Telefon nije u validnom formatu.</value>
+    <comment>Poruka kada telefon nije u validnom formatu</comment>
+  </data>
+  <data name="PhoneMaxLength" xml:space="preserve">
+    <value>Telefon ne može biti duži od 15 karaktera.</value>
+    <comment>Poruka kada telefon prelazi maksimalnu dužinu</comment>
+  </data>
+  <data name="WebsiteInvalid" xml:space="preserve">
+    <value>Website nije u validnom formatu.</value>
+    <comment>Poruka kada website nije u validnom formatu</comment>
+  </data>
+  <data name="WebsiteMaxLength" xml:space="preserve">
+    <value>Website ne može biti duži od 200 karaktera.</value>
+    <comment>Poruka kada website prelazi maksimalnu dužinu</comment>
+  </data>
+  <data name="CompanyLogoMaxLength" xml:space="preserve">
+    <value>Logo putanja ne može biti duža od 500 karaktera.</value>
+    <comment>Poruka kada putanja do logotipa prelazi maksimalnu dužinu</comment>
+  </data>
+  <data name="ClientNameRequired" xml:space="preserve">
     <value>Ime klijenta je obavezno.</value>
     <comment>Poruka kada korisnik ne unese ime klijenta</comment>
-	</data>
-
-	<data name="ClientNameMaxLength" xml:space="preserve">
-		<value>Ime klijenta ne može biti duže od 100 karaktera.</value>
-		<comment>Poruka kada ime klijenta prelazi maksimalnu dužinu</comment>
-	</data>
-
-	<data name="ClientPIBLength" xml:space="preserve">
-		<value>PIB mora imati tačno 9 cifara.</value>
-		<comment>Poruka kada PIB klijenta nije tačno 9 cifara</comment>
-	</data>
-
-	<data name="ClientMBLength" xml:space="preserve">
-		<value>MB mora imati tačno 8 cifara.</value>
-		<comment>Poruka kada MB klijenta nije tačno 8 cifara</comment>
-	</data>
-
-	<data name="ClientAddressRequired" xml:space="preserve">
-		<value>Adresa je obavezna.</value>
-		<comment>Poruka kada korisnik ne unese adresu klijenta</comment>
-	</data>
-
-	<data name="ClientAddressMaxLength" xml:space="preserve">
-		<value>Adresa ne može biti duža od 200 karaktera.</value>
-		<comment>Poruka kada adresa klijenta prelazi maksimalnu dužinu</comment>
-	</data>
-
-	<data name="ClientCityRequired" xml:space="preserve">
-		<value>Grad je obavezan.</value>
-		<comment>Poruka kada korisnik ne unese grad klijenta</comment>
-	</data>
-
-	<data name="ClientCityMaxLength" xml:space="preserve">
-		<value>Grad ne može biti duži od 50 karaktera.</value>
-		<comment>Poruka kada grad klijenta prelazi maksimalnu dužinu</comment>
-	</data>
-
-	<data name="ClientEmailRequired" xml:space="preserve">
-		<value>Email je obavezan.</value>
-		<comment>Poruka kada korisnik ne unese email klijenta</comment>
-	</data>
-
-	<data name="ClientEmailInvalid" xml:space="preserve">
-		<value>Email nije u validnom formatu.</value>
-		<comment>Poruka kada email klijenta nije u validnom formatu</comment>
-	</data>
-
-	<data name="ClientEmailMaxLength" xml:space="preserve">
-		<value>Email ne može biti duži od 100 karaktera.</value>
-		<comment>Poruka kada email klijenta prelazi maksimalnu dužinu</comment>
-	</data>
-
-	<data name="ClientPhoneInvalid" xml:space="preserve">
-		<value>Telefon nije u validnom formatu.</value>
-		<comment>Poruka kada telefon klijenta nije u validnom formatu</comment>
-	</data>
-
-	<data name="ClientPhoneMaxLength" xml:space="preserve">
-		<value>Telefon ne može biti duži od 15 karaktera.</value>
-		<comment>Poruka kada telefon klijenta prelazi maksimalnu dužinu</comment>
-	</data>
-
-	<data name="ClientCountryMaxLength" xml:space="preserve">
-		<value>Država ne može biti duža od 50 karaktera.</value>
-		<comment>Poruka kada država klijenta prelazi maksimalnu dužinu</comment>
-	</data>
-
-	<data name="DocumentNumberRequired" xml:space="preserve">
-		<value>Broj dokumenta je obavezan.</value>
-		<comment>Poruka kada korisnik ne unese broj dokumenta</comment>
-	</data>
-
-	<data name="DocumentNumberMaxLength" xml:space="preserve">
-		<value>Broj dokumenta ne može biti duži od 50 karaktera.</value>
-		<comment>Poruka kada broj dokumenta prelazi maksimalnu dužinu</comment>
-	</data>
-
-	<data name="DocumentFilePathRequired" xml:space="preserve">
-		<value>Putanja do fajla je obavezna.</value>
-		<comment>Poruka kada korisnik ne unese putanju do fajla</comment>
-	</data>
-
-	<data name="DocumentFilePathMaxLength" xml:space="preserve">
-		<value>Putanja do fajla ne može biti duža od 500 karaktera.</value>
-		<comment>Poruka kada putanja do fajla prelazi maksimalnu dužinu</comment>
-	</data>
-
-	<data name="ExpenseNameRequired" xml:space="preserve">
-		<value>Naziv troška je obavezan.</value>
-		<comment>Poruka kada korisnik ne unese naziv troška</comment>
-	</data>
-
-	<data name="ExpenseNameMaxLength" xml:space="preserve">
-		<value>Naziv troška ne sme imati više od 100 karaktera.</value>
-		<comment>Poruka kada naziv troška prelazi maksimalnu dužinu</comment>
-	</data>
-
-	<data name="ExpenseAmountGreaterThanZero" xml:space="preserve">
-		<value>Iznos mora biti veći od 0.</value>
-		<comment>Poruka kada iznos troška nije veći od nule</comment>
-	</data>
-
-	<data name="ExpenseStatusInvalid" xml:space="preserve">
-		<value>Nepoznat status troška.</value>
-		<comment>Poruka kada status troška nije prepoznat</comment>
-	</data>
-
-	<data name="InvoiceItemInvoiceIdRequired" xml:space="preserve">
-		<value>InvoiceId je obavezan.</value>
-		<comment>Poruka kada nedostaje InvoiceId za stavku fakture</comment>
-	</data>
-
-	<data name="InvoiceItemNameRequired" xml:space="preserve">
-		<value>Naziv stavke je obavezan.</value>
-		<comment>Poruka kada korisnik ne unese naziv stavke fakture</comment>
-	</data>
-
-	<data name="InvoiceItemNameMaxLength" xml:space="preserve">
-		<value>Naziv stavke ne sme imati više od 100 karaktera.</value>
-		<comment>Poruka kada naziv stavke fakture prelazi maksimalnu dužinu</comment>
-	</data>
-
-	<data name="InvoiceItemDescriptionMaxLength" xml:space="preserve">
-		<value>Opis ne sme imati više od 500 karaktera.</value>
-		<comment>Poruka kada opis stavke fakture prelazi maksimalnu dužinu</comment>
-	</data>
-
-	<data name="InvoiceItemQuantityGreaterThanZero" xml:space="preserve">
-		<value>Količina mora biti veća od 0.</value>
-		<comment>Poruka kada količina stavke fakture nije veća od nule</comment>
-	</data>
-
-	<data name="InvoiceItemUnitPriceMinZero" xml:space="preserve">
-		<value>Cena po jedinici mora biti najmanje 0.</value>
-		<comment>Poruka kada cena po jedinici stavke fakture je negativna</comment>
-	</data>
-
-	<data name="InvoiceClientIdRequired" xml:space="preserve">
-		<value>ClientId je obavezan.</value>
-		<comment>Poruka kada fakturi nedostaje ID klijenta</comment>
-	</data>
-
-	<data name="InvoiceDueDateNotInPast" xml:space="preserve">
-		<value>Rok dospeća ne može biti u prošlosti.</value>
-		<comment>Poruka kada rok dospeća fakture je u prošlosti</comment>
-	</data>
-
-	<data name="InvoiceExchangeRateGreaterThanZero" xml:space="preserve">
-		<value>Kurs mora biti veći od 0.</value>
-		<comment>Poruka kada kurs na fakturi nije veći od nule</comment>
-	</data>
-
-	<data name="InvoiceItemsRequired" xml:space="preserve">
-		<value>Faktura mora sadržati bar jednu stavku.</value>
-		<comment>Poruka kada faktura nema nijednu stavku</comment>
-	</data>
-
-	<data name="ItemNameRequired" xml:space="preserve">
-		<value>Naziv stavke je obavezan.</value>
-		<comment>Poruka kada korisnik ne unese naziv stavke</comment>
-	</data>
-
-	<data name="ItemNameMaxLength" xml:space="preserve">
-		<value>Naziv stavke ne može biti duži od 100 karaktera.</value>
-		<comment>Poruka kada naziv stavke prelazi maksimalnu dužinu</comment>
-	</data>
-
-	<data name="ItemDescriptionMaxLength" xml:space="preserve">
-		<value>Opis ne može biti duži od 500 karaktera.</value>
-		<comment>Poruka kada opis stavke prelazi maksimalnu dužinu</comment>
-	</data>
-
-	<data name="ItemUnitPriceNonNegative" xml:space="preserve">
-		<value>Cena po jedinici ne može biti negativna.</value>
-		<comment>Poruka kada cena po jedinici stavke je negativna</comment>
-	</data>
-	<data name="PaymentTypeUnknown" xml:space="preserve">
-		<value>Nepoznat tip uplate.</value>
-		<comment>Poruka kada tip uplate nije prepoznat</comment>
-	</data>
-
-	<data name="PaymentEntityIdRequired" xml:space="preserve">
-		<value>EntityId je obavezan.</value>
-		<comment>Poruka kada nedostaje EntityId za uplatu</comment>
-	</data>
-
-	<data name="PaymentAmountGreaterThanZero" xml:space="preserve">
-		<value>Iznos mora biti veći od 0.</value>
-		<comment>Poruka kada iznos uplate nije veći od nule</comment>
-	</data>
-
-	<data name="PaymentUnknownCurrency" xml:space="preserve">
-		<value>Nepoznata valuta.</value>
-		<comment>Poruka kada valuta uplate nije prepoznata</comment>
-	</data>
-
-	<data name="PaymentExchangeRateGreaterThanZero" xml:space="preserve">
-		<value>Kurs mora biti veći od 0.</value>
-		<comment>Poruka kada kurs za uplatu nije veći od nule</comment>
-	</data>
-
-	<data name="PaymentReferenceMaxLength" xml:space="preserve">
-		<value>Referentni broj ne sme imati više od 50 karaktera.</value>
-		<comment>Poruka kada referentni broj uplate prelazi maksimalnu dužinu</comment>
-	</data>
-
-	<data name="PaymentDescriptionMaxLength" xml:space="preserve">
-		<value>Opis ne sme imati više od 500 karaktera.</value>
-		<comment>Poruka kada opis uplate prelazi maksimalnu dužinu</comment>
-	</data>
-	<data name="ReminderTitleRequired" xml:space="preserve">
-		<value>Naslov je obavezan.</value>
-		<comment>Poruka kada korisnik ne unese naslov podsetnika</comment>
-	</data>
-
-	<data name="ReminderTitleMaxLength" xml:space="preserve">
-		<value>Naslov ne sme imati više od 100 karaktera.</value>
-		<comment>Poruka kada naslov podsetnika prelazi maksimalnu dužinu</comment>
-	</data>
-
-	<data name="ReminderDescriptionMaxLength" xml:space="preserve">
-		<value>Opis ne sme imati više od 500 karaktera.</value>
-		<comment>Poruka kada opis podsetnika prelazi maksimalnu dužinu</comment>
-	</data>
-
-	<data name="ReminderTypeUnknown" xml:space="preserve">
-		<value>Nepoznat tip podsetnika.</value>
-		<comment>Poruka kada tip podsetnika nije prepoznat</comment>
-	</data>
-
-	<data name="ReminderDueDateInPast" xml:space="preserve">
-		<value>Rok dospeća ne može biti u prošlosti.</value>
-		<comment>Poruka kada rok dospeća podsetnika je u prošlosti</comment>
-	</data>
-	<data name="TaxDueDateInPast" xml:space="preserve">
-		<value>Rok plaćanja ne sme biti u prošlosti.</value>
-		<comment>Poruka kada rok plaćanja poreske obaveze je u prošlosti</comment>
-	</data>
-
-	<data name="TaxTypeUnknown" xml:space="preserve">
-		<value>Nepoznat tip poreske obaveze.</value>
-		<comment>Poruka kada tip poreske obaveze nije prepoznat</comment>
-	</data>
-
-	<data name="TaxStatusUnknown" xml:space="preserve">
-		<value>Nepoznat status poreske obaveze.</value>
-		<comment>Poruka kada status poreske obaveze nije prepoznat</comment>
-	</data>
-
-	<data name="TaxTotalAmountGreaterThanZero" xml:space="preserve">
-		<value>Ukupan iznos mora biti veći od 0.</value>
-		<comment>Poruka kada ukupan iznos poreske obaveze nije veći od nule</comment>
-	</data>
-	<data name="UserIdRequired" xml:space="preserve">
-		<value>ID korisnika je obavezan.</value>
-		<comment>Poruka kada nedostaje ID korisnika</comment>
-	</data>
-
-	<data name="BusinessProfileIdRequired" xml:space="preserve">
-		<value>ID poslovnog profila je obavezan.</value>
-		<comment>Poruka kada nedostaje ID poslovnog profila</comment>
-	</data>
-
-	<data name="UserBusinessRoleRequired" xml:space="preserve">
-		<value>Uloga korisnika je obavezna.</value>
-		<comment>Poruka kada nedostaje uloga korisnika</comment>
-	</data>
-
-	<data name="UserFirstNameRequired" xml:space="preserve">
-		<value>Ime je obavezno.</value>
-		<comment>Poruka kada korisnik ne unese ime</comment>
-	</data>
-
-	<data name="UserFirstNameMaxLength" xml:space="preserve">
-		<value>Ime ne može biti duže od 50 karaktera.</value>
-		<comment>Poruka kada ime korisnika prelazi maksimalnu dužinu</comment>
-	</data>
-
-	<data name="UserLastNameRequired" xml:space="preserve">
-		<value>Prezime je obavezno.</value>
-		<comment>Poruka kada korisnik ne unese prezime</comment>
-	</data>
-
-	<data name="UserLastNameMaxLength" xml:space="preserve">
-		<value>Prezime ne može biti duže od 50 karaktera.</value>
-		<comment>Poruka kada prezime korisnika prelazi maksimalnu dužinu</comment>
-	</data>
-	<data name="UserEmailRequired" xml:space="preserve">
-		<value>Email je obavezan.</value>
-		<comment>Poruka kada korisnik ne unese email</comment>
-	</data>
-
-	<data name="UserEmailInvalid" xml:space="preserve">
-		<value>Email nije u validnom formatu.</value>
-		<comment>Poruka kada email korisnika nije u validnom formatu</comment>
-	</data>
-
-	<data name="UserEmailMaxLength" xml:space="preserve">
-		<value>Email ne može biti duži od 100 karaktera.</value>
-		<comment>Poruka kada email korisnika prelazi maksimalnu dužinu</comment>
-	</data>
-
-	<data name="UserPasswordRequired" xml:space="preserve">
-		<value>Password hash je obavezan.</value>
-		<comment>Poruka kada nedostaje password hash za korisnika</comment>
-	</data>
-
-	<data name="UserPasswordMaxLength" xml:space="preserve">
-		<value>Password hash ne može biti duži od 255 karaktera.</value>
-		<comment>Poruka kada password hash korisnika prelazi maksimalnu dužinu</comment>
-	</data>
-
-	<data name="UserProfilePictureMaxLength" xml:space="preserve">
-		<value>Slika profila ne može biti duža od 500 karaktera.</value>
-		<comment>Poruka kada putanja do slike profila prelazi maksimalnu dužinu</comment>
-	</data>
-
-	<data name="UserPhoneInvalid" xml:space="preserve">
-		<value>Telefon nije u validnom formatu.</value>
-		<comment>Poruka kada telefon korisnika nije u validnom formatu</comment>
-	</data>
-
-	<data name="UserPhoneMaxLength" xml:space="preserve">
-		<value>Telefon ne može biti duži od 15 karaktera.</value>
-		<comment>Poruka kada telefon korisnika prelazi maksimalnu dužinu</comment>
-	</data>
-
-	<data name="UserCityMaxLength" xml:space="preserve">
-		<value>Grad ne može biti duži od 50 karaktera.</value>
-		<comment>Poruka kada grad korisnika prelazi maksimalnu dužinu</comment>
-	</data>
-
-	<data name="UserAddressMaxLength" xml:space="preserve">
-		<value>Adresa ne može biti duža od 200 karaktera.</value>
-		<comment>Poruka kada adresa korisnika prelazi maksimalnu dužinu</comment>
-	</data>
-
-	<data name="ServerError" xml:space="preserve">
-		<value>Došlo je do greške na serveru.</value>
-		<comment>Poruka kada je problem na serveru</comment>
-	</data>
-
-	<data name="UserProfileCreationFailed" xml:space="preserve">
-		<value>Korisnički profil nije kreiran.</value>
-		<comment>Poruka kada korisnički profil nije kreiran</comment>
-	</data>
+  </data>
+  <data name="ClientNameMaxLength" xml:space="preserve">
+    <value>Ime klijenta ne može biti duže od 100 karaktera.</value>
+    <comment>Poruka kada ime klijenta prelazi maksimalnu dužinu</comment>
+  </data>
+  <data name="ClientPIBLength" xml:space="preserve">
+    <value>PIB mora imati tačno 9 cifara.</value>
+    <comment>Poruka kada PIB klijenta nije tačno 9 cifara</comment>
+  </data>
+  <data name="ClientMBLength" xml:space="preserve">
+    <value>MB mora imati tačno 8 cifara.</value>
+    <comment>Poruka kada MB klijenta nije tačno 8 cifara</comment>
+  </data>
+  <data name="ClientAddressRequired" xml:space="preserve">
+    <value>Adresa je obavezna.</value>
+    <comment>Poruka kada korisnik ne unese adresu klijenta</comment>
+  </data>
+  <data name="ClientAddressMaxLength" xml:space="preserve">
+    <value>Adresa ne može biti duža od 200 karaktera.</value>
+    <comment>Poruka kada adresa klijenta prelazi maksimalnu dužinu</comment>
+  </data>
+  <data name="ClientCityRequired" xml:space="preserve">
+    <value>Grad je obavezan.</value>
+    <comment>Poruka kada korisnik ne unese grad klijenta</comment>
+  </data>
+  <data name="ClientCityMaxLength" xml:space="preserve">
+    <value>Grad ne može biti duži od 50 karaktera.</value>
+    <comment>Poruka kada grad klijenta prelazi maksimalnu dužinu</comment>
+  </data>
+  <data name="ClientEmailRequired" xml:space="preserve">
+    <value>Email je obavezan.</value>
+    <comment>Poruka kada korisnik ne unese email klijenta</comment>
+  </data>
+  <data name="ClientEmailInvalid" xml:space="preserve">
+    <value>Email nije u validnom formatu.</value>
+    <comment>Poruka kada email klijenta nije u validnom formatu</comment>
+  </data>
+  <data name="ClientEmailMaxLength" xml:space="preserve">
+    <value>Email ne može biti duži od 100 karaktera.</value>
+    <comment>Poruka kada email klijenta prelazi maksimalnu dužinu</comment>
+  </data>
+  <data name="ClientPhoneInvalid" xml:space="preserve">
+    <value>Telefon nije u validnom formatu.</value>
+    <comment>Poruka kada telefon klijenta nije u validnom formatu</comment>
+  </data>
+  <data name="ClientPhoneMaxLength" xml:space="preserve">
+    <value>Telefon ne može biti duži od 15 karaktera.</value>
+    <comment>Poruka kada telefon klijenta prelazi maksimalnu dužinu</comment>
+  </data>
+  <data name="ClientCountryMaxLength" xml:space="preserve">
+    <value>Država ne može biti duža od 50 karaktera.</value>
+    <comment>Poruka kada država klijenta prelazi maksimalnu dužinu</comment>
+  </data>
+  <data name="DocumentNumberRequired" xml:space="preserve">
+    <value>Broj dokumenta je obavezan.</value>
+    <comment>Poruka kada korisnik ne unese broj dokumenta</comment>
+  </data>
+  <data name="DocumentNumberMaxLength" xml:space="preserve">
+    <value>Broj dokumenta ne može biti duži od 50 karaktera.</value>
+    <comment>Poruka kada broj dokumenta prelazi maksimalnu dužinu</comment>
+  </data>
+  <data name="DocumentFilePathRequired" xml:space="preserve">
+    <value>Putanja do fajla je obavezna.</value>
+    <comment>Poruka kada korisnik ne unese putanju do fajla</comment>
+  </data>
+  <data name="DocumentFilePathMaxLength" xml:space="preserve">
+    <value>Putanja do fajla ne može biti duža od 500 karaktera.</value>
+    <comment>Poruka kada putanja do fajla prelazi maksimalnu dužinu</comment>
+  </data>
+  <data name="ExpenseNameRequired" xml:space="preserve">
+    <value>Naziv troška je obavezan.</value>
+    <comment>Poruka kada korisnik ne unese naziv troška</comment>
+  </data>
+  <data name="ExpenseNameMaxLength" xml:space="preserve">
+    <value>Naziv troška ne sme imati više od 100 karaktera.</value>
+    <comment>Poruka kada naziv troška prelazi maksimalnu dužinu</comment>
+  </data>
+  <data name="ExpenseAmountGreaterThanZero" xml:space="preserve">
+    <value>Iznos mora biti veći od 0.</value>
+    <comment>Poruka kada iznos troška nije veći od nule</comment>
+  </data>
+  <data name="ExpenseStatusInvalid" xml:space="preserve">
+    <value>Nepoznat status troška.</value>
+    <comment>Poruka kada status troška nije prepoznat</comment>
+  </data>
+  <data name="InvoiceItemInvoiceIdRequired" xml:space="preserve">
+    <value>InvoiceId je obavezan.</value>
+    <comment>Poruka kada nedostaje InvoiceId za stavku fakture</comment>
+  </data>
+  <data name="InvoiceItemNameRequired" xml:space="preserve">
+    <value>Naziv stavke je obavezan.</value>
+    <comment>Poruka kada korisnik ne unese naziv stavke fakture</comment>
+  </data>
+  <data name="InvoiceItemNameMaxLength" xml:space="preserve">
+    <value>Naziv stavke ne sme imati više od 100 karaktera.</value>
+    <comment>Poruka kada naziv stavke fakture prelazi maksimalnu dužinu</comment>
+  </data>
+  <data name="InvoiceItemDescriptionMaxLength" xml:space="preserve">
+    <value>Opis ne sme imati više od 500 karaktera.</value>
+    <comment>Poruka kada opis stavke fakture prelazi maksimalnu dužinu</comment>
+  </data>
+  <data name="InvoiceItemQuantityGreaterThanZero" xml:space="preserve">
+    <value>Količina mora biti veća od 0.</value>
+    <comment>Poruka kada količina stavke fakture nije veća od nule</comment>
+  </data>
+  <data name="InvoiceItemUnitPriceMinZero" xml:space="preserve">
+    <value>Cena po jedinici mora biti najmanje 0.</value>
+    <comment>Poruka kada cena po jedinici stavke fakture je negativna</comment>
+  </data>
+  <data name="InvoiceClientIdRequired" xml:space="preserve">
+    <value>ClientId je obavezan.</value>
+    <comment>Poruka kada fakturi nedostaje ID klijenta</comment>
+  </data>
+  <data name="InvoiceDueDateNotInPast" xml:space="preserve">
+    <value>Rok dospeća ne može biti u prošlosti.</value>
+    <comment>Poruka kada rok dospeća fakture je u prošlosti</comment>
+  </data>
+  <data name="InvoiceExchangeRateGreaterThanZero" xml:space="preserve">
+    <value>Kurs mora biti veći od 0.</value>
+    <comment>Poruka kada kurs na fakturi nije veći od nule</comment>
+  </data>
+  <data name="InvoiceItemsRequired" xml:space="preserve">
+    <value>Faktura mora sadržati bar jednu stavku.</value>
+    <comment>Poruka kada faktura nema nijednu stavku</comment>
+  </data>
+  <data name="ItemNameRequired" xml:space="preserve">
+    <value>Naziv stavke je obavezan.</value>
+    <comment>Poruka kada korisnik ne unese naziv stavke</comment>
+  </data>
+  <data name="ItemNameMaxLength" xml:space="preserve">
+    <value>Naziv stavke ne može biti duži od 100 karaktera.</value>
+    <comment>Poruka kada naziv stavke prelazi maksimalnu dužinu</comment>
+  </data>
+  <data name="ItemDescriptionMaxLength" xml:space="preserve">
+    <value>Opis ne može biti duži od 500 karaktera.</value>
+    <comment>Poruka kada opis stavke prelazi maksimalnu dužinu</comment>
+  </data>
+  <data name="ItemUnitPriceNonNegative" xml:space="preserve">
+    <value>Cena po jedinici ne može biti negativna.</value>
+    <comment>Poruka kada cena po jedinici stavke je negativna</comment>
+  </data>
+  <data name="PaymentTypeUnknown" xml:space="preserve">
+    <value>Nepoznat tip uplate.</value>
+    <comment>Poruka kada tip uplate nije prepoznat</comment>
+  </data>
+  <data name="PaymentEntityIdRequired" xml:space="preserve">
+    <value>EntityId je obavezan.</value>
+    <comment>Poruka kada nedostaje EntityId za uplatu</comment>
+  </data>
+  <data name="PaymentAmountGreaterThanZero" xml:space="preserve">
+    <value>Iznos mora biti veći od 0.</value>
+    <comment>Poruka kada iznos uplate nije veći od nule</comment>
+  </data>
+  <data name="PaymentUnknownCurrency" xml:space="preserve">
+    <value>Nepoznata valuta.</value>
+    <comment>Poruka kada valuta uplate nije prepoznata</comment>
+  </data>
+  <data name="PaymentExchangeRateGreaterThanZero" xml:space="preserve">
+    <value>Kurs mora biti veći od 0.</value>
+    <comment>Poruka kada kurs za uplatu nije veći od nule</comment>
+  </data>
+  <data name="PaymentReferenceMaxLength" xml:space="preserve">
+    <value>Referentni broj ne sme imati više od 50 karaktera.</value>
+    <comment>Poruka kada referentni broj uplate prelazi maksimalnu dužinu</comment>
+  </data>
+  <data name="PaymentDescriptionMaxLength" xml:space="preserve">
+    <value>Opis ne sme imati više od 500 karaktera.</value>
+    <comment>Poruka kada opis uplate prelazi maksimalnu dužinu</comment>
+  </data>
+  <data name="ReminderTitleRequired" xml:space="preserve">
+    <value>Naslov je obavezan.</value>
+    <comment>Poruka kada korisnik ne unese naslov podsetnika</comment>
+  </data>
+  <data name="ReminderTitleMaxLength" xml:space="preserve">
+    <value>Naslov ne sme imati više od 100 karaktera.</value>
+    <comment>Poruka kada naslov podsetnika prelazi maksimalnu dužinu</comment>
+  </data>
+  <data name="ReminderDescriptionMaxLength" xml:space="preserve">
+    <value>Opis ne sme imati više od 500 karaktera.</value>
+    <comment>Poruka kada opis podsetnika prelazi maksimalnu dužinu</comment>
+  </data>
+  <data name="ReminderTypeUnknown" xml:space="preserve">
+    <value>Nepoznat tip podsetnika.</value>
+    <comment>Poruka kada tip podsetnika nije prepoznat</comment>
+  </data>
+  <data name="ReminderDueDateInPast" xml:space="preserve">
+    <value>Rok dospeća ne može biti u prošlosti.</value>
+    <comment>Poruka kada rok dospeća podsetnika je u prošlosti</comment>
+  </data>
+  <data name="TaxDueDateInPast" xml:space="preserve">
+    <value>Rok plaćanja ne sme biti u prošlosti.</value>
+    <comment>Poruka kada rok plaćanja poreske obaveze je u prošlosti</comment>
+  </data>
+  <data name="TaxTypeUnknown" xml:space="preserve">
+    <value>Nepoznat tip poreske obaveze.</value>
+    <comment>Poruka kada tip poreske obaveze nije prepoznat</comment>
+  </data>
+  <data name="TaxStatusUnknown" xml:space="preserve">
+    <value>Nepoznat status poreske obaveze.</value>
+    <comment>Poruka kada status poreske obaveze nije prepoznat</comment>
+  </data>
+  <data name="TaxTotalAmountGreaterThanZero" xml:space="preserve">
+    <value>Ukupan iznos mora biti veći od 0.</value>
+    <comment>Poruka kada ukupan iznos poreske obaveze nije veći od nule</comment>
+  </data>
+  <data name="UserIdRequired" xml:space="preserve">
+    <value>ID korisnika je obavezan.</value>
+    <comment>Poruka kada nedostaje ID korisnika</comment>
+  </data>
+  <data name="BusinessProfileIdRequired" xml:space="preserve">
+    <value>ID poslovnog profila je obavezan.</value>
+    <comment>Poruka kada nedostaje ID poslovnog profila</comment>
+  </data>
+  <data name="UserBusinessRoleRequired" xml:space="preserve">
+    <value>Uloga korisnika je obavezna.</value>
+    <comment>Poruka kada nedostaje uloga korisnika</comment>
+  </data>
+  <data name="UserFirstNameRequired" xml:space="preserve">
+    <value>Ime je obavezno.</value>
+    <comment>Poruka kada korisnik ne unese ime</comment>
+  </data>
+  <data name="UserFirstNameMaxLength" xml:space="preserve">
+    <value>Ime ne može biti duže od 50 karaktera.</value>
+    <comment>Poruka kada ime korisnika prelazi maksimalnu dužinu</comment>
+  </data>
+  <data name="UserLastNameRequired" xml:space="preserve">
+    <value>Prezime je obavezno.</value>
+    <comment>Poruka kada korisnik ne unese prezime</comment>
+  </data>
+  <data name="UserLastNameMaxLength" xml:space="preserve">
+    <value>Prezime ne može biti duže od 50 karaktera.</value>
+    <comment>Poruka kada prezime korisnika prelazi maksimalnu dužinu</comment>
+  </data>
+  <data name="UserEmailRequired" xml:space="preserve">
+    <value>Email je obavezan.</value>
+    <comment>Poruka kada korisnik ne unese email</comment>
+  </data>
+  <data name="UserEmailInvalid" xml:space="preserve">
+    <value>Email nije u validnom formatu.</value>
+    <comment>Poruka kada email korisnika nije u validnom formatu</comment>
+  </data>
+  <data name="UserEmailMaxLength" xml:space="preserve">
+    <value>Email ne može biti duži od 100 karaktera.</value>
+    <comment>Poruka kada email korisnika prelazi maksimalnu dužinu</comment>
+  </data>
+  <data name="UserPasswordRequired" xml:space="preserve">
+    <value>Password hash je obavezan.</value>
+    <comment>Poruka kada nedostaje password hash za korisnika</comment>
+  </data>
+  <data name="UserPasswordMaxLength" xml:space="preserve">
+    <value>Password hash ne može biti duži od 255 karaktera.</value>
+    <comment>Poruka kada password hash korisnika prelazi maksimalnu dužinu</comment>
+  </data>
+  <data name="UserProfilePictureMaxLength" xml:space="preserve">
+    <value>Slika profila ne može biti duža od 500 karaktera.</value>
+    <comment>Poruka kada putanja do slike profila prelazi maksimalnu dužinu</comment>
+  </data>
+  <data name="UserPhoneInvalid" xml:space="preserve">
+    <value>Telefon nije u validnom formatu.</value>
+    <comment>Poruka kada telefon korisnika nije u validnom formatu</comment>
+  </data>
+  <data name="UserPhoneMaxLength" xml:space="preserve">
+    <value>Telefon ne može biti duži od 15 karaktera.</value>
+    <comment>Poruka kada telefon korisnika prelazi maksimalnu dužinu</comment>
+  </data>
+  <data name="UserCityMaxLength" xml:space="preserve">
+    <value>Grad ne može biti duži od 50 karaktera.</value>
+    <comment>Poruka kada grad korisnika prelazi maksimalnu dužinu</comment>
+  </data>
+  <data name="UserAddressMaxLength" xml:space="preserve">
+    <value>Adresa ne može biti duža od 200 karaktera.</value>
+    <comment>Poruka kada adresa korisnika prelazi maksimalnu dužinu</comment>
+  </data>
+  <data name="ServerError" xml:space="preserve">
+    <value>Došlo je do greške na serveru.</value>
+    <comment>Poruka kada je problem na serveru</comment>
+  </data>
+  <data name="UserProfileCreationFailed" xml:space="preserve">
+    <value>Korisnički profil nije kreiran.</value>
+    <comment>Poruka kada korisnički profil nije kreiran</comment>
+  </data>
+  <data name="ActivityCodeRequired" xml:space="preserve">
+    <value>Delatnost firme je obavezna.</value>
+    <comment>Poruka kada korisnik ne unese delatnost firme</comment>
+  </data>
+  <data name="ClientCountryInvalid" xml:space="preserve">
+    <value>Zemlja za klijenta nije validna</value>
+    <comment>Poruka kada korisnik pokusa da posalje zemlju koju baza ne podržava</comment>
+  </data>
+  <data name="ExpiresAtFuture" xml:space="preserve">
+    <value>Datum isteka mora biti veći od trenutnog datuma</value>
+    <comment>Poruka kada datum isteka mora biti veći od trenutnog datuma</comment>
+  </data>
+  <data name="InviteTokenRequired" xml:space="preserve">
+    <value>Pozivni token je obavezan</value>
+    <comment>Poruka kada pozivni token nije prosleđen.</comment>
+  </data>
+  <data name="UserAlreadyExists" xml:space="preserve">
+    <value>Korisnik već postoji</value>
+    <comment>Poruka kada korisnik već postoji u bazi.</comment>
+  </data>
+  <data name="RegistrationFailed" xml:space="preserve">
+    <value>Registracija nije uspela.</value>
+    <comment>Poruka kada registracija ne bude uspešna.</comment>
+  </data>
+  <data name="ConfirmEmail" xml:space="preserve">
+    <value>Potvrdite svoj email.</value>
+    <comment>Poruka kada treba da se potvrdi email.</comment>
+  </data>
+  <data name="EmailVerifyGreeting" xml:space="preserve">
+    <value>Zdravo, {0}!</value>
+    <comment>Poruka za email template pozdrav</comment>
+  </data>
+  <data name="EmailVerifyText" xml:space="preserve">
+    <value>Hvala što ste se registrovali na našoj platformi. Molimo potvrdite vaš email klikom na dugme ispod:</value>
+    <comment>Poruka za email template text</comment>
+  </data>
+  <data name="EmailVerifyButton" xml:space="preserve">
+    <value>Potvrdite Email</value>
+    <comment>Poruka za email template za potvrdu mejla</comment>
+  </data>
+  <data name="EmailVerifyFallback" xml:space="preserve">
+    <value>Ako dugme ne radi, kopirajte i zalepite sledeći link u vaš pregledač:</value>
+    <comment>Poruka za email template za fallback</comment>
+  </data>
+  <data name="EmailVerifyFooter" xml:space="preserve">
+    <value>Ako niste registrovani, ignorisite ovaj email.</value>
+    <comment>Poruka za email template footer</comment>
+  </data>
+  <data name="EmailVerify" xml:space="preserve">
+    <value>Verifikujte svoj profil</value>
+    <comment>Poruka za verifikaciju emaila</comment>
+  </data>
+  <data name="InvalidRequest" xml:space="preserve">
+    <value>Zahtev nije validan.</value>
+    <comment>Poruka kako zahtev nije validan.</comment>
+  </data>
+  <data name="UserNotFound" xml:space="preserve">
+    <value>Korisnik nije pronađen.</value>
+    <comment>Poruka kako korisnik nije pronađen.</comment>
+  </data>
+  <data name="InvalidOrExpiredToken" xml:space="preserve">
+    <value>Istekao ili netačan token</value>
+    <comment>Poruka kako je token istekao ili nije tačan.</comment>
+  </data>
+  <data name="EmailVerifiedSuccessfully" xml:space="preserve">
+    <value>Email je uspešno verifikovan.</value>
+    <comment>Poruka kako je email uspešno verifikovan.</comment>
+  </data>
+  <data name="VerificationSuccessTitle" xml:space="preserve">
+    <value>Email Verifikovan.</value>
+    <comment>Poruka kada je email verifikovan.</comment>
+  </data>
+  <data name="VerificationSuccessHeading" xml:space="preserve">
+    <value>Uspešno Verifikovano!</value>
+    <comment>Poruka kada je email uspešno verifikovan.</comment>
+  </data>
+  <data name="VerificationSuccessMessage" xml:space="preserve">
+    <value>Vaš email je uspešno verifikovan. Sada možete da se prijavite u sistem.</value>
+    <comment>Poruka da je email verifikovan i da korisnik može da se prijavi.</comment>
+  </data>
+  <data name="GoToLogin" xml:space="preserve">
+    <value>Prijavite Se</value>
+    <comment>Poruka na dugmetu za prijavu</comment>
+  </data>
+  <data name="VerificationErrorTitle" xml:space="preserve">
+    <value>Greška pri Verifikaciji</value>
+    <comment>Poruka kada korisnik ne uspe da se verifikuje.</comment>
+  </data>
+  <data name="VerificationErrorHeading" xml:space="preserve">
+    <value>Verifikacija Neuspešna</value>
+    <comment>Poruka kada verifikacije ne prođe.</comment>
+  </data>
+  <data name="ResendVerificationEmail" xml:space="preserve">
+    <value>Pošalji Ponovo</value>
+    <comment>Poruka na dugmetu za slanje novog tokena</comment>
+  </data>
+  <data name="GoToHome" xml:space="preserve">
+    <value>Početna</value>
+    <comment>Poruka za dugme za početnu stranicu.</comment>
+  </data>
+  <data name="EmailAlreadyVerified" xml:space="preserve">
+    <value>Email je već verifikovan.</value>
+    <comment>Poruka kada je email već verifikovan.</comment>
+  </data>
+  <data name="VerificationEmailResent" xml:space="preserve">
+    <value>Email za verifikaciju je ponovo poslat. Proverite svoj inbox.</value>
+    <comment>Poruka kada je Email za verifikaciju uspešno poslat.</comment>
+  </data>
+  <data name="RegistrationSuccessful" xml:space="preserve">
+    <value>Registracija uspešna! Proverite email za verifikaciju.</value>
+    <comment>Poruka kada je registracija uspešna.</comment>
+  </data>
+  <data name="CompanyAlreadyExists" xml:space="preserve">
+    <value>Kompanija već postoji.</value>
+    <comment>Poruka kada kompanija već postoji.</comment>
+  </data>
+  <data name="InviteTokenDoesNotExist" xml:space="preserve">
+    <value>Pozivni token ne postoji.</value>
+    <comment>Poruka da pozivni token ne postoji.</comment>
+  </data>
+  <data name="InviteTokenDismatch" xml:space="preserve">
+    <value>Pozivni tokeni se ne poklapaju.</value>
+    <comment>Poruka kako se pozivni tokeni ne poklapaju.</comment>
+  </data>
+  <data name="BusinesProfileNotFound" xml:space="preserve">
+    <value>Firma nije pronađena.</value>
+    <comment>Poruka kad firma nije pronađena.</comment>
+  </data>
+  <data name="InviteTokenPageTitle" xml:space="preserve">
+    <value>Poziv za registraciju kao asistent</value>
+    <comment>Title za InviteToken email</comment>
+  </data>
+  <data name="InviteTokenTitle" xml:space="preserve">
+    <value>Dobrodošli! Imate novi poziv</value>
+    <comment>Naslov za Invite token</comment>
+  </data>
+  <data name="InviteTokenPageMessage" xml:space="preserve">
+    <value>Vlasnik firme vas je pozvao da postanete njegov asistent. Molimo koristite sledeći token da završite registraciju:</value>
+    <comment>Pozivni token</comment>
+  </data>
+  <data name="InviteTokenFooter" xml:space="preserve">
+    <value>Ako niste očekivali ovaj poziv, molimo ignorišite ovaj mejl. © 2026 Pausalio</value>
+    <comment>Footer za email</comment>
+  </data>
+  <data name="Register" xml:space="preserve">
+    <value>Registracija</value>
+    <comment>Poruka za registraciju</comment>
+  </data>
+  <data name="PasswordRegex" xml:space="preserve">
+    <value>Šifra mora uključivati najmanje 8 karaktera i barem jedno veliko, malo slovo, broj i specijalni znak</value>
+    <comment>Poruka za regex lozinku </comment>
+  </data>
+  <data name="InvalidCredentials" xml:space="preserve">
+    <value>Neispravni podaci. Proverite unos</value>
+    <comment>Poruka kako je neispravan unos</comment>
+  </data>
+  <data name="EmailNotVerified" xml:space="preserve">
+    <value>Email nije verifikovan</value>
+    <comment>Poruka kako emain nije verifikovan</comment>
+  </data>
+  <data name="UserInactive" xml:space="preserve">
+    <value>Korisnički profil nije aktiviran.</value>
+    <comment>Poruka kako korisnički profil nije aktiviran.</comment>
+  </data>
+  <data name="UserEmailNotProvided" xml:space="preserve">
+    <value>Email korisnika nije pronađen u tokenu</value>
+    <comment>Poruka kako email korisnika nije pronađen u jwt tokenu</comment>
+  </data>
+  <data name="InviteTokenAlreadyExists" xml:space="preserve">
+    <value>Pozivni token već postoji.</value>
+    <comment>Poruka kako pozivni token već postoji.</comment>
+  </data>
+  <data name="InviteTokenCreateFail" xml:space="preserve">
+    <value>Greška prilikom kreiranja pozivnog tokena u bazi.</value>
+    <comment>Poruka kako je došlo do greeške prilikom kreiranja pozivnog tokena u bazi.</comment>
+  </data>
+  <data name="LoginSuccessfull" xml:space="preserve">
+    <value>Prijava uspešna.</value>
+    <comment>Poruka o uspešnoj prijavi</comment>
+  </data>
+  <data name="InvalidPassword" xml:space="preserve">
+    <value>Lozinka nije ispravna.</value>
+    <comment>Poruka o neispravnoj šifri.</comment>
+  </data>
+  <data name="InvalidCompanyId" xml:space="preserve">
+    <value>ID kompanije nije validan.</value>
+    <comment>Poruka da ID kompanije nije validan.</comment>
+  </data>
+  <data name="UserCompanyNotFound" xml:space="preserve">
+    <value>Korisniku nije dodeljena nijedna kompanija.</value>
+    <comment>Poruka da je korisnik bez kompanije.</comment>
+  </data>
 </root>

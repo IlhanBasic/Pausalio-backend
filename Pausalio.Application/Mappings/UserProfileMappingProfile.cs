@@ -13,7 +13,11 @@ namespace Pausalio.Application.Mappings
     {
         public UserProfileMappingProfile()
         {
-            CreateMap<AddUserProfileDto, UserProfile>();
+            CreateMap<AddUserProfileDto, UserProfile>()
+                .ForMember(
+                    dest => dest.PasswordHash,
+                    opt => opt.MapFrom(src => src.Password)
+                );
             CreateMap<UpdateUserProfileDto, UserProfile>();
             CreateMap<UserProfile, UserProfileToReturnDto>();
         }

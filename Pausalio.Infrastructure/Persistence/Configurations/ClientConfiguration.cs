@@ -51,9 +51,6 @@ namespace Pausalio.Infrastructure.Persistence.Configurations
             builder.Property(x => x.Phone)
                 .HasMaxLength(20);
 
-            builder.Property(x => x.Country)
-                .HasMaxLength(100);
-
             builder.Property(x => x.IsActive)
                 .HasDefaultValue(true)
                 .IsRequired();
@@ -79,6 +76,11 @@ namespace Pausalio.Infrastructure.Persistence.Configurations
                 .WithOne(x => x.Client)
                 .HasForeignKey(x => x.ClientId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(x => x.Country)
+                .WithMany()
+                .HasForeignKey(x => x.CountryId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

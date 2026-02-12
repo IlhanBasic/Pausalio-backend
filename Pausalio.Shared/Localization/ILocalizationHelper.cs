@@ -2,6 +2,55 @@
 {
     public interface ILocalizationHelper
     {
+        string InvalidCompanyId { get; }
+        string UserCompanyNotFound { get; }
+        string InvalidPassword { get; }
+        string LoginSuccessfull {  get; }
+        string UserEmailNotProvided { get; }
+        string InviteTokenAlreadyExists { get; }
+        string InviteTokenCreateFail { get; }
+        string InvalidCredentials { get; }
+        string EmailNotVerified { get; }
+        string UserInactive { get; }
+        string PasswordRegex { get; }
+        string Register {  get; }
+        string InviteTokenFooter { get; }
+        string InviteTokenPageMessage { get; }
+        string InviteTokenTitle { get; }
+        string InviteTokenPageTitle { get; }
+        string BusinesProfileNotFound { get; }
+        string InviteTokenDismatch {  get; }
+        string InviteTokenDoesNotExist { get; }
+        string CompanyAlreadyExists { get; }
+        string UserAlreadyExists { get; }
+        string RegistrationFailed { get; }
+        string ConfirmEmail { get; }
+        string InvalidRequest { get; }
+        string UserNotFound { get; }
+        string InvalidOrExpiredToken { get; }
+        string EmailVerifyGreeting { get; }
+        string EmailVerifyText { get; }
+        string EmailVerifyButton { get; }
+        string EmailVerifyFallback { get; }
+        string EmailVerifyFooter { get; }
+        string VerificationSuccessTitle { get; }
+        string VerificationSuccessHeading { get; }
+        string VerificationSuccessMessage { get; }
+        string GoToLogin { get; }
+        string VerificationErrorTitle { get; }
+        string VerificationErrorHeading { get; }
+        string ResendVerificationEmail { get; }
+        string GoToHome { get; }
+        string EmailAlreadyVerified { get; }
+        string VerificationEmailResent { get; }
+        string RegistrationSuccessful { get; }
+        string EmailVerifiedSuccessfully { get; }
+        string EmailVerify { get; }
+        string InviteTokenRequired { get; }
+        string ExpiresAtFuture {  get; }
+        string BusinessProfileIdInvalid { get; }
+        string ClientCountryInvalid { get; }
+        string ActivityCodeRequired { get; }
         string BankNameRequired { get; }
         string AccountNumberRequired { get; }
         string UnknownCurrency {  get; }

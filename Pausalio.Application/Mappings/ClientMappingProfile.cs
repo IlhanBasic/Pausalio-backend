@@ -13,7 +13,11 @@ namespace Pausalio.Application.Mappings
     {
         public ClientMappingProfile()
         {
-            CreateMap<Client, ClientToReturnDto>();
+            CreateMap<Client, ClientToReturnDto>()
+                .ForMember(
+                    dest => dest.Country,
+                    opt => opt.MapFrom(src => src.Country != null ? src.Country.Name : null)
+                );
             CreateMap<AddClientDto, Client>();
             CreateMap<UpdateClientDto, Client>();
         }

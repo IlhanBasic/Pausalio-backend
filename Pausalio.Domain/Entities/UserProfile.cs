@@ -21,5 +21,11 @@ namespace Pausalio.Domain.Entities
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
         public ICollection<UserBusinessProfile> UserBusinessProfiles { get; set; } = new List<UserBusinessProfile>();
+        public bool IsEmailVerified { get; set; } = false;
+        public string? EmailVerificationToken { get; set; }
+        public DateTime? EmailVerificationTokenExpiration { get; set; }
+        public string? PasswordResetToken { get; set; }
+        public DateTime? PasswordResetTokenExpiration { get; set; }
+
     }
 }

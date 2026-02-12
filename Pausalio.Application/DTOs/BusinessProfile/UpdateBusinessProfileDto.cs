@@ -11,7 +11,7 @@ namespace Pausalio.Application.DTOs.BusinessProfile
         public string BusinessName { get; set; } = null!;
         public string PIB { get; set; } = null!;
         public string MB { get; set; } = string.Empty;
-        public string ActivityCode { get; set; } = string.Empty;
+        public Guid ActivityCodeId { get; set; }
         public string City { get; set; } = string.Empty;
         public string Address { get; set; } = null!;
         public string Email { get; set; } = null!;

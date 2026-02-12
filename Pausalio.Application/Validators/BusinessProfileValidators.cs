@@ -5,15 +5,13 @@ using System;
 
 namespace Pausalio.Application.Validators
 {
-    public class AddBusinessProfileValidator : AbstractValidator<AddBusinessProfileDto>
+    public class AddBusinessProfileDtoValidator : AbstractValidator<AddBusinessProfileDto>
     {
-
-        public AddBusinessProfileValidator(ILocalizationHelper _localizationHelper)
+        public AddBusinessProfileDtoValidator(ILocalizationHelper _localizationHelper)
         {
-
             RuleFor(x => x.BusinessName)
                 .NotEmpty().WithMessage(_localizationHelper.BusinessNameRequired)
-                .MaximumLength(100).WithMessage(_localizationHelper.BusinessNameMaxLength);
+                .MaximumLength(150).WithMessage(_localizationHelper.BusinessNameMaxLength);
 
             RuleFor(x => x.PIB)
                 .NotEmpty().WithMessage(_localizationHelper.PIBRequired)
@@ -23,13 +21,12 @@ namespace Pausalio.Application.Validators
                 .Matches(@"^\d{8}$").When(x => !string.IsNullOrEmpty(x.MB))
                 .WithMessage(_localizationHelper.MBLength);
 
-            RuleFor(x => x.ActivityCode)
-                .MaximumLength(5).When(x => !string.IsNullOrEmpty(x.ActivityCode))
-                .WithMessage(_localizationHelper.ActivityCodeMaxLength);
+            RuleFor(x => x.ActivityCodeId)
+                .NotEmpty().WithMessage(_localizationHelper.ActivityCodeRequired);
 
             RuleFor(x => x.City)
                 .NotEmpty().WithMessage(_localizationHelper.CityRequired)
-                .MaximumLength(50).WithMessage(_localizationHelper.CityMaxLength);
+                .MaximumLength(100).WithMessage(_localizationHelper.CityMaxLength);
 
             RuleFor(x => x.Address)
                 .NotEmpty().WithMessage(_localizationHelper.AddressRequired)
@@ -57,15 +54,13 @@ namespace Pausalio.Application.Validators
         }
     }
 
-    public class UpdateBusinessProfileValidator : AbstractValidator<UpdateBusinessProfileDto>
+    public class UpdateBusinessProfileDtoValidator : AbstractValidator<UpdateBusinessProfileDto>
     {
-
-        public UpdateBusinessProfileValidator(ILocalizationHelper _localizationHelper)
+        public UpdateBusinessProfileDtoValidator(ILocalizationHelper _localizationHelper)
         {
-
             RuleFor(x => x.BusinessName)
                 .NotEmpty().WithMessage(_localizationHelper.BusinessNameRequired)
-                .MaximumLength(100).WithMessage(_localizationHelper.BusinessNameMaxLength);
+                .MaximumLength(150).WithMessage(_localizationHelper.BusinessNameMaxLength);
 
             RuleFor(x => x.PIB)
                 .NotEmpty().WithMessage(_localizationHelper.PIBRequired)
@@ -75,13 +70,12 @@ namespace Pausalio.Application.Validators
                 .Matches(@"^\d{8}$").When(x => !string.IsNullOrEmpty(x.MB))
                 .WithMessage(_localizationHelper.MBLength);
 
-            RuleFor(x => x.ActivityCode)
-                .MaximumLength(5).When(x => !string.IsNullOrEmpty(x.ActivityCode))
-                .WithMessage(_localizationHelper.ActivityCodeMaxLength);
+            RuleFor(x => x.ActivityCodeId)
+                .NotEmpty().WithMessage(_localizationHelper.ActivityCodeRequired);
 
             RuleFor(x => x.City)
                 .NotEmpty().WithMessage(_localizationHelper.CityRequired)
-                .MaximumLength(50).WithMessage(_localizationHelper.CityMaxLength);
+                .MaximumLength(100).WithMessage(_localizationHelper.CityMaxLength);
 
             RuleFor(x => x.Address)
                 .NotEmpty().WithMessage(_localizationHelper.AddressRequired)

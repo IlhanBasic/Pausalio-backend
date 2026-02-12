@@ -60,6 +60,16 @@ namespace Pausalio.Infrastructure.Persistence.Configurations
                    .WithOne(ubp => ubp.User)
                    .HasForeignKey(ubp => ubp.UserId)
                    .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Property(x => x.IsEmailVerified)
+                   .HasDefaultValue(false)
+                   .IsRequired();
+
+            builder.Property(x => x.EmailVerificationToken)
+                   .HasMaxLength(500);
+
+            builder.Property(x => x.PasswordResetToken)
+                   .HasMaxLength(500);
         }
     }
 }

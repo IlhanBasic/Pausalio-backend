@@ -1,0 +1,201 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes" />
+    <title>{{PageTitle}}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: radial-gradient(circle at 90% 20%, #e6f7e6 0%, #dcfce7 40%, #f0fdf4 100%);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 520px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            background-color: #ffffff;
+            padding: 44px 36px;
+            border-radius: 32px;
+            box-shadow: 0 25px 40px -15px rgba(21, 128, 61, 0.15), 0 8px 20px rgba(0,0,0,0.02);
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.6);
+            transition: all 0.25s ease;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+
+            .container {
+                padding: 32px 20px;
+                border-radius: 28px;
+            }
+        }
+
+        .success-icon {
+            width: 88px;
+            height: 88px;
+            background: linear-gradient(145deg, #16a34a, #15803d);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 12px 22px -8px rgba(21, 128, 61, 0.3);
+            animation: softAppear 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+            .success-icon svg {
+                width: 54px;
+                height: 54px;
+                fill: white;
+                opacity: 0.95;
+                transform: scale(0.9);
+                animation: checkPulse 2.2s infinite ease-in-out;
+            }
+
+        @keyframes softAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0.7) translateY(10px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        @keyframes checkPulse {
+            0%, 100% {
+                transform: scale(0.9);
+                opacity: 0.9;
+            }
+
+            50% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        h1 {
+            color: #0a2e1a;
+            margin-bottom: 12px;
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            word-break: break-word;
+        }
+
+        p {
+            color: #2d4a3b;
+            line-height: 1.6;
+            margin-bottom: 32px;
+            font-size: 17px;
+            font-weight: 400;
+            padding: 0 8px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 15px 42px;
+            background: #15803d;
+            color: white !important;
+            text-decoration: none;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 17px;
+            transition: all 0.25s ease;
+            border: none;
+            box-shadow: 0 8px 18px rgba(21, 128, 61, 0.25);
+            letter-spacing: 0.4px;
+            margin: 8px 0 4px;
+        }
+
+            .button:hover {
+                background: #166534;
+                transform: translateY(-3px);
+                box-shadow: 0 16px 26px rgba(21, 128, 61, 0.35);
+            }
+
+            .button:active {
+                transform: translateY(0);
+                box-shadow: 0 8px 16px rgba(21, 128, 61, 0.3);
+            }
+
+        .footer {
+            margin-top: 40px;
+            font-size: 13px;
+            color: #547860;
+            border-top: 1px solid #dcf1e3;
+            padding-top: 24px;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+        }
+
+        .button:focus-visible {
+            outline: 3px solid #86efac;
+            outline-offset: 3px;
+        }
+
+        .fallback-link {
+            margin-top: 24px;
+            font-size: 14px;
+            background: #f0fdf4;
+            padding: 12px 20px;
+            border-radius: 30px;
+            color: #14532d;
+            word-break: break-all;
+            border: 1px solid #bbf7d0;
+        }
+
+            .fallback-link a {
+                color: #15803d;
+                text-decoration: underline;
+                font-weight: 600;
+            }
+
+                .fallback-link a:hover {
+                    color: #0a5c2c;
+                    text-decoration: none;
+                }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="success-icon">
+            <svg viewBox="0 0 24 24" aria-label="Success icon" role="img">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+            </svg>
+        </div>
+
+        <h1>{{Title}}</h1>
+        <p>{{Message}}</p>
+
+        <a href="{{LoginLink}}" class="button">{{ButtonText}}</a>
+
+
+        <div class="footer">
+            {{Footer}}
+        </div>
+    </div>
+</body>
+</html>

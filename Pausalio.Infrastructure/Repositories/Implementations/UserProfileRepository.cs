@@ -1,4 +1,5 @@
-﻿using Pausalio.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using Pausalio.Domain.Entities;
 using Pausalio.Infrastructure.Persistence;
 using Pausalio.Infrastructure.Repositories.Interfaces;
 using System;
@@ -16,5 +17,13 @@ namespace Pausalio.Infrastructure.Repositories.Implementations
         {
             _context = context;
         }
+        public async Task<UserProfile?> GetByEmailWithEntitiesAsync(string email)
+        {
+            return await _context.UserProfiles
+                .Include(u => u.UserBusinessProfiles)
+                    .ThenInclude(u => u.BusinessProfile)
+                .FirstOrDefaultAsync(u => u.Email == email);
+        }
+
     }
 }

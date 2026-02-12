@@ -9,5 +9,7 @@ namespace Pausalio.Infrastructure.Repositories.Interfaces
 {
     public interface IUserProfileRepository: IRepository<UserProfile>
     {
+        Task<UserProfile?> GetByEmailWithEntitiesAsync(string email);
+
     }
 }

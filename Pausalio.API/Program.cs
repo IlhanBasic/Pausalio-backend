@@ -1,7 +1,10 @@
 ﻿using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Pausalio.Application.Mappings;
 using Pausalio.Application.Services.Implementations;
 using Pausalio.Application.Services.Interfaces;
@@ -9,14 +12,15 @@ using Pausalio.Application.Validators;
 using Pausalio.Infrastructure.Persistence;
 using Pausalio.Infrastructure.Repositories.Implementations;
 using Pausalio.Infrastructure.Repositories.Interfaces;
+using Pausalio.Shared.Configuration;
 using Pausalio.Shared.Localization;
 using Serilog;
 using Serilog.Events;
 using System.Globalization;
-using System.Reflection;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddHttpContextAccessor();
 // -------------------- Serilog --------------------
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
@@ -53,12 +57,46 @@ builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<IReminderRepository, ReminderRepository>();
 builder.Services.AddScoped<ITaxObligationRepository, TaxObligationRepository>();
 builder.Services.AddScoped<IUserProfileRepository, UserProfileRepository>();
+builder.Services.AddScoped<IBusinessInviteRepository, BusinessInviteRepository>();
+
+// -------------------- Configuration --------------------
+builder.Services.Configure<UrlSettings>(builder.Configuration.GetSection("UrlSettings"));
+builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("Email"));
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
+var key = Encoding.UTF8.GetBytes(jwtSettings.Key);
+
+// -------------------- JWT Authentication --------------------
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = true;
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidIssuer = jwtSettings.Issuer,
+
+        ValidateAudience = true,
+        ValidAudience = jwtSettings.Audience,
+
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero,
+
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key)
+    };
+});
 
 // -------------------- AutoMapper --------------------
 builder.Services.AddAutoMapper(typeof(ClientMappingProfile).Assembly);
 
 // -------------------- Controllers --------------------
-builder.Services.AddControllers(); // DODATO - ovo ti je nedostajalo!
+builder.Services.AddControllers();
 
 // -------------------- Authorization --------------------
 builder.Services.AddAuthorization();
@@ -80,12 +118,18 @@ builder.Services.AddScoped<IReminderService, ReminderService>();
 builder.Services.AddScoped<ITaxObligationService, TaxObligationService>();
 builder.Services.AddScoped<IUserBusinessProfileService, UserBusinessProfileService>();
 builder.Services.AddScoped<IUserProfileService, UserProfileService>();
+builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddScoped<IEmailTemplateService, EmailTemplateService>();
+builder.Services.AddScoped<IBusinessInviteService, BusinessInviteService>();
+
 // -------------------- FluentValidation --------------------
 builder.Services.AddValidatorsFromAssemblyContaining<AddBankAccountDtoValidator>();
 builder.Services.AddFluentValidationAutoValidation();
+
 // -------------------- Localization --------------------
 builder.Services.AddLocalization();
-
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
     var supportedCultures = new[]
@@ -104,12 +148,34 @@ builder.Services.AddScoped<ILocalizationHelper, LocalizationHelper>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Title = "Pausalio API",
-        Version = "v1"
+        Description = "Unesite JWT token ovde sa prefixom 'Bearer '",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement()
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                },
+                Scheme = "oauth2",
+                Name = "Bearer",
+                In = ParameterLocation.Header,
+            },
+            new List<string>()
+        }
     });
 });
+
 
 // -------------------- Build Application --------------------
 var app = builder.Build();
@@ -119,6 +185,9 @@ app.UseSerilogRequestLogging();
 app.UseRequestLocalization();
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 // -------------------- Swagger UI --------------------
 app.UseSwagger();
 app.UseSwaggerUI(c =>
@@ -127,8 +196,6 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = string.Empty;
 });
 
-// -------------------- Authorization & Controllers --------------------
-app.UseAuthorization();
 app.MapControllers();
 
 // -------------------- Run --------------------

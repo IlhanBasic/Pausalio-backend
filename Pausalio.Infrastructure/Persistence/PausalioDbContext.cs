@@ -27,6 +27,7 @@ namespace Pausalio.Infrastructure.Persistence
         public DbSet<Country> Countries { get; set; }
         public DbSet<City> Cities { get; set; }
         public DbSet<ActivityCode> ActivityCodes { get; set; }
+        public DbSet<BusinessInvite> BusinessInvites { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

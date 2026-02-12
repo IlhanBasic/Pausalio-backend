@@ -12,7 +12,8 @@ namespace Pausalio.Domain.Entities
         public string BusinessName { get; set; } = null!;
         public string PIB { get; set; } = null!;
         public string MB { get; set; } = string.Empty;
-        public string ActivityCode { get; set; } = string.Empty;
+        public Guid ActivityCodeId { get; set; }
+        public ActivityCode ActivityCode { get; set; } = null!;
         public string City { get; set; } = string.Empty;
         public string Address { get; set; } = null!;
         public string Email { get; set; } = null!;
@@ -32,5 +33,7 @@ namespace Pausalio.Domain.Entities
         public ICollection<Document> Documents { get; set; } = new List<Document>();
         public ICollection<Reminder> Reminders { get; set; } = new List<Reminder>();
         public ICollection<Item> Items { get; set; } = new List<Item>();
+        public ICollection<BusinessInvite> BusinessInvites { get; set; } = new List<BusinessInvite>();
+
     }
 }

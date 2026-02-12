@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,6 +25,8 @@ namespace Pausalio.Infrastructure.Repositories.Interfaces
         IReminderRepository ReminderRepository { get; }
         ITaxObligationRepository TaxObligationRepository { get; }
         IUserProfileRepository UserProfileRepository { get; }
+        IBusinessInviteRepository BusinessInviteRepository { get; }
         Task<int> SaveChangesAsync();
+        Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
     }   
 }
