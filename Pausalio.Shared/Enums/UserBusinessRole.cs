@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Pausalio.Shared.Enums
 {
-    public enum UserRole
+    public enum UserBusinessRole
     {
-        RegularUser = 1,
-        Admin = 2
+        Owner = 1,
+        Assistant = 2,
     }
 }

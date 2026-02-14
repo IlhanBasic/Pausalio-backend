@@ -14,7 +14,7 @@ namespace Pausalio.Application.DTOs.UserBusinessProfile
         public Guid Id { get; set; }
         public UserProfileToReturnDto User { get; set; } = null!;
         public BusinessProfileToReturnDto BusinessProfile { get; set; } = null!;
-        public UserRole Role { get; set; }
+        public UserBusinessRole Role { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

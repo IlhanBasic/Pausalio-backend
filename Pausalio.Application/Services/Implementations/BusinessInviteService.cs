@@ -4,6 +4,7 @@ using Pausalio.Application.Helpers;
 using Pausalio.Application.Services.Interfaces;
 using Pausalio.Domain.Entities;
 using Pausalio.Infrastructure.Repositories.Interfaces;
+using Pausalio.Shared.Localization;
 
 namespace Pausalio.Application.Services.Implementations
 {
@@ -11,10 +12,12 @@ namespace Pausalio.Application.Services.Implementations
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public BusinessInviteService(IUnitOfWork unitOfWork, IMapper mapper)
+        private readonly ILocalizationHelper _localizationHelper;
+        public BusinessInviteService(IUnitOfWork unitOfWork, IMapper mapper, ILocalizationHelper localizationHelper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _localizationHelper = localizationHelper;
         }
 
         public async Task<BusinessInviteToReturnDto?> GetBusinessInviteByEmail(string email)
@@ -26,6 +29,14 @@ namespace Pausalio.Application.Services.Implementations
             return _mapper.Map<BusinessInviteToReturnDto>(businessInvite);
         }
 
+        public async Task RemoveInvite(Guid id)
+        {
+            var businessInvite = await _unitOfWork.BusinessInviteRepository.FindFirstOrDefaultAsync(x => x.Id == id);
+            if (businessInvite == null)
+                throw new KeyNotFoundException(_localizationHelper.InviteTokenDoesNotExist);
+            _unitOfWork.BusinessInviteRepository.Remove(businessInvite);
+            await _unitOfWork.SaveChangesAsync();
+        }
 
         public async Task<BusinessInviteToReturnDto> SendInvite(AddBusinessInviteDto invite, Guid ownerId, Guid businessId)
         {

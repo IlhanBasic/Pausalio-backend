@@ -2,6 +2,56 @@
 {
     public interface ILocalizationHelper
     {
+        string InviteRemoved { get; }
+        string InviteSent { get; }
+        string FileUploadFailed {  get; }
+        string FileUploadedSuccessfully {  get; }
+        string UnsupportedFileType {  get; }
+        string FileIsEmptyOrNotProvided { get; }
+        string FileDeleteFailed { get; }
+        string FileDeletedSuccessfully { get; }
+        string UrlIsRequired { get; }
+        string CountryCodeInvalidLength { get; }
+        string CountryCodeRequired { get; }
+        string CountryNameTooLong { get; }
+        string CountryNameRequired { get; }
+        string ActivityCodeDescriptionTooLong {  get; }
+        string ActivityCodeDescriptionRequired { get; }
+        string ActivityCodeTooLong {  get; }
+        string ReminderDeletedSuccessfully {  get; }
+        string ReminderMarkedCompleted {  get; }
+        string ReminderUpdatedSuccessfully {  get; }
+        string ReminderCreatedSuccessfully { get; }
+        string ReminderNotFound {  get; }
+        string ItemDeletedSuccessfully { get; }
+        string ItemUpdatedSuccessfully {  get; }
+        string ItemCreatedSuccessfully {  get; }
+        string ItemNotFound {  get; }
+        string DocumentDeletedSuccessfully { get; }
+        string DocumentUpdatedSuccessfully {  get; }
+        string DocumentCreatedSuccessfully { get; }
+        string DocumentNotFound { get; }
+        string CountryDeletedSuccessfully {  get; }
+        string CountryUpdatedSuccessfully { get; }
+        string CountryCreatedSuccessfully { get; }
+        string CountryNotFound {  get; }
+        string CityDeletedSuccessfully { get; }
+        string CityUpdatedSuccessfully {  get; }
+        string CityCreatedSuccessfully { get; }
+        string CityNotFound {  get; }
+        string BankAccountDeletedSuccessfully {  get; }
+        string BankAccountUpdatedSuccessfully {  get; }
+        string BankAccountCreatedSuccessfully { get; }
+        string BankAccountNotFound {  get; }
+        string ActivityCodeAlreadyExists { get; }
+        string ActivityCodeDeletedSuccessfully { get; }
+        string ActivityCodeUpdatedSuccessfully {  get; }
+        string ActivityCodeCreatedSuccessfully {  get; }
+        string ActivityCodeNotFound { get; }
+        string CityNameMaxLength { get; }
+        string CityNameRequired { get; }
+        string PostalCodeMaxLength { get; }
+        string PostalCodeRequired { get; }
         string InvalidCompanyId { get; }
         string UserCompanyNotFound { get; }
         string InvalidPassword { get; }

@@ -198,5 +198,105 @@ namespace Pausalio.Shared.Localization
         public string InvalidCompanyId => _localizer["InvalidCompanyId"];
 
         public string UserCompanyNotFound => _localizer["UserCompanyNotFound"];
+
+        public string CityNameMaxLength => _localizer["CityNameMaxLength"];
+
+        public string CityNameRequired => _localizer["CityNameRequired"];
+
+        public string PostalCodeMaxLength => _localizer["PostalCodeMaxLength"];
+
+        public string PostalCodeRequired => _localizer["PostalCodeRequired"];
+
+        public string ReminderDeletedSuccessfully => _localizer["ReminderDeletedSuccessfully"];
+
+        public string ReminderUpdatedSuccessfully => _localizer["ReminderUpdatedSuccessfully"];
+
+        public string ReminderCreatedSuccessfully => _localizer["ReminderCreatedSuccessfully"];
+
+        public string ReminderNotFound => _localizer["ReminderNotFound"];
+
+        public string ItemDeletedSuccessfully => _localizer["ItemDeletedSuccessfully"];
+
+        public string ItemUpdatedSuccessfully => _localizer["ItemUpdatedSuccessfully"];
+
+        public string ItemCreatedSuccessfully => _localizer["ItemCreatedSuccessfully"];
+
+        public string ItemNotFound => _localizer["ItemNotFound"];
+
+        public string DocumentDeletedSuccessfully => _localizer["DocumentDeletedSuccessfully"];
+
+        public string DocumentUpdatedSuccessfully => _localizer["DocumentUpdatedSuccessfully"];
+
+        public string DocumentCreatedSuccessfully => _localizer["DocumentCreatedSuccessfully"];
+
+        public string DocumentNotFound => _localizer["DocumentNotFound"];
+
+        public string CountryDeletedSuccessfully => _localizer["CountryDeletedSuccessfully"];
+
+        public string CountryUpdatedSuccessfully => _localizer["CountryUpdatedSuccessfully"];
+
+        public string CountryCreatedSuccessfully => _localizer["CountryCreatedSuccessfully"];
+
+        public string CountryNotFound => _localizer["CountryNotFound"];
+
+        public string CityDeletedSuccessfully => _localizer["CityDeletedSuccessfully"];
+
+        public string CityUpdatedSuccessfully => _localizer["CityUpdatedSuccessfully"];
+
+        public string CityCreatedSuccessfully => _localizer["CityCreatedSuccessfully"];
+
+        public string CityNotFound => _localizer["CityNotFound"];
+
+        public string BankAccountDeletedSuccessfully => _localizer["BankAccountDeletedSuccessfully"];
+
+        public string BankAccountUpdatedSuccessfully => _localizer["BankAccountUpdatedSuccessfully"];
+
+        public string BankAccountCreatedSuccessfully => _localizer["BankAccountCreatedSuccessfully"];
+
+        public string BankAccountNotFound => _localizer["BankAccountNotFound"];
+
+        public string ActivityCodeAlreadyExists => _localizer["ActivityCodeAlreadyExists"];
+
+        public string ActivityCodeDeletedSuccessfully => _localizer["ActivityCodeDeletedSuccessfully"];
+
+        public string ActivityCodeUpdatedSuccessfully => _localizer["ActivityCodeUpdatedSuccessfully"];
+
+        public string ActivityCodeCreatedSuccessfully => _localizer["ActivityCodeCreatedSuccessfully"];
+
+        public string ActivityCodeNotFound => _localizer["ActivityCodeNotFound"];
+
+        public string CountryCodeInvalidLength => _localizer["CountryCodeInvalidLength"];
+
+        public string CountryCodeRequired => _localizer["CountryCodeRequired"];
+
+        public string CountryNameTooLong => _localizer["CountryNameTooLong"];
+
+        public string CountryNameRequired => _localizer["CountryNameRequired"];
+
+        public string ActivityCodeDescriptionTooLong => _localizer["ActivityCodeDescriptionTooLong"];
+
+        public string ActivityCodeDescriptionRequired => _localizer["ActivityCodeDescriptionRequired"];
+
+        public string ActivityCodeTooLong => _localizer["ActivityCodeTooLong"];
+
+        public string ReminderMarkedCompleted => _localizer["ReminderMarkedCompleted"];
+
+        public string FileUploadFailed => _localizer["FileUploadFailed"];
+
+        public string FileUploadedSuccessfully => _localizer["FileUploadedSuccessfully"];
+
+        public string UnsupportedFileType => _localizer["UnsupportedFileType"];
+
+        public string FileIsEmptyOrNotProvided => _localizer["FileIsEmptyOrNotProvided"];
+
+        public string FileDeleteFailed => _localizer["FileDeleteFailed"];
+
+        public string FileDeletedSuccessfully => _localizer["FileDeletedSuccessfully"];
+
+        public string UrlIsRequired => _localizer["UrlIsRequired"];
+
+        public string InviteSent => _localizer["InviteSent"];
+
+        public string InviteRemoved => _localizer["InviteRemoved"];
     }
 }

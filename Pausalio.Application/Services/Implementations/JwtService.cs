@@ -26,10 +26,7 @@ namespace Pausalio.Application.Services.Implementations
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(_jwtSettings.Key);
-
-            var roles = user.UserBusinessProfiles.Select(ubp => ubp.Role.ToString()).Distinct();
-            var firstUserBusinessProfile = user.UserBusinessProfiles.FirstOrDefault();
-            var businessId = firstUserBusinessProfile!.BusinessProfile.Id;
+           
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
@@ -37,13 +34,20 @@ namespace Pausalio.Application.Services.Implementations
                 new Claim("FirstName", user.FirstName),
                 new Claim("LastName", user.LastName),
                 new Claim("IsActive", user.IsActive.ToString()),
-                new Claim("BusinessProfileId", string.Join(",", businessId))
             };
-            foreach (var role in roles)
+            claims.Add(new Claim(ClaimTypes.Role, user.Role.ToString()));
+            var firstUserBusinessProfile = user.UserBusinessProfiles.FirstOrDefault();
+            if (firstUserBusinessProfile != null && firstUserBusinessProfile.BusinessProfile != null)
             {
-                claims.Add(new Claim(ClaimTypes.Role, role));
+                var roles = user.UserBusinessProfiles.Select(ubp => ubp.Role.ToString()).Distinct();
+                var businessId = firstUserBusinessProfile.BusinessProfile.Id;
+                claims.Add(new Claim("BusinessProfileId", string.Join(",", businessId)));
+                foreach (var role in roles)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, role));
+                }
             }
-
+           
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),

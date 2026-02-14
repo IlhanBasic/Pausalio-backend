@@ -10,7 +10,7 @@ namespace Pausalio.Application.Services.Interfaces
     public interface IUserProfileService
     {
         Task<UserProfileToReturnDto?> LoginAsync(string email, string password);
-        Task<UserProfileToReturnDto?> CreateUserProfile(AddUserProfileDto userProfile);
+        Task<UserProfileToReturnDto?> CreateUserProfile(AddUserProfileDto userProfile, UserRole role);
         Task<UserProfileToReturnDto?> GetByEmailAsync(string email);
         Task<BusinessInviteToReturnDto?> GetBusinessInvite(string email, string token);
         Task<BusinessProfileToReturnDto?> GetCompanyByPibOrMb(string pib, string mb);
@@ -18,7 +18,7 @@ namespace Pausalio.Application.Services.Interfaces
         Task<BusinessProfileToReturnDto?> CreateBusinessProfile(AddBusinessProfileDto dto, Guid ownerId);
         Task<BusinessProfileToReturnDto?> CreateBusinessProfileOnly(AddBusinessProfileDto dto);
         Task<UserProfile?> CreateOwnerAsync(RegisterOwnerDto dto);
-        Task<UserBusinessProfile> AddUserToBusinessProfile(Guid userId, Guid businessProfileId, UserRole role);
+        Task<UserBusinessProfile> AddUserToBusinessProfile(Guid userId, Guid businessProfileId, UserBusinessRole role);
         Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
         Task SetEmailVerificationToken(Guid userId, string token, DateTime expiration);
         Task<bool> VerifyEmailToken(string email, string token);

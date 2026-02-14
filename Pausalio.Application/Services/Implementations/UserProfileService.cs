@@ -48,7 +48,7 @@ namespace Pausalio.Application.Services.Implementations
         }
 
 
-        public async Task<UserBusinessProfile> AddUserToBusinessProfile(Guid userId, Guid businessProfileId, UserRole role)
+        public async Task<UserBusinessProfile> AddUserToBusinessProfile(Guid userId, Guid businessProfileId, UserBusinessRole role)
         {
             var userBusinessProfile = new UserBusinessProfile
             {
@@ -58,7 +58,7 @@ namespace Pausalio.Application.Services.Implementations
             };
 
             await _unitOfWork.UserBusinessProfileRepository.AddAsync(userBusinessProfile);
-            if (role == UserRole.Assistant)
+            if (role == UserBusinessRole.Assistant)
             {
                 var userProfile = await _unitOfWork.UserProfileRepository.GetByIdAsync(userId);
                 var businessInvite = await _unitOfWork.BusinessInviteRepository.FindFirstOrDefaultAsync(x=>x.BusinessProfileId == businessProfileId && x.Email == userProfile!.Email);
@@ -97,7 +97,7 @@ namespace Pausalio.Application.Services.Implementations
             {
                 UserId = ownerId,
                 BusinessProfileId = businessProfile.Id,
-                Role = Shared.Enums.UserRole.Owner
+                Role = Shared.Enums.UserBusinessRole.Owner
             };
             await _unitOfWork.UserBusinessProfileRepository.AddAsync(userBusiness);
             await _unitOfWork.SaveChangesAsync();
@@ -129,7 +129,7 @@ namespace Pausalio.Application.Services.Implementations
                 {
                     UserId = newUser.Id,
                     BusinessProfileId = newBusiness.Id,
-                    Role = Shared.Enums.UserRole.Owner
+                    Role = Shared.Enums.UserBusinessRole.Owner
                 };
                 await _unitOfWork.UserBusinessProfileRepository.AddAsync(userBusiness);
                 await _unitOfWork.SaveChangesAsync();
@@ -145,14 +145,18 @@ namespace Pausalio.Application.Services.Implementations
             }
         }
 
-        public async Task<UserProfileToReturnDto?> CreateUserProfile(AddUserProfileDto userProfileDto)
+        public async Task<UserProfileToReturnDto?> CreateUserProfile(AddUserProfileDto userProfileDto, UserRole role)
         {
             var userProfile = _mapper.Map<UserProfile>(userProfileDto);
             if (userProfile == null)
                 throw new Exception(_localizationHelper.UserProfileCreationFailed);
 
             userProfile.PasswordHash = PasswordHelper.HashPassword(userProfile.PasswordHash);
-
+            userProfile.Role = role;
+            userProfile.IsActive = true;
+            if (role == UserRole.Admin)
+                userProfile.IsEmailVerified = true;
+            
             await _unitOfWork.UserProfileRepository.AddAsync(userProfile);
             await _unitOfWork.SaveChangesAsync();
 

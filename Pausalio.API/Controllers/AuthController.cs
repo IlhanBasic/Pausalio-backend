@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using Pausalio.Application.DTOs.UserProfile;
 using Pausalio.Application.Services.Interfaces;
 using Pausalio.Shared.Configuration;
+using Pausalio.Shared.Enums;
 using Pausalio.Shared.Localization;
 
 namespace Pausalio.API.Controllers
@@ -53,37 +54,45 @@ namespace Pausalio.API.Controllers
 
                 Response.Cookies.Append("access_token", token, cookieOptions);
 
-                return Ok(new { message = _localizationHelper.LoginSuccessfull, Token = token });
+                return Ok(new { success = true, message = _localizationHelper.LoginSuccessfull, Token = token });
             }
             catch (Exception ex)
             {
-                return Unauthorized(new {message = ex.Message});
+                return Unauthorized(new { success = false, message = ex.Message});
             }
         }
 
-
+        [HttpPost("register-admin")]
+        public async Task<IActionResult> RegisterAdmin([FromBody] AddUserProfileDto dto)
+        {
+            var existingUser = await _userProfileService.GetByEmailAsync(dto.Email);
+            if (existingUser != null)
+                return BadRequest(new { success = false, message = _localizationHelper.UserAlreadyExists });
+            var newUser = await _userProfileService.CreateUserProfile(dto, UserRole.Admin);
+            return Ok(new { success = true, message = _localizationHelper.RegistrationSuccessful});
+        }
         [HttpPost("register-assistant")]
         public async Task<IActionResult> RegisterAssistant([FromBody] RegisterAssistantDto dto)
         {
             var existingUser = await _userProfileService.GetByEmailAsync(dto.User.Email);
             if (existingUser != null)
-                return BadRequest(new { message = _localizationHelper.UserAlreadyExists});
+                return BadRequest(new { success = false, message = _localizationHelper.UserAlreadyExists});
             var invite = await _userProfileService.GetBusinessInvite(dto.User.Email, dto.InviteToken);
             if (invite == null)
-                return BadRequest(new { message = _localizationHelper.InviteTokenDismatch});
+                return BadRequest(new { success = false, message = _localizationHelper.InviteTokenDismatch});
             await using var transaction = await _userProfileService.BeginTransactionAsync();
             try
             {
-                var newUser = await _userProfileService.CreateUserProfile(dto.User);
+                var newUser = await _userProfileService.CreateUserProfile(dto.User, UserRole.RegularUser);
                 
                 var business = await _userProfileService.GetCompanyById(invite.BusinessProfileId);
                 if (business == null)
-                    return BadRequest(new {message = _localizationHelper.BusinesProfileNotFound});
+                    return BadRequest(new { success = false, message = _localizationHelper.BusinesProfileNotFound});
 
-                var userBusiness = await _userProfileService.AddUserToBusinessProfile(newUser!.Id, business.Id, Shared.Enums.UserRole.Assistant);
+                var userBusiness = await _userProfileService.AddUserToBusinessProfile(newUser!.Id, business.Id, UserBusinessRole.Assistant);
 
                 if (userBusiness == null)
-                    return BadRequest(new { message = _localizationHelper.RegistrationFailed});
+                    return BadRequest(new { success = false, message = _localizationHelper.RegistrationFailed});
                 await transaction.CommitAsync();
                 
                 var verificationToken = Guid.NewGuid().ToString();
@@ -101,9 +110,9 @@ namespace Pausalio.API.Controllers
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                return BadRequest(new {message =  ex.Message});
+                return BadRequest(new { success = false, message =  ex.Message});
             }
-            return Ok();
+            return Ok(new { success = true, message = _localizationHelper.RegistrationSuccessful});
         }
 
         [HttpPost("register-owner")]
@@ -111,35 +120,35 @@ namespace Pausalio.API.Controllers
         {
             var existingUser = await _userProfileService.GetByEmailAsync(dto.User.Email);
             if (existingUser != null)
-                return BadRequest(new { message = _localizationHelper.UserAlreadyExists});
+                return BadRequest(new { success = false, message = _localizationHelper.UserAlreadyExists});
             var existingBusiness = await _userProfileService.GetCompanyByPibOrMb(dto.Business.PIB, dto.Business.MB);
             if (existingBusiness != null)
-                return BadRequest(new { message = _localizationHelper.CompanyAlreadyExists});
+                return BadRequest(new { success = false, message = _localizationHelper.CompanyAlreadyExists});
 
             await using var transaction = await _userProfileService.BeginTransactionAsync();
 
             try
             {
-                var newUser = await _userProfileService.CreateUserProfile(dto.User);
+                var newUser = await _userProfileService.CreateUserProfile(dto.User, UserRole.RegularUser);
                 if (newUser == null)
                 {
                     await transaction.RollbackAsync();
-                    return BadRequest(new { message = _localizationHelper.RegistrationFailed});
+                    return BadRequest(new { success = false, message = _localizationHelper.RegistrationFailed});
                 }
 
                 var business = await _userProfileService.CreateBusinessProfileOnly(dto.Business);
                 if (business == null)
                 {
                     await transaction.RollbackAsync();
-                    return BadRequest(new { message = _localizationHelper.RegistrationFailed});
+                    return BadRequest(new { success = false, message = _localizationHelper.RegistrationFailed});
                 }
 
-                var userBusinessProfile = await _userProfileService.AddUserToBusinessProfile(newUser.Id, business.Id, Shared.Enums.UserRole.Owner);
+                var userBusinessProfile = await _userProfileService.AddUserToBusinessProfile(newUser.Id, business.Id, UserBusinessRole.Owner);
 
                 if (userBusinessProfile == null)
                 {
                     await transaction.RollbackAsync();
-                    return BadRequest(new { message =_localizationHelper.RegistrationFailed});
+                    return BadRequest(new { success = false, message =_localizationHelper.RegistrationFailed});
                 }
 
                 var verificationToken = Guid.NewGuid().ToString();
@@ -155,12 +164,12 @@ namespace Pausalio.API.Controllers
                 var emailBody = _emailTemplateService.GetVerifyEmailTemplate(newUser.FirstName, verificationLink);
                 await _emailService.SendEmailAsync(newUser.Email, _localizationHelper.ConfirmEmail, emailBody);
 
-                return Ok();
+                return Ok(new { success = true, message = _localizationHelper.RegistrationSuccessful});
             }
             catch (Exception ex) 
             {
                 await transaction.RollbackAsync();
-                return BadRequest(new {message = ex.Message});
+                return BadRequest(new { success = false, message = ex.Message});
             }
         }
 
@@ -233,10 +242,10 @@ namespace Pausalio.API.Controllers
         {
             var userProfile = await _userProfileService.GetByEmailAsync(email);
             if (userProfile == null)
-                return BadRequest(new { message = _localizationHelper.UserNotFound});
+                return BadRequest(new { success = false, message = _localizationHelper.UserNotFound});
 
             if (userProfile.IsEmailVerified)
-                return BadRequest(new { message = _localizationHelper.EmailAlreadyVerified});
+                return BadRequest(new { success = false, message = _localizationHelper.EmailAlreadyVerified});
 
             var verificationToken = Guid.NewGuid().ToString();
             await _userProfileService.SetEmailVerificationToken(
@@ -249,7 +258,7 @@ namespace Pausalio.API.Controllers
             var emailBody = _emailTemplateService.GetVerifyEmailTemplate(userProfile.FirstName, verificationLink);
             await _emailService.SendEmailAsync(userProfile.Email, _localizationHelper.ConfirmEmail, emailBody);
 
-            return Ok(new { message = _localizationHelper.VerificationEmailResent });
+            return Ok(new { success = true, message = _localizationHelper.VerificationEmailResent });
         }
     }
 }

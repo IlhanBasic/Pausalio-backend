@@ -60,6 +60,7 @@ builder.Services.AddScoped<IUserProfileRepository, UserProfileRepository>();
 builder.Services.AddScoped<IBusinessInviteRepository, BusinessInviteRepository>();
 
 // -------------------- Configuration --------------------
+builder.Services.Configure<AzureBlobStorageSettings>(builder.Configuration.GetSection("AzureBlobStorageSettings"));
 builder.Services.Configure<UrlSettings>(builder.Configuration.GetSection("UrlSettings"));
 builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("Email"));
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
@@ -123,6 +124,7 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IEmailTemplateService, EmailTemplateService>();
 builder.Services.AddScoped<IBusinessInviteService, BusinessInviteService>();
+builder.Services.AddScoped<IUploadFileService, UploadFileService>();
 
 // -------------------- FluentValidation --------------------
 builder.Services.AddValidatorsFromAssemblyContaining<AddBankAccountDtoValidator>();

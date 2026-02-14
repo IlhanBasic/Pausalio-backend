@@ -1,4 +1,5 @@
 ﻿using Pausalio.Application.DTOs.UserBusinessProfile;
+using Pausalio.Shared.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,7 @@ namespace Pausalio.Application.DTOs.UserProfile
         public Guid Id { get; set; }
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;
+        public UserRole Role { get; set; }
         public string Email { get; set; } = null!;
         public string? ProfilePicture { get; set; }
         public string? Phone { get; set; }

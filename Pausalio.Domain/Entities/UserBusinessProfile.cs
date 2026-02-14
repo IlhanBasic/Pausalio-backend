@@ -14,7 +14,7 @@ namespace Pausalio.Domain.Entities
         public UserProfile User { get; set; } = null!;
         public Guid BusinessProfileId { get; set; }
         public BusinessProfile BusinessProfile { get; set; } = null!;
-        public UserRole Role { get; set; }
+        public UserBusinessRole Role { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

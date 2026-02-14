@@ -13,7 +13,9 @@ namespace Pausalio.Application.Mappings
     {
         public CityMappingProfile()
         {
-            CreateMap<City, CityToReturnDto>();   
+            CreateMap<City, CityToReturnDto>();  
+            CreateMap<AddCityDto, City>();
+            CreateMap<UpdateCityDto, City>();
         }
     }
 }

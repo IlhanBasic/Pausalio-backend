@@ -11,5 +11,6 @@ namespace Pausalio.Application.Services.Interfaces
     {
         Task<BusinessInviteToReturnDto> SendInvite(AddBusinessInviteDto invite, Guid ownerId, Guid businessId);
         Task<BusinessInviteToReturnDto?> GetBusinessInviteByEmail(string email);
+        Task RemoveInvite(Guid id);
     }
 }

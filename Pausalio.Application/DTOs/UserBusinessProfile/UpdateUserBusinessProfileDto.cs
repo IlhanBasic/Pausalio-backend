@@ -9,6 +9,6 @@ namespace Pausalio.Application.DTOs.UserBusinessProfile
 {
     public class UpdateUserBusinessProfileDto
     {
-        public UserRole Role { get; set; }
+        public UserBusinessRole Role { get; set; }
     }
 }

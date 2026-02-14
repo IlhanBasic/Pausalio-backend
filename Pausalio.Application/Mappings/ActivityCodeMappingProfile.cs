@@ -14,6 +14,8 @@ namespace Pausalio.Application.Mappings
         public ActivityCodeMappingProfile()
         {
             CreateMap<ActivityCode, ActivityCodeToReturnDto>();
+            CreateMap<AddActivityCodeDto, ActivityCode>();
+            CreateMap<UpdateActivityCodeDto, ActivityCode>();
         }
     }
 }

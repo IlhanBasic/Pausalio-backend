@@ -12,7 +12,7 @@ using Pausalio.Infrastructure.Persistence;
 namespace Pausalio.Infrastructure.Migrations
 {
     [DbContext(typeof(PausalioDbContext))]
-    [Migration("20260212163428_InitMigration")]
+    [Migration("20260213091005_InitMigration")]
     partial class InitMigration
     {
         /// <inheritdoc />
@@ -3494,6 +3494,9 @@ namespace Pausalio.Infrastructure.Migrations
                     b.Property<string>("ProfilePicture")
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime(6)");

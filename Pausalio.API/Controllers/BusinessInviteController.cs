@@ -38,32 +38,48 @@ namespace Pausalio.API.Controllers
         {
             var userEmail = _currentUserService.GetEmail();
             if (string.IsNullOrEmpty(userEmail))
-                return BadRequest(new { message = _localizationHelper.UserEmailNotProvided});
+                return BadRequest(new { success = false, message = _localizationHelper.UserEmailNotProvided});
 
             var currentUser = await _userProfileService.GetByEmailAsync(userEmail);
             if (currentUser == null)
-                return BadRequest(new { message = _localizationHelper.UserNotFound});
+                return BadRequest(new { success = false, message = _localizationHelper.UserNotFound});
             var targetUser = await _userProfileService.GetByEmailAsync(dto.Email);
             if (targetUser != null)
-                return BadRequest(new { message = _localizationHelper.UserAlreadyExists });
+                return BadRequest(new { success = false, message = _localizationHelper.UserAlreadyExists });
             var firstCompanyId = _currentUserService.GetCompany();
             if (firstCompanyId == null)
-                return BadRequest(new { message = _localizationHelper.UserCompanyNotFound });
+                return BadRequest(new { success = false, message = _localizationHelper.UserCompanyNotFound });
             if (!Guid.TryParse(firstCompanyId, out Guid firstCompany))
-                return BadRequest(new { message = _localizationHelper.InvalidCompanyId });
+                return BadRequest(new { success = false, message = _localizationHelper.InvalidCompanyId });
             var existingInvite = await _businessInviteService.GetBusinessInviteByEmail(dto.Email);
             if (existingInvite != null)
-                return BadRequest(new { message = _localizationHelper.InviteTokenAlreadyExists});
+                return BadRequest(new { success = false, message = _localizationHelper.InviteTokenAlreadyExists});
 
             var businessInvite = await _businessInviteService.SendInvite(dto, currentUser.Id, firstCompany);
             if (businessInvite == null)
-                return BadRequest(new { message = _localizationHelper.InviteTokenCreateFail});
+                return BadRequest(new { success = false, message = _localizationHelper.InviteTokenCreateFail});
 
             var registerLink = $"{_urlSettings.Value.FrontendUrl}/api/auth/register";
             var emailBody = _emailTemplateService.GetInviteEmailTemplate(businessInvite.Token, registerLink);
 
             await _emailService.SendEmailAsync(dto.Email, _localizationHelper.InviteTokenPageTitle, emailBody);
-            return Ok();
+            return Ok(new { success = true, message = _localizationHelper.InviteSent});
+        }
+
+        [HttpDelete("{id:guid}")]
+        [Authorize(Roles = "Owner")]
+        public async Task<IActionResult> RemoveInvite (Guid id)
+        {
+            try
+            {
+                await _businessInviteService.RemoveInvite(id);
+                return Ok(new { success = true, message = _localizationHelper.InviteRemoved });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new {success = true, message = ex.Message});
+            }
+            
         }
     }
 }

@@ -14,6 +14,8 @@ namespace Pausalio.Application.Mappings
         public CountryMappingProfile()
         {
             CreateMap<Country, CountryToReturnDto>();
+            CreateMap<AddCountryDto, Country>();
+            CreateMap<UpdateCountyDto, Country>();
         }
     }
 }

@@ -506,8 +506,8 @@
     <comment>Poruka kada korisnik ne unese delatnost firme</comment>
   </data>
   <data name="ClientCountryInvalid" xml:space="preserve">
-    <value>Zemlja za klijenta nije validna</value>
-    <comment>Poruka kada korisnik pokusa da posalje zemlju koju baza ne podržava</comment>
+    <value>Država za klijenta nije validna</value>
+    <comment>Poruka kada korisnik pokusa da posalje državu koju baza ne podržava</comment>
   </data>
   <data name="ExpiresAtFuture" xml:space="preserve">
     <value>Datum isteka mora biti veći od trenutnog datuma</value>
@@ -692,5 +692,205 @@
   <data name="UserCompanyNotFound" xml:space="preserve">
     <value>Korisniku nije dodeljena nijedna kompanija.</value>
     <comment>Poruka da je korisnik bez kompanije.</comment>
+  </data>
+  <data name="CityNameMaxLength" xml:space="preserve">
+    <value>Naziv grada ne može biti duži od 100 karaktera.</value>
+    <comment>Poruka kako naziv grada ne sme biti duži od 100 karaktera.</comment>
+  </data>
+  <data name="CityNameRequired" xml:space="preserve">
+    <value>Naziv grada ne sme biti prazan.</value>
+    <comment>Poruka kako naziv grada ne sme biti prazan.</comment>
+  </data>
+  <data name="PostalCodeMaxLength" xml:space="preserve">
+    <value>Poštanski broj može biti dug maksimalno 10 karaktera.</value>
+    <comment>Poruka kada je poštanski broj duži od 10 karaktera.</comment>
+  </data>
+  <data name="PostalCodeRequired" xml:space="preserve">
+    <value>Poštanski broj ne sme biti prazan.</value>
+    <comment>Poruka kako poštanski broj ne sme biti prazan.</comment>
+  </data>
+  <data name="ReminderDeletedSuccessfully" xml:space="preserve">
+    <value>Podsetnik uspešno obrisan.</value>
+    <comment>Poruka kada je podsetnik uspešno obrisan.</comment>
+  </data>
+  <data name="ReminderMarkedCompleted" xml:space="preserve">
+    <value>Podsetnik označen da je završen.</value>
+    <comment>Poruka kada je podsetnik označen da je završen.</comment>
+  </data>
+  <data name="ReminderUpdatedSuccessfully" xml:space="preserve">
+    <value>Podsetnik uspešno izmenjen.</value>
+    <comment>Poruka kada je podsetnik uspešno izmenjen.</comment>
+  </data>
+  <data name="ReminderCreatedSuccessfully" xml:space="preserve">
+    <value>Podsetnik uspešno kreiran.</value>
+    <comment>Poruka kada je podsetnik uspešno kreiran.</comment>
+  </data>
+  <data name="ReminderNotFound" xml:space="preserve">
+    <value>Podsetnik nije pronađen.</value>
+    <comment>Poruka kada podsetnik nije pronađen.</comment>
+  </data>
+  <data name="ItemDeletedSuccessfully" xml:space="preserve">
+    <value>Usluga uspešno obrisana.</value>
+    <comment>Poruka kada je usluga uspešno obrisana.</comment>
+  </data>
+  <data name="ItemUpdatedSuccessfully" xml:space="preserve">
+    <value>Usluga uspešno izmenjena.</value>
+    <comment>Poruka kada je poruka uspešno izmenjena.</comment>
+  </data>
+  <data name="ItemCreatedSuccessfully" xml:space="preserve">
+    <value>Usluga uspešno kreirana.</value>
+    <comment>Poruka kada je usluga uspešno kreirana.</comment>
+  </data>
+  <data name="ItemNotFound" xml:space="preserve">
+    <value>Usluga nije pronađena.</value>
+    <comment>Poruka kada usluga nije uspešno pronađena</comment>
+  </data>
+  <data name="DocumentDeletedSuccessfully" xml:space="preserve">
+    <value>Dokument uspešno obrisan.</value>
+    <comment>Poruka kada je dokument uspešno obrisan.</comment>
+  </data>
+  <data name="DocumentUpdatedSuccessfully" xml:space="preserve">
+    <value>Dokument uspešno izmenjen.</value>
+    <comment>Poruka kada je dokument uspešno izmenjen.</comment>
+  </data>
+  <data name="DocumentCreatedSuccessfully" xml:space="preserve">
+    <value>Dokument uspešno kreiran.</value>
+    <comment>Poruka kada je dokument uspešno kreiran.</comment>
+  </data>
+  <data name="DocumentNotFound" xml:space="preserve">
+    <value>Dokument nije pronađen.</value>
+    <comment>Poruka kada dokument nije pronađen.</comment>
+  </data>
+  <data name="CountryDeletedSuccessfully" xml:space="preserve">
+    <value>Država uspešno obrisana.</value>
+    <comment>Poruka kada je država uspešno obrisana.</comment>
+  </data>
+  <data name="CountryUpdatedSuccessfully" xml:space="preserve">
+    <value>Država uspešno izmenjena.</value>
+    <comment>Poruka kada je država uspešno izmenjena.</comment>
+  </data>
+  <data name="CountryCreatedSuccessfully" xml:space="preserve">
+    <value>Država uspešno kreirana.</value>
+    <comment>Poruka kada je država uspešno kreirana.</comment>
+  </data>
+  <data name="CountryNotFound" xml:space="preserve">
+    <value>Država nije pronađena.</value>
+    <comment>Poruka kada država nije pronađena.</comment>
+  </data>
+  <data name="CityDeletedSuccessfully" xml:space="preserve">
+    <value>Grad uspešno obrisan.</value>
+    <comment>Poruka kada je grad uspešno obrisan.</comment>
+  </data>
+  <data name="CityUpdatedSuccessfully" xml:space="preserve">
+    <value>Grad uspešno izmenjen.</value>
+    <comment>Poruka kada je grad uspešno izmenjen.</comment>
+  </data>
+  <data name="CityCreatedSuccessfully" xml:space="preserve">
+    <value>Grad uspešno kreiran.</value>
+    <comment>Poruka kada je grad uspešno kreiran.</comment>
+  </data>
+  <data name="CityNotFound" xml:space="preserve">
+    <value>Grad nije pronađen.</value>
+    <comment>Poruka kada grad nije pronađen.</comment>
+  </data>
+  <data name="BankAccountDeletedSuccessfully" xml:space="preserve">
+    <value>Bankovni račun uspešno obrisan.</value>
+    <comment>Poruka kada je bankovni račun uspešno obrisan.</comment>
+  </data>
+  <data name="BankAccountUpdatedSuccessfully" xml:space="preserve">
+    <value>Bankovni račun uspešno izmenjen.</value>
+    <comment>Poruka kada je bankovni račun uspešno izmenjen.</comment>
+  </data>
+  <data name="BankAccountCreatedSuccessfully" xml:space="preserve">
+    <value>Bankovni račun uspešno kreiran.</value>
+    <comment>Poruka kada je bankovni račun uspešno kreiran.</comment>
+  </data>
+  <data name="BankAccountNotFound" xml:space="preserve">
+    <value>Bankovni račun nije pronađen.</value>
+    <comment>Poruka kada bankovni račun nije pronađen.</comment>
+  </data>
+  <data name="ActivityCodeAlreadyExists" xml:space="preserve">
+    <value>Šifra delatnosti već postoji.</value>
+    <comment>Poruka kada šifra delatnosti već postoji.</comment>
+  </data>
+  <data name="ActivityCodeDeletedSuccessfully" xml:space="preserve">
+    <value>Šifra delatnosti uspešno obrisana.</value>
+    <comment>Poruka kada je šifra delatnosti uspešno obrisana.</comment>
+  </data>
+  <data name="ActivityCodeUpdatedSuccessfully" xml:space="preserve">
+    <value>Šifra delatnosti uspešno izmenjena.</value>
+    <comment>Poruka kada je šifra delatnosti uspešno izmenjena.</comment>
+  </data>
+  <data name="ActivityCodeCreatedSuccessfully" xml:space="preserve">
+    <value>Šifra delatnosti uspešno kreirana.</value>
+    <comment>Poruka kada je šifra delatnosti uspešno kreirana.</comment>
+  </data>
+  <data name="ActivityCodeNotFound" xml:space="preserve">
+    <value>Šifra delatnosti nije pronađena.</value>
+    <comment>Poruka kada šifra delatnosti nije pronađena.</comment>
+  </data>
+  <data name="CountryCodeInvalidLength" xml:space="preserve">
+    <value>Broj države mora biti dug tačno 2 karaktera.</value>
+    <comment>Poruka kada broj države treba da bude dug 2 karaktera.</comment>
+  </data>
+  <data name="CountryCodeRequired" xml:space="preserve">
+    <value>Broj države je obavezan.</value>
+    <comment>Poruka kada je broj države obavezan.</comment>
+  </data>
+  <data name="CountryNameTooLong" xml:space="preserve">
+    <value>Naziv države je predug, maksimalno 100 karaktera.</value>
+    <comment>Poruka da naziv države treba da bude do 100 karaktera.</comment>
+  </data>
+  <data name="CountryNameRequired" xml:space="preserve">
+    <value>Naziv države je obavezan.</value>
+    <comment>Poruka kako je naziv države obavezan.</comment>
+  </data>
+  <data name="ActivityCodeDescriptionTooLong" xml:space="preserve">
+    <value>Opis šifre delatnosti predugačak</value>
+    <comment>Poruka kada je opis šifre delatnosti predugačak.</comment>
+  </data>
+  <data name="ActivityCodeDescriptionRequired" xml:space="preserve">
+    <value>Opis šifre delatnosti je obavezan.</value>
+    <comment>Poruka kada je opis šifre delatnosti obavezan.</comment>
+  </data>
+  <data name="ActivityCodeTooLong" xml:space="preserve">
+    <value>Šifra delatnosti predugačka.</value>
+    <comment>Poruka kada šifra delatnosti je predugačka.</comment>
+  </data>
+  <data name="FileUploadFailed" xml:space="preserve">
+    <value>Upload fajla je bio neuspešan.</value>
+    <comment>Poruka kada je upload fajla neuspešan</comment>
+  </data>
+  <data name="FileUploadedSuccessfully" xml:space="preserve">
+    <value>Fajl je uspešno sačuvan.</value>
+    <comment>Poruka o uspešnom uploadu.</comment>
+  </data>
+  <data name="UnsupportedFileType" xml:space="preserve">
+    <value>Tip ovog fajla nije podržan.</value>
+    <comment>Poruka kada tip fajla nije podržan.</comment>
+  </data>
+  <data name="FileIsEmptyOrNotProvided" xml:space="preserve">
+    <value>Fajl je prazan ili nije prosleđen.</value>
+    <comment>Poruka kada je fajl prazan ili nije prosleđen.</comment>
+  </data>
+  <data name="FileDeleteFailed" xml:space="preserve">
+    <value>Neuspešno brisanje fajla.</value>
+    <comment>Poruka kada je brisanje fajla neuspešno.</comment>
+  </data>
+  <data name="FileDeletedSuccessfully" xml:space="preserve">
+    <value>Fajl je uspešno obrisan.</value>
+    <comment>Poruka kada je fajl uspešno obrisan.</comment>
+  </data>
+  <data name="UrlIsRequired" xml:space="preserve">
+    <value>Url je obavezan.</value>
+    <comment>Poruka kada je url obavezan.</comment>
+  </data>
+  <data name="InviteSent" xml:space="preserve">
+    <value>Zahtev za registraciju poslat.</value>
+    <comment>Poruka kako je zahtev za registraciju poslat.</comment>
+  </data>
+  <data name="InviteRemoved" xml:space="preserve">
+    <value>Pozivni token uspešno uklonjen.</value>
+    <comment>Poruka kada je pozivni token uspešno uklonjen.</comment>
   </data>
 </root>
