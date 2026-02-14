@@ -61,15 +61,14 @@ namespace Pausalio.API.Controllers
         {
             try
             {
-
+                await _countryService.UpdateCountry(id, dto);
+                return Ok(new { success = true, message = _localizationHelper.CountryUpdatedSuccessfully });
             }
             catch (Exception ex)
             {
                 return BadRequest(new { success = false, message = ex.Message });
             }
-            await _countryService.UpdateCountry(id, dto);
-
-            return Ok(new { success = true, message = _localizationHelper.CountryUpdatedSuccessfully });
+           
         }
         [Authorize(Roles = "Admin")]
         [HttpDelete("{id:guid}")]

@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Pausalio.Application.DTOs.BusinessInvite;
 using Pausalio.Application.DTOs.UserProfile;
+using Pausalio.Application.Services.Implementations;
 using Pausalio.Application.Services.Interfaces;
 using Pausalio.Shared.Configuration;
 using Pausalio.Shared.Enums;
@@ -13,6 +16,7 @@ namespace Pausalio.API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IUserProfileService _userProfileService;
+        private readonly ICurrentUserService _currentUserService;
         private readonly IJwtService _jwtService;
         private readonly ILocalizationHelper _localizationHelper;
         private readonly IEmailService _emailService;
@@ -21,6 +25,7 @@ namespace Pausalio.API.Controllers
 
         public AuthController(
             IUserProfileService userProfileService,
+            ICurrentUserService currentUserService,
             IJwtService jwtService,
             ILocalizationHelper localizationHelper,
             IEmailService emailService,
@@ -28,6 +33,7 @@ namespace Pausalio.API.Controllers
             IOptions<UrlSettings> urlSettings)
         {
             _userProfileService = userProfileService;
+            _currentUserService = currentUserService;
             _jwtService = jwtService;
             _localizationHelper = localizationHelper;
             _emailService = emailService;
@@ -61,8 +67,68 @@ namespace Pausalio.API.Controllers
                 return Unauthorized(new { success = false, message = ex.Message});
             }
         }
+        [HttpPost("accept-invite")]
+        [Authorize(Roles = "RegularUser")]
+        public async Task<IActionResult> AcceptInvite([FromBody] AcceptInviteDto dto)
+        {
+            var userEmail = _currentUserService.GetEmail();
+            if (string.IsNullOrEmpty(userEmail))
+                return Unauthorized(new { success = false, message = _localizationHelper.Unauthorized });
 
+            var existingUser = await _userProfileService.GetByEmailAsync(userEmail);
+            if (existingUser == null)
+                return NotFound(new { success = false, message = _localizationHelper.UserNotFound });
+
+            var invite = await _userProfileService.GetBusinessInvite(userEmail, dto.InviteToken);
+            if (invite == null)
+                return BadRequest(new { success = false, message = _localizationHelper.InviteTokenDismatch });
+
+            var alreadyAssistant = await _userProfileService.IsUserInBusiness(existingUser.Id, invite.BusinessProfileId);
+            if (alreadyAssistant)
+                return BadRequest(new { success = false, message = _localizationHelper.AlreadyAssistantInBusiness });
+
+            await using var transaction = await _userProfileService.BeginTransactionAsync();
+            try
+            {
+                var business = await _userProfileService.GetCompanyById(invite.BusinessProfileId);
+                if (business == null)
+                {
+                    await transaction.RollbackAsync();
+                    return BadRequest(new { success = false, message = _localizationHelper.BusinesProfileNotFound });
+                }
+
+                var userBusiness = await _userProfileService.AddUserToBusinessProfile(
+                    existingUser.Id,
+                    business.Id,
+                    UserBusinessRole.Assistant
+                );
+
+                if (userBusiness == null)
+                {
+                    await transaction.RollbackAsync();
+                    return BadRequest(new { success = false, message = _localizationHelper.FailedToAddUserToBusiness });
+                }
+
+                await _userProfileService.DeleteBusinessInvite(invite.Id);
+
+                await transaction.CommitAsync();
+
+                return Ok(new
+                {
+                    success = true,
+                    message = _localizationHelper.InviteAcceptedSuccessfully,
+                    businessName = business.BusinessName,
+                    businessId = business.Id
+                });
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
         [HttpPost("register-admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> RegisterAdmin([FromBody] AddUserProfileDto dto)
         {
             var existingUser = await _userProfileService.GetByEmailAsync(dto.Email);

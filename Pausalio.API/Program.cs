@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Pausalio.API.Middlewares;
 using Pausalio.Application.Mappings;
 using Pausalio.Application.Services.Implementations;
 using Pausalio.Application.Services.Interfaces;
@@ -189,7 +190,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseMiddleware<BusinessContextMiddleware>();
 // -------------------- Swagger UI --------------------
 app.UseSwagger();
 app.UseSwaggerUI(c =>

@@ -20,6 +20,7 @@ namespace Pausalio.Application.Mappings
                            opt => opt.MapFrom(src => src.CreatedBy.Email));
             CreateMap<AddBusinessInviteDto, BusinessInvite>();
             CreateMap<UpdateBusinessInviteDto, BusinessInvite>();
+            CreateMap<AcceptInviteDto, BusinessInvite>();
         }
     }
 }

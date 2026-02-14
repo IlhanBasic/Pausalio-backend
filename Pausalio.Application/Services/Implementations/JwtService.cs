@@ -26,7 +26,7 @@ namespace Pausalio.Application.Services.Implementations
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(_jwtSettings.Key);
-           
+
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
@@ -35,19 +35,28 @@ namespace Pausalio.Application.Services.Implementations
                 new Claim("LastName", user.LastName),
                 new Claim("IsActive", user.IsActive.ToString()),
             };
+
             claims.Add(new Claim(ClaimTypes.Role, user.Role.ToString()));
-            var firstUserBusinessProfile = user.UserBusinessProfiles.FirstOrDefault();
-            if (firstUserBusinessProfile != null && firstUserBusinessProfile.BusinessProfile != null)
+
+            var businessIds = user.UserBusinessProfiles
+                .Where(ubp => ubp.BusinessProfile != null)
+                .Select(ubp => ubp.BusinessProfile.Id.ToString())
+                .ToList();
+
+            if (businessIds.Any())
             {
-                var roles = user.UserBusinessProfiles.Select(ubp => ubp.Role.ToString()).Distinct();
-                var businessId = firstUserBusinessProfile.BusinessProfile.Id;
-                claims.Add(new Claim("BusinessProfileId", string.Join(",", businessId)));
-                foreach (var role in roles)
+                claims.Add(new Claim("AvailableBusinesses", string.Join(",", businessIds)));
+
+                var businessRoles = user.UserBusinessProfiles
+                    .Select(ubp => ubp.Role.ToString())
+                    .Distinct();
+
+                foreach (var role in businessRoles)
                 {
                     claims.Add(new Claim(ClaimTypes.Role, role));
                 }
             }
-           
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
@@ -60,7 +69,5 @@ namespace Pausalio.Application.Services.Implementations
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
-
-
     }
 }

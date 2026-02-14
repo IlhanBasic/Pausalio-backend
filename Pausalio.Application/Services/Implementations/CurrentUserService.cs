@@ -2,16 +2,17 @@
 using Pausalio.Application.Services.Interfaces;
 using System.Security.Claims;
 
-
 namespace Pausalio.Application.Services.Implementations
 {
     public class CurrentUserService : ICurrentUserService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+
         public CurrentUserService(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
         }
+
         public string? GetEmail()
         {
             return _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Email)?.Value;
@@ -31,10 +32,31 @@ namespace Pausalio.Application.Services.Implementations
 
         public string? GetCompany()
         {
-            var companiesClaim = _httpContextAccessor.HttpContext?.User?.FindFirst("BusinessProfileId")?.Value;
+            var context = _httpContextAccessor.HttpContext;
+            if (context == null) return null;
 
+            var headerValue = context.Request.Headers["X-Business-Context"].FirstOrDefault();
+            if (!string.IsNullOrEmpty(headerValue))
+            {
+                var availableBusinesses = GetAvailableBusinesses();
+                if (availableBusinesses.Contains(headerValue))
+                {
+                    return headerValue;
+                }
 
-            return companiesClaim;
+            }
+
+            var availableClaim = context.User?.FindFirst("AvailableBusinesses")?.Value;
+            return availableClaim?.Split(',').FirstOrDefault();
+        }
+
+        public IEnumerable<string> GetAvailableBusinesses()
+        {
+            var claim = _httpContextAccessor.HttpContext?.User?.FindFirst("AvailableBusinesses")?.Value;
+            if (string.IsNullOrEmpty(claim))
+                return Enumerable.Empty<string>();
+
+            return claim.Split(',', StringSplitOptions.RemoveEmptyEntries);
         }
     }
 }

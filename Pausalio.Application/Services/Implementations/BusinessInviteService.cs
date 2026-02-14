@@ -52,5 +52,18 @@ namespace Pausalio.Application.Services.Implementations
             await _unitOfWork.SaveChangesAsync();
             return _mapper.Map<BusinessInviteToReturnDto>(businessInvite);
         }
+        public async Task<BusinessInviteToReturnDto?> GetBusinessInviteByEmailAndCompany(string email, Guid companyId)
+        {
+            var businessInvite = await _unitOfWork.BusinessInviteRepository
+                .FindFirstOrDefaultAsync(x => x.Email == email &&
+                                              x.BusinessProfileId == companyId &&
+                                              x.ExpiresAt > DateTime.UtcNow &&
+                                              !x.IsUsed);
+
+            if (businessInvite == null)
+                return null;
+
+            return _mapper.Map<BusinessInviteToReturnDto>(businessInvite);
+        }
     }
 }

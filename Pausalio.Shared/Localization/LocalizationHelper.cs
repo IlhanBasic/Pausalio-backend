@@ -298,5 +298,21 @@ namespace Pausalio.Shared.Localization
         public string InviteSent => _localizer["InviteSent"];
 
         public string InviteRemoved => _localizer["InviteRemoved"];
+
+        public string InviteAcceptedSuccessfully => _localizer["InviteAcceptedSuccessfully"];
+
+        public string FailedToAddUserToBusiness => _localizer["FailedToAddUserToBusiness"];
+
+        public string AlreadyAssistantInBusiness => _localizer["AlreadyAssistantInBusiness"];
+
+        public string Unauthorized => _localizer["Unauthorized"];
+
+        public string UserAlreadyAssistantInYourBusiness => _localizer["UserAlreadyAssistantInYourBusiness"];
+
+        public string InviteAlreadySentToThisUser => _localizer["InviteAlreadySentToThisUser"];
+
+        public string CannotInviteOwner => _localizer["CannotInviteOwner"];
+
+        public string CannotInviteAdmin => _localizer["CannotInviteAdmin"];
     }
 }

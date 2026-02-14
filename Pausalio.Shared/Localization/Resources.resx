@@ -893,4 +893,36 @@
     <value>Pozivni token uspešno uklonjen.</value>
     <comment>Poruka kada je pozivni token uspešno uklonjen.</comment>
   </data>
+  <data name="InviteAcceptedSuccessfully" xml:space="preserve">
+    <value>Poziv za saradnju uspešno prihvaćen.</value>
+    <comment>Poruka da je poziv za saradnju uspešno prihvaćen.</comment>
+  </data>
+  <data name="FailedToAddUserToBusiness" xml:space="preserve">
+    <value>Neuspešan pokušaj dodavanja korisnika u kompaniju.</value>
+    <comment>Poruka da je bio neuspešan pokušaj dodavanja korisnika u kompaniju.</comment>
+  </data>
+  <data name="AlreadyAssistantInBusiness" xml:space="preserve">
+    <value>Asistent je već dodat u kompaniju.</value>
+    <comment>Poruka kako asistent već je dodat u kompaniju.</comment>
+  </data>
+  <data name="Unauthorized" xml:space="preserve">
+    <value>Neovlašćen pristup.</value>
+    <comment>Poruka o neovlašćenom pristupu.</comment>
+  </data>
+  <data name="UserAlreadyAssistantInYourBusiness" xml:space="preserve">
+    <value>Korisnik je već dodat kao asistent u Vašoj kompaniji.</value>
+    <comment>Poruka kako korisnik već postoji u kompaniji kao asistent.</comment>
+  </data>
+  <data name="InviteAlreadySentToThisUser" xml:space="preserve">
+    <value>Poziv je već poslat tom korisniku.</value>
+    <comment>Poruka kako je poziv već poslat korisniku.</comment>
+  </data>
+  <data name="CannotInviteAdmin" xml:space="preserve">
+    <value>Ne možete pozvati Admin korisnika kao asistenta</value>
+    <comment>Poruka da se ne može pozivati admin korisnik kao asistent.</comment>
+  </data>
+  <data name="CannotInviteOwner" xml:space="preserve">
+    <value>Ne možete pozvati preduzetnika (Owner-a) kao asistenta</value>
+    <comment>Poruka kako se ne može pozivati preduzentik paušalac kao asistent u drugoj firmi.</comment>
+  </data>
 </root>

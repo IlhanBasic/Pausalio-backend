@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Pausalio.Application.DTOs.BusinessInvite;
 using Pausalio.Application.Services.Interfaces;
 using Pausalio.Shared.Configuration;
+using Pausalio.Shared.Enums;
 using Pausalio.Shared.Localization;
 
 namespace Pausalio.API.Controllers
@@ -38,32 +39,55 @@ namespace Pausalio.API.Controllers
         {
             var userEmail = _currentUserService.GetEmail();
             if (string.IsNullOrEmpty(userEmail))
-                return BadRequest(new { success = false, message = _localizationHelper.UserEmailNotProvided});
+                return BadRequest(new { success = false, message = _localizationHelper.UserEmailNotProvided });
 
             var currentUser = await _userProfileService.GetByEmailAsync(userEmail);
             if (currentUser == null)
-                return BadRequest(new { success = false, message = _localizationHelper.UserNotFound});
-            var targetUser = await _userProfileService.GetByEmailAsync(dto.Email);
-            if (targetUser != null)
-                return BadRequest(new { success = false, message = _localizationHelper.UserAlreadyExists });
+                return BadRequest(new { success = false, message = _localizationHelper.UserNotFound });
+
             var firstCompanyId = _currentUserService.GetCompany();
             if (firstCompanyId == null)
                 return BadRequest(new { success = false, message = _localizationHelper.UserCompanyNotFound });
+
             if (!Guid.TryParse(firstCompanyId, out Guid firstCompany))
                 return BadRequest(new { success = false, message = _localizationHelper.InvalidCompanyId });
-            var existingInvite = await _businessInviteService.GetBusinessInviteByEmail(dto.Email);
-            if (existingInvite != null)
-                return BadRequest(new { success = false, message = _localizationHelper.InviteTokenAlreadyExists});
+
+            var existingInviteFromThisCompany = await _businessInviteService
+                .GetBusinessInviteByEmailAndCompany(dto.Email, firstCompany);
+
+            if (existingInviteFromThisCompany != null)
+                return BadRequest(new { success = false, message = _localizationHelper.InviteAlreadySentToThisUser });
+
+            var targetUser = await _userProfileService.GetByEmailAsync(dto.Email);
+            if (targetUser != null)
+            {
+                if (targetUser.Role == UserRole.Admin)
+                    return BadRequest(new { success = false, message = _localizationHelper.CannotInviteAdmin });
+
+                var isOwnerAnywhere = await _userProfileService.IsUserOwnerInAnyBusiness(targetUser.Id);
+                if (isOwnerAnywhere)
+                    return BadRequest(new { success = false, message = _localizationHelper.CannotInviteOwner });
+
+                var isAlreadyInBusiness = await _userProfileService.IsUserInBusiness(targetUser.Id, firstCompany);
+                if (isAlreadyInBusiness)
+                    return BadRequest(new { success = false, message = _localizationHelper.UserAlreadyAssistantInYourBusiness });
+            }
 
             var businessInvite = await _businessInviteService.SendInvite(dto, currentUser.Id, firstCompany);
             if (businessInvite == null)
-                return BadRequest(new { success = false, message = _localizationHelper.InviteTokenCreateFail});
+                return BadRequest(new { success = false, message = _localizationHelper.InviteTokenCreateFail });
 
             var registerLink = $"{_urlSettings.Value.FrontendUrl}/api/auth/register";
             var emailBody = _emailTemplateService.GetInviteEmailTemplate(businessInvite.Token, registerLink);
 
             await _emailService.SendEmailAsync(dto.Email, _localizationHelper.InviteTokenPageTitle, emailBody);
-            return Ok(new { success = true, message = _localizationHelper.InviteSent});
+
+            return Ok(new
+            {
+                success = true,
+                message = _localizationHelper.InviteSent,
+                invitedUserExists = targetUser != null
+            });
         }
 
         [HttpDelete("{id:guid}")]

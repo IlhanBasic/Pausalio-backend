@@ -12,5 +12,6 @@ namespace Pausalio.Application.Services.Interfaces
         string? GetUserId();
         string? GetCompany();
         IEnumerable<string> GetRoles();
+        IEnumerable<string> GetAvailableBusinesses();
     }
 }

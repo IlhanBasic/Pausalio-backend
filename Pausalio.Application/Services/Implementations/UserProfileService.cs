@@ -236,7 +236,30 @@ namespace Pausalio.Application.Services.Implementations
             var business = await _unitOfWork.BusinessProfileRepository.FindFirstOrDefaultAsync(x => x.Id == id);
             return _mapper.Map<BusinessProfileToReturnDto>(business);
         }
+        public async Task<bool> IsUserInBusiness(Guid userId, Guid businessProfileId)
+        {
+            var userBusiness = await _unitOfWork.UserBusinessProfileRepository
+                .FindFirstOrDefaultAsync(x => x.UserId == userId && x.BusinessProfileId == businessProfileId);
 
-       
+            return userBusiness != null;
+        }
+
+        public async Task DeleteBusinessInvite(Guid inviteId)
+        {
+            var invite = await _unitOfWork.BusinessInviteRepository.GetByIdAsync(inviteId);
+            if (invite != null)
+            {
+                _unitOfWork.BusinessInviteRepository.Remove(invite);
+                await _unitOfWork.SaveChangesAsync();
+            }
+        }
+        public async Task<bool> IsUserOwnerInAnyBusiness(Guid userId)
+        {
+            var ownerRole = await _unitOfWork.UserBusinessProfileRepository
+                .FindFirstOrDefaultAsync(x => x.UserId == userId && x.Role == UserBusinessRole.Owner);
+
+            return ownerRole != null;
+        }
+
     }
 }

@@ -23,5 +23,8 @@ namespace Pausalio.Application.Services.Interfaces
         Task SetEmailVerificationToken(Guid userId, string token, DateTime expiration);
         Task<bool> VerifyEmailToken(string email, string token);
         Task MarkEmailAsVerified(Guid userId);
+        Task<bool> IsUserInBusiness(Guid userId, Guid businessProfileId);
+        Task DeleteBusinessInvite(Guid inviteId);
+        Task<bool> IsUserOwnerInAnyBusiness(Guid userId);
     }
 }

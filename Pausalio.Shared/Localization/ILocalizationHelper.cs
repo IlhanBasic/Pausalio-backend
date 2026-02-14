@@ -2,6 +2,14 @@
 {
     public interface ILocalizationHelper
     {
+        string CannotInviteOwner { get; }
+        string CannotInviteAdmin { get; }
+        string UserAlreadyAssistantInYourBusiness { get; }
+        string InviteAlreadySentToThisUser { get; }
+        string InviteAcceptedSuccessfully {  get; }
+        string FailedToAddUserToBusiness {  get; }
+        string AlreadyAssistantInBusiness {  get; }
+        string Unauthorized {  get; }
         string InviteRemoved { get; }
         string InviteSent { get; }
         string FileUploadFailed {  get; }

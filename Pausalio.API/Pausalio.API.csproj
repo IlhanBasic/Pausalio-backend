@@ -33,10 +33,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Middlewares\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Pausalio.Application\Pausalio.Application.csproj" />
     <ProjectReference Include="..\Pausalio.Domain\Pausalio.Domain.csproj" />
     <ProjectReference Include="..\Pausalio.Infrastructure\Pausalio.Infrastructure.csproj" />

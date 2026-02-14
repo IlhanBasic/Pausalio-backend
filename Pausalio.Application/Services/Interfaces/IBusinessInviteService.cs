@@ -10,6 +10,7 @@ namespace Pausalio.Application.Services.Interfaces
     public interface IBusinessInviteService
     {
         Task<BusinessInviteToReturnDto> SendInvite(AddBusinessInviteDto invite, Guid ownerId, Guid businessId);
+        Task<BusinessInviteToReturnDto?> GetBusinessInviteByEmailAndCompany(string email, Guid companyId);
         Task<BusinessInviteToReturnDto?> GetBusinessInviteByEmail(string email);
         Task RemoveInvite(Guid id);
     }

@@ -22,4 +22,13 @@ namespace Pausalio.Application.Validators
         {
         }
     }
+
+    public class AcceptInviteDtoValidator : AbstractValidator<AcceptInviteDto>
+    {
+        public AcceptInviteDtoValidator(ILocalizationHelper _localizationHelper)
+        {
+            RuleFor(x => x.InviteToken)
+                .NotEmpty().WithMessage(_localizationHelper.InviteTokenRequired);
+        }
+    }
 }
