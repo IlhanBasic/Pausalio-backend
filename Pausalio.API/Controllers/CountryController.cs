@@ -66,7 +66,7 @@ namespace Pausalio.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { success = false, message = ex.Message });
+                return NotFound(new { success = false, message = ex.Message });
             }
            
         }
@@ -81,7 +81,7 @@ namespace Pausalio.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { success = false, message = ex.Message });
+                return NotFound(new { success = false, message = ex.Message });
             }
             
         }

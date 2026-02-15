@@ -14,6 +14,5 @@ namespace Pausalio.Application.DTOs.BankAccount
         public Currency Currency { get; set; } = Currency.RSD!;
         public string? IBAN { get; set; }
         public string? SWIFT { get; set; }
-        public bool IsActive { get; set; } = true;
     }
 }

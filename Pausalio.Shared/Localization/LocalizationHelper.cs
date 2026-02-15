@@ -14,6 +14,7 @@ namespace Pausalio.Shared.Localization
         {
             _localizer = localizer;
         }
+        public string ClientEmailAlreadyExists => _localizer["ClientEmailAlreadyExists"];
         public string InvalidPassword => _localizer["InvalidPassword"];
         public string LoginSuccessfull => _localizer["LoginSuccessfull"];
         public string PasswordRegex => _localizer["PasswordRegex"];
@@ -314,5 +315,117 @@ namespace Pausalio.Shared.Localization
         public string CannotInviteOwner => _localizer["CannotInviteOwner"];
 
         public string CannotInviteAdmin => _localizer["CannotInviteAdmin"];
+
+        public string CompanyWithPIBOrMBAlreadyExists => _localizer["CompanyWithPIBOrMBAlreadyExists"];
+
+        public string CompanyActivatedSuccessfully => _localizer["CompanyActivatedSuccessfully"];
+
+        public string CompanyDeactivatedSuccessfully => _localizer["CompanyDeactivatedSuccessfully"];
+
+        public string CompanyUpdatedSuccessfully => _localizer["CompanyUpdatedSuccessfully"];
+
+        public string ForeignClientMustHaveCountry => _localizer["ForeignClientMustHaveCountry"];
+
+        public string ClientWithPIBAlreadyExists => _localizer["ClientWithPIBAlreadyExists"];
+
+        public string LegalEntityMustHavePIB => _localizer["LegalEntityMustHavePIB"];
+
+        public string ClientActivatedSuccessfully => _localizer["ClientActivatedSuccessfully"];
+
+        public string ClientDeletedSuccessfully => _localizer["ClientDeletedSuccessfully"];
+
+        public string ClientUpdatedSuccessfully => _localizer["ClientUpdatedSuccessfully"];
+
+        public string ClientCreatedSuccessfully => _localizer["ClientCreatedSuccessfully"];
+
+        public string ClientNotFound => _localizer["ClientNotFound"];
+
+        public string CannotDeletePaidExpense => _localizer["CannotDeletePaidExpense"];
+
+        public string CannotModifyPaidExpense => _localizer["CannotModifyPaidExpense"];
+
+        public string AmountMustBePositive => _localizer["AmountMustBePositive"];
+
+        public string ExpenseArchivedSuccessfully => _localizer["ExpenseArchivedSuccessfully"];
+
+        public string ExpenseDeletedSuccessfully => _localizer["ExpenseDeletedSuccessfully"];
+
+        public string ExpenseUpdatedSuccessfully => _localizer["ExpenseUpdatedSuccessfully"];
+
+        public string ExpenseCreatedSuccessfully => _localizer["ExpenseCreatedSuccessfully"];
+
+        public string ExpenseNotFound => _localizer["ExpenseNotFound"];
+
+        public string CannotDeletePaidObligation => _localizer["CannotDeletePaidObligation"];
+
+        public string CannotModifyPaidObligation => _localizer["CannotModifyPaidObligation"];
+
+        public string ObligationAlreadyExistsForMonth => _localizer["ObligationAlreadyExistsForMonth"];
+
+        public string ObligationsAlreadyExistForYear => _localizer["ObligationsAlreadyExistForYear"];
+
+        public string InvalidDueDay => _localizer["InvalidDueDay"];
+
+        public string InvalidYear => _localizer["InvalidYear"];
+
+        public string TaxObligationMarkedAsPaid => _localizer["TaxObligationMarkedAsPaid"];
+
+        public string TaxObligationDeletedSuccessfully => _localizer["TaxObligationDeletedSuccessfully"];
+
+        public string TaxObligationUpdatedSuccessfully => _localizer["TaxObligationUpdatedSuccessfully"];
+
+        public string TaxObligationsGeneratedSuccessfully => _localizer["TaxObligationsGeneratedSuccessfully"];
+
+        public string TaxObligationCreatedSuccessfully => _localizer["TaxObligationCreatedSuccessfully"];
+
+        public string TaxObligationNotFound => _localizer["TaxObligationNotFound"];
+
+        public string CountrySerbiaNotFound => _localizer["CountrySerbiaNotFound"];
+
+        public string IBANRequiredForForeignCurrency => _localizer["IBANRequiredForForeignCurrency"];
+
+        public string SWIFTRequiredForForeignCurrency => _localizer["SWIFTRequiredForForeignCurrency"];
+
+        public string CannotDeletePaidInvoice => _localizer["CannotDeletePaidInvoice"];
+
+        public string CannotModifyPaidInvoice => _localizer["CannotModifyPaidInvoice"];
+
+        public string InvalidInvoiceItemValues => _localizer["InvalidInvoiceItemValues"];
+
+        public string InvoiceMustHaveItems => _localizer["InvoiceMustHaveItems"];
+
+        public string InvoiceDeletedSuccessfully => _localizer["InvoiceDeletedSuccessfully"];
+
+        public string InvoiceUpdatedSuccessfully => _localizer["InvoiceUpdatedSuccessfully"];
+
+        public string InvoiceCreatedSuccessfully => _localizer["InvoiceCreatedSuccessfully"];
+
+        public string InvoiceNotFound => _localizer["InvoiceNotFound"];
+
+        public string InvoiceItemUnitPriceGreaterThanZero => _localizer["InvoiceItemUnitPriceGreaterThanZero"];
+
+        public string InvalidPaymentType => _localizer["InvalidPaymentType"];
+
+        public string EntityIdRequired => _localizer["EntityIdRequired"];
+
+        public string PaymentNotFound => _localizer["PaymentNotFound"];
+
+        public string InvoiceAlreadyPaid => _localizer["InvoiceAlreadyPaid"];
+
+        public string PaymentExceedsRemainingAmount => _localizer["PaymentExceedsRemainingAmount"];
+
+        public string TaxObligationAlreadyPaid => _localizer["TaxObligationAlreadyPaid"];
+
+        public string TaxObligationMustBePaidInFull => _localizer["TaxObligationMustBePaidInFull"];
+
+        public string ExpenseAlreadyPaid => _localizer["ExpenseAlreadyPaid"];
+
+        public string ExpenseMustBePaidInFull => _localizer["ExpenseMustBePaidInFull"];
+
+        public string PaymentCreatedSuccessfully => _localizer["PaymentCreatedSuccessfully"];
+
+        public string PaymentUpdatedSuccessfully => _localizer["PaymentUpdatedSuccessfully"];
+
+        public string PaymentDeletedSuccessfully => _localizer["PaymentDeletedSuccessfully"];
     }
 }

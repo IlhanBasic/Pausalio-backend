@@ -38,18 +38,15 @@ namespace Pausalio.Infrastructure.Persistence.Configurations
                 .IsRequired();
 
             builder.Property(x => x.PaymentStatus)
-                .HasConversion<string>()
-                .HasMaxLength(20)
+                .HasConversion<int>()
                 .IsRequired();
 
             builder.Property(x => x.InvoiceStatus)
-                .HasConversion<string>()
-                .HasMaxLength(20)
+                .HasConversion<int>()
                 .IsRequired();
 
             builder.Property(x => x.Currency)
-                .HasConversion<string>()
-                .HasMaxLength(3)
+                .HasConversion<int>()
                 .IsRequired();
 
             builder.Property(x => x.ReferenceNumber)

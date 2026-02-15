@@ -9,10 +9,6 @@ namespace Pausalio.Application.Validators
 
         public AddInvoiceItemDtoValidator(ILocalizationHelper _localizationHelper)
         {
-
-            RuleFor(x => x.InvoiceId)
-                .NotEmpty().WithMessage(_localizationHelper.InvoiceItemInvoiceIdRequired);
-
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage(_localizationHelper.InvoiceItemNameRequired)
                 .MaximumLength(100).WithMessage(_localizationHelper.InvoiceItemNameMaxLength);

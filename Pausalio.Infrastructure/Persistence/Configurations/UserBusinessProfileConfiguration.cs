@@ -15,8 +15,7 @@ namespace Pausalio.Infrastructure.Persistence.Configurations
             builder.HasKey(x => x.Id);
 
             builder.Property(x => x.Role)
-                   .HasConversion<string>()
-                   .HasMaxLength(50)
+                   .HasConversion<int>()
                    .IsRequired();
 
             builder.Property(x => x.CreatedAt)

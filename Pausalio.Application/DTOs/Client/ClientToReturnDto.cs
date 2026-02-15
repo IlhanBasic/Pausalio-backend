@@ -24,6 +24,6 @@ namespace Pausalio.Application.DTOs.Client
         public bool IsActive { get; set; } = true;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
-        public ICollection<InvoiceToReturnDto> Invoices { get; set; } = new List<InvoiceToReturnDto>();
+        //public ICollection<InvoiceToReturnDto> Invoices { get; set; } = new List<InvoiceToReturnDto>();
     }
 }

@@ -35,8 +35,7 @@ namespace Pausalio.Infrastructure.Persistence.Configurations
                 .IsRequired();
 
             builder.Property(x => x.DocumentType)
-                .HasConversion<string>()
-                .HasMaxLength(50)
+                .HasConversion<int>()
                 .IsRequired();
 
             builder.Property(x => x.IsDeleted)

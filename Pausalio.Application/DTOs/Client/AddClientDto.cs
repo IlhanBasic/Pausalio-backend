@@ -18,6 +18,5 @@ namespace Pausalio.Application.DTOs.Client
         public string Email { get; set; } = string.Empty;
         public string? Phone { get; set; }
         public Guid? CountryId { get; set; }
-        public bool IsActive { get; set; } = true;
     }
 }

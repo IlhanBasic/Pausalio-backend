@@ -41,17 +41,14 @@ namespace Pausalio.API.Controllers
 
             var allowedContentTypes = new[]
             {
-				// Images
 				"image/jpeg",
                 "image/png",
                 "image/gif",
                 "image/bmp",
                 "image/webp",
 
-				// PDF
 				"application/pdf",
 
-				// Microsoft Office
 				"application/msword",
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 "application/vnd.ms-excel",
@@ -59,7 +56,6 @@ namespace Pausalio.API.Controllers
                 "application/vnd.ms-powerpoint",
                 "application/vnd.openxmlformats-officedocument.presentationml.presentation",
 
-				// Text files
 				"text/plain",
                 "text/csv"
             };

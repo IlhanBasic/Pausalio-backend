@@ -1,9 +1,11 @@
-﻿using Pausalio.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using Pausalio.Domain.Entities;
 using Pausalio.Infrastructure.Persistence;
 using Pausalio.Infrastructure.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,6 +17,27 @@ namespace Pausalio.Infrastructure.Repositories.Implementations
         public InvoiceRepository(PausalioDbContext context) : base(context)
         {
             _context = context;
+        }
+
+        public async Task<IList<Invoice>> FindInvoicesWithEntities(Expression<Func<Invoice, bool>> predicate)
+        {
+            return await _context.Invoices
+                .Include(x => x.Items)
+                .Include(x => x.BusinessProfile)
+                .Include(x => x.Client)
+                .Include(x => x.Payments)
+                .Where(predicate)
+                .ToListAsync();
+        }
+
+        public async Task<Invoice?> FindInvoiceWithEntities(Expression<Func<Invoice, bool>> predicate)
+        {
+            return await _context.Invoices
+                .Include(x => x.Items)
+                .Include(x => x.BusinessProfile)
+                .Include(x => x.Client)
+                .Include(x => x.Payments)
+                .FirstOrDefaultAsync(predicate);
         }
     }
 }

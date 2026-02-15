@@ -12,6 +12,10 @@ namespace Pausalio.Infrastructure.Persistence.Configurations
             builder.ToTable("UserProfiles");
 
             builder.HasKey(x => x.Id);
+            
+            builder.Property(x => x.Role)
+                   .HasConversion<int>()
+                   .IsRequired();
 
             builder.Property(x => x.FirstName)
                    .HasMaxLength(100)

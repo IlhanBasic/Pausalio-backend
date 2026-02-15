@@ -27,8 +27,7 @@ namespace Pausalio.Infrastructure.Persistence.Configurations
                    .HasMaxLength(500);
 
             builder.Property(x => x.ReminderType)
-                   .HasConversion<string>()
-                   .HasMaxLength(50)
+                   .HasConversion<int>()
                    .IsRequired();
 
             builder.Property(x => x.DueDate)

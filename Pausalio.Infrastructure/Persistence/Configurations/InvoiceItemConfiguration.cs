@@ -22,8 +22,7 @@ namespace Pausalio.Infrastructure.Persistence.Configurations
                 .IsRequired(false);
 
             builder.Property(x => x.ItemType)
-                .HasConversion<string>()
-                .HasMaxLength(50)
+                .HasConversion<int>()
                 .IsRequired();
 
             builder.Property(x => x.Quantity)

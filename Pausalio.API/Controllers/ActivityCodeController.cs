@@ -24,6 +24,9 @@ namespace Pausalio.API.Controllers
             _localizationHelper = localizationHelper;
         }
 
+        /// <summary>
+        /// Vraća sve šifre delatnosti
+        /// </summary>
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -31,6 +34,9 @@ namespace Pausalio.API.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Vraća šifre delatnosti po Id-ju
+        /// </summary>
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetById(Guid id)
         {
@@ -41,9 +47,12 @@ namespace Pausalio.API.Controllers
 
             return Ok(result);
         }
+
+        /// <summary>
+        /// Služi za kreiranje šifre delatnosti
+        /// </summary>
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        
         public async Task<IActionResult> Create(AddActivityCodeDto dto)
         {
             try
@@ -57,6 +66,10 @@ namespace Pausalio.API.Controllers
             }
            
         }
+
+        /// <summary>
+        /// Služi za izmenu šifre delatnosti
+        /// </summary>
         [Authorize(Roles = "Admin")]
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> Update(Guid id, UpdateActivityCodeDto dto)
@@ -68,7 +81,7 @@ namespace Pausalio.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { success = false, message = ex.Message });
+                return NotFound(new { success = false, message = ex.Message });
             }
             
         }
@@ -83,7 +96,7 @@ namespace Pausalio.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new {success = false, message = ex.Message});
+                return NotFound(new {success = false, message = ex.Message});
             }
             
         }

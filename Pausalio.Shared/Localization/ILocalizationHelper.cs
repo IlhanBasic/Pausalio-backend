@@ -2,6 +2,63 @@
 {
     public interface ILocalizationHelper
     {
+        string PaymentCreatedSuccessfully { get; }
+        string PaymentUpdatedSuccessfully { get; }
+        string PaymentDeletedSuccessfully { get; }
+        string InvalidPaymentType { get; }
+        string EntityIdRequired { get; }
+        string PaymentNotFound { get; }
+        string InvoiceAlreadyPaid { get; }
+        string PaymentExceedsRemainingAmount { get; }
+        string TaxObligationAlreadyPaid { get; }
+        string TaxObligationMustBePaidInFull {  get; }
+        string ExpenseAlreadyPaid { get; }
+        string ExpenseMustBePaidInFull { get; }
+        string InvoiceItemUnitPriceGreaterThanZero { get; }
+        string CannotDeletePaidInvoice {  get; }
+        string CannotModifyPaidInvoice {  get; }
+        string InvalidInvoiceItemValues { get; }
+        string InvoiceMustHaveItems { get; }
+        string InvoiceDeletedSuccessfully { get; }
+        string InvoiceUpdatedSuccessfully { get; }
+        string InvoiceCreatedSuccessfully { get; }
+        string InvoiceNotFound { get; }
+        string IBANRequiredForForeignCurrency {  get; }
+        string SWIFTRequiredForForeignCurrency { get; }
+        string CountrySerbiaNotFound { get; }
+        string ClientEmailAlreadyExists { get; }
+        string CannotDeletePaidObligation {  get; }
+        string CannotModifyPaidObligation {  get; }
+        string ObligationAlreadyExistsForMonth {  get; }
+        string ObligationsAlreadyExistForYear {  get; }
+        string InvalidDueDay {  get; }
+        string InvalidYear {  get; }
+        string TaxObligationMarkedAsPaid {  get; }
+        string TaxObligationDeletedSuccessfully {  get; }
+        string TaxObligationUpdatedSuccessfully {  get; }
+        string TaxObligationsGeneratedSuccessfully { get; }
+        string TaxObligationCreatedSuccessfully {  get; }
+        string TaxObligationNotFound {  get; }
+        string CannotDeletePaidExpense {  get; }
+        string CannotModifyPaidExpense {  get; }
+        string AmountMustBePositive {  get; }
+        string ExpenseArchivedSuccessfully {  get; }
+        string ExpenseDeletedSuccessfully { get; }
+        string ExpenseUpdatedSuccessfully {  get; }
+        string ExpenseCreatedSuccessfully { get; }
+        string ExpenseNotFound {  get; }
+        string ForeignClientMustHaveCountry {  get; }
+        string ClientWithPIBAlreadyExists { get; }
+        string LegalEntityMustHavePIB {  get; }
+        string ClientActivatedSuccessfully { get; }
+        string ClientDeletedSuccessfully { get; }
+        string ClientUpdatedSuccessfully { get; }
+        string ClientCreatedSuccessfully { get; }
+        string ClientNotFound {  get; }
+        string CompanyWithPIBOrMBAlreadyExists { get; }
+        string CompanyActivatedSuccessfully {  get; }
+        string CompanyDeactivatedSuccessfully {  get; }
+        string CompanyUpdatedSuccessfully {  get; }
         string CannotInviteOwner { get; }
         string CannotInviteAdmin { get; }
         string UserAlreadyAssistantInYourBusiness { get; }

@@ -249,7 +249,8 @@ namespace Pausalio.Application.Services.Implementations
             var invite = await _unitOfWork.BusinessInviteRepository.GetByIdAsync(inviteId);
             if (invite != null)
             {
-                _unitOfWork.BusinessInviteRepository.Remove(invite);
+                invite.IsUsed = true;
+                _unitOfWork.BusinessInviteRepository.Update(invite);
                 await _unitOfWork.SaveChangesAsync();
             }
         }

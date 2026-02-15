@@ -8,7 +8,7 @@ namespace Pausalio.Infrastructure.Repositories.Implementations
     public class UnitOfWork : IUnitOfWork
     {
         private readonly PausalioDbContext _context;
-
+        public PausalioDbContext GetContext() => _context;
         public IActivityCodeRepository ActivityCodeRepository { get; }
         public IBankAccountRepository BankAccountRepository { get; }
         public IBusinessProfileRepository BusinessProfileRepository { get; }

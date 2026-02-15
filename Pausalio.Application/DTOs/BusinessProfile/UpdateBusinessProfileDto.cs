@@ -8,9 +8,9 @@ namespace Pausalio.Application.DTOs.BusinessProfile
 {
     public class UpdateBusinessProfileDto
     {
-        public string BusinessName { get; set; } = null!;
-        public string PIB { get; set; } = null!;
+        public string PIB { get; set; } = string.Empty;
         public string MB { get; set; } = string.Empty;
+        public string BusinessName { get; set; } = null!;
         public Guid ActivityCodeId { get; set; }
         public string City { get; set; } = string.Empty;
         public string Address { get; set; } = null!;
@@ -18,6 +18,5 @@ namespace Pausalio.Application.DTOs.BusinessProfile
         public string? Phone { get; set; }
         public string? Website { get; set; }
         public string? CompanyLogo { get; set; }
-        public bool IsActive { get; set; } = true;
     }
 }

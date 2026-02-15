@@ -46,6 +46,7 @@ namespace Pausalio.Application.Validators
                 .MaximumLength(200).When(x => !string.IsNullOrEmpty(x.Website))
                 .WithMessage(_localizationHelper.WebsiteMaxLength)
                 .Must(uri => Uri.TryCreate(uri, UriKind.Absolute, out _))
+                .When(x => !string.IsNullOrEmpty(x.Website))
                 .WithMessage(_localizationHelper.WebsiteInvalid);
 
             RuleFor(x => x.CompanyLogo)
@@ -95,6 +96,7 @@ namespace Pausalio.Application.Validators
                 .MaximumLength(200).When(x => !string.IsNullOrEmpty(x.Website))
                 .WithMessage(_localizationHelper.WebsiteMaxLength)
                 .Must(uri => Uri.TryCreate(uri, UriKind.Absolute, out _))
+                .When(x => !string.IsNullOrEmpty(x.Website))
                 .WithMessage(_localizationHelper.WebsiteInvalid);
 
             RuleFor(x => x.CompanyLogo)

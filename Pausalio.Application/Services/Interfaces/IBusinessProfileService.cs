@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Pausalio.Application.DTOs.BusinessProfile;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,11 @@ namespace Pausalio.Application.Services.Interfaces
 {
     public interface IBusinessProfileService
     {
+        Task<BusinessProfileToReturnDto?> GetByIdAsync(Guid id);
+        Task<IEnumerable<BusinessProfileToReturnDto>> GetAllAsync();
+        Task<IEnumerable<BusinessProfileToReturnDto>> GetUserBusinessProfilesAsync(Guid userId);
+        Task UpdateAsync(Guid id, UpdateBusinessProfileDto dto);
+        Task DeactivateAsync(Guid id);
+        Task ActivateAsync(Guid id);
     }
 }

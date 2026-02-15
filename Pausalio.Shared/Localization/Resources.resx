@@ -925,4 +925,232 @@
     <value>Ne možete pozvati preduzetnika (Owner-a) kao asistenta</value>
     <comment>Poruka kako se ne može pozivati preduzentik paušalac kao asistent u drugoj firmi.</comment>
   </data>
+  <data name="CompanyUpdatedSuccessfully" xml:space="preserve">
+    <value>Firma je uspešno ažurirana.</value>
+    <comment>Poruka da je firma uspešno ažurirana.</comment>
+  </data>
+  <data name="CompanyDeactivatedSuccessfully" xml:space="preserve">
+    <value>Firma je uspešno deaktivirana.</value>
+    <comment>Poruka da je firma uspešno deaktivirana.</comment>
+  </data>
+  <data name="CompanyActivatedSuccessfully" xml:space="preserve">
+    <value>Firma je uspešno aktivirana.</value>
+    <comment>Poruka da je firma uspešno aktivirana.</comment>
+  </data>
+  <data name="CompanyWithPIBOrMBAlreadyExists" xml:space="preserve">
+    <value>Firma sa ovim PIB-om ili MB-om već postoji</value>
+    <comment>Poruka da firma sa ovim PIB-om ili MB-om već postoji.</comment>
+  </data>
+  <data name="ForeignClientMustHaveCountry" xml:space="preserve">
+    <value>Strani klijent mora imati izabranu državu.</value>
+    <comment>Poruka da se za strane krijente mora odabrati država.</comment>
+  </data>
+  <data name="ClientWithPIBAlreadyExists" xml:space="preserve">
+    <value>Klijent sa ovim PIB-om već postoji u vašoj firmi</value>
+    <comment>Poruka da klijent sa ovim PIB-om već postoji</comment>
+  </data>
+  <data name="LegalEntityMustHavePIB" xml:space="preserve">
+    <value>Pravno lice mora imati PIB.</value>
+    <comment>Poruka da pravno lice mora imati PIB.</comment>
+  </data>
+  <data name="ClientActivatedSuccessfully" xml:space="preserve">
+    <value>Klijent je uspešno aktiviran.</value>
+    <comment>Poruka da je klijent uspešno aktiviran.</comment>
+  </data>
+  <data name="ClientDeletedSuccessfully" xml:space="preserve">
+    <value>Klijent je uspešno obrisan</value>
+    <comment>Poruka da je klijent uspešno obrisan.</comment>
+  </data>
+  <data name="ClientUpdatedSuccessfully" xml:space="preserve">
+    <value>Klijent je uspešno ažuriran.</value>
+    <comment>Poruka da je klijent uspešno ažuriran.</comment>
+  </data>
+  <data name="ClientCreatedSuccessfully" xml:space="preserve">
+    <value>Klijent je uspešno kreiran.</value>
+    <comment>Poruka da je klijent uspešno kreiran.</comment>
+  </data>
+  <data name="ClientNotFound" xml:space="preserve">
+    <value>Klijent nije pronađen.</value>
+    <comment>Poruka da klijent nije pronađen.</comment>
+  </data>
+  <data name="ExpenseNotFound" xml:space="preserve">
+    <value>Trošak nije pronađen.</value>
+    <comment>Poruka da trošak nije pronađen.</comment>
+  </data>
+  <data name="ExpenseCreatedSuccessfully" xml:space="preserve">
+    <value>Trošak je uspešno kreiran.</value>
+    <comment>Poruka da je trošak uspešno kreiran.</comment>
+  </data>
+  <data name="ExpenseUpdatedSuccessfully" xml:space="preserve">
+    <value>Trošak je uspešno ažuriran</value>
+    <comment>Poruka da je trošak uspešno ažuriran.</comment>
+  </data>
+  <data name="ExpenseDeletedSuccessfully" xml:space="preserve">
+    <value>Trošak je uspešno obrisan.</value>
+    <comment>Poruka da je trošak uspešno obrisan.</comment>
+  </data>
+  <data name="ExpenseArchivedSuccessfully" xml:space="preserve">
+    <value>Trošak je uspešno arhiviran.</value>
+    <comment>Poruka da je trošak uspešno arhiviran.</comment>
+  </data>
+  <data name="AmountMustBePositive" xml:space="preserve">
+    <value>Iznos mora biti pozitivan broj.</value>
+    <comment>Poruka da iznos mora imati pozitivan broj.</comment>
+  </data>
+  <data name="CannotModifyPaidExpense" xml:space="preserve">
+    <value>Ne možete menjati plaćeni trošak.</value>
+    <comment>Poruka da ne možete menjati plaćeni trošak.</comment>
+  </data>
+  <data name="CannotDeletePaidExpense" xml:space="preserve">
+    <value>Ne možete obrisati plaćeni trošak.</value>
+    <comment>Poruka da ne možete obrisati plaćeni trošak.</comment>
+  </data>
+  <data name="TaxObligationNotFound" xml:space="preserve">
+    <value>Poreska obaveza nije pronađena.</value>
+    <comment>Poruka da poreska obaveza nije pronađena.</comment>
+  </data>
+  <data name="TaxObligationCreatedSuccessfully" xml:space="preserve">
+    <value>Poreska obaveza je uspešno kreirana.</value>
+    <comment>Poruka da je poreska obaveza uspešno kreirana.</comment>
+  </data>
+  <data name="TaxObligationsGeneratedSuccessfully" xml:space="preserve">
+    <value>Poreske obaveze su uspešno generisane.</value>
+    <comment>Poruka da su poreske obaveze uspešno kreirane.</comment>
+  </data>
+  <data name="TaxObligationUpdatedSuccessfully" xml:space="preserve">
+    <value>Poreska obaveza je uspešno ažurirana.</value>
+    <comment>Poruka da je poreska obaveza uspešno ažurirana.</comment>
+  </data>
+  <data name="TaxObligationDeletedSuccessfully" xml:space="preserve">
+    <value>Poreska obaveza je uspešno obrisana.</value>
+    <comment>Poruka da je poreska obaveza uspešno obrisana.</comment>
+  </data>
+  <data name="TaxObligationMarkedAsPaid" xml:space="preserve">
+    <value>Poreska obaveza je označena kao plaćena.</value>
+    <comment>Poruka da je poreska obaveza označena kao plaćena.</comment>
+  </data>
+  <data name="InvalidYear" xml:space="preserve">
+    <value>Nevalidna godina.</value>
+    <comment>Poruka o nevalidnoj godini.</comment>
+  </data>
+  <data name="InvalidDueDay" xml:space="preserve">
+    <value>Dan dospeća mora biti između 1 i 31.</value>
+    <comment>Poruka da dan dospeća mora biti između 1 i 31.</comment>
+  </data>
+  <data name="ObligationsAlreadyExistForYear" xml:space="preserve">
+    <value>Obaveze za ovu godinu već postoje.</value>
+    <comment>Poruka da obaveze postoje za ovu godinu.</comment>
+  </data>
+  <data name="ObligationAlreadyExistsForMonth" xml:space="preserve">
+    <value>Obaveza za ovaj mesec već postoji.</value>
+    <comment>Poruka da obaveza za ovaj mesec već postoji.</comment>
+  </data>
+  <data name="CannotModifyPaidObligation" xml:space="preserve">
+    <value>Ne možete menjati plaćenu obavezu.</value>
+    <comment>Poruka da ne možete menjati plaćenu obavezu.</comment>
+  </data>
+  <data name="CannotDeletePaidObligation" xml:space="preserve">
+    <value>Ne možete obrisati plaćenu obavezu.</value>
+    <comment>Poruka da ne možete obrisati plaćenu obavezu.</comment>
+  </data>
+  <data name="ClientEmailAlreadyExists" xml:space="preserve">
+    <value>Klijent sa ovim emailom već postoji.</value>
+    <comment>Poruka da klijent sa ovim emailom već postoji.</comment>
+  </data>
+  <data name="CountrySerbiaNotFound" xml:space="preserve">
+    <value>Država Srbija nije pronađena.</value>
+    <comment>Poruka da država Srbija nije pronađena.</comment>
+  </data>
+  <data name="SWIFTRequiredForForeignCurrency" xml:space="preserve">
+    <value>SWIFT je obavezan za strane valute.</value>
+    <comment>Poruka da je swift obavezan.</comment>
+  </data>
+  <data name="IBANRequiredForForeignCurrency" xml:space="preserve">
+    <value>IBAN je obavezan za strane valute.</value>
+    <comment>Poruka da je IBAN obavezan za strane valute.</comment>
+  </data>
+  <data name="CannotDeletePaidInvoice" xml:space="preserve">
+    <value>Ne možete obrisati plaćenu fakturu</value>
+    <comment>Poruka da ne možemo brisati plaćenu fakturu.</comment>
+  </data>
+  <data name="CannotModifyPaidInvoice" xml:space="preserve">
+    <value>Ne možete menjati plaćenu fakturu</value>
+    <comment>Poruka da ne možete menjati plaćenu fakturu.</comment>
+  </data>
+  <data name="InvalidInvoiceItemValues" xml:space="preserve">
+    <value>Količina i cena moraju biti pozitivni brojevi.</value>
+    <comment>Poruka da količina i cena moraju biti pozitivni brojevi.</comment>
+  </data>
+  <data name="InvoiceMustHaveItems" xml:space="preserve">
+    <value>Faktura mora imati bar jednu stavku.</value>
+    <comment>Poruka da faktura mora imati bar jednu stavku.</comment>
+  </data>
+  <data name="InvoiceDeletedSuccessfully" xml:space="preserve">
+    <value>Faktura je uspešno obrisana.</value>
+    <comment>Poruka da je faktura uspešno obrisana.</comment>
+  </data>
+  <data name="InvoiceUpdatedSuccessfully" xml:space="preserve">
+    <value>Faktura je uspešno ažurirana.</value>
+    <comment>Poruka da je faktura uspešno ažurirana.</comment>
+  </data>
+  <data name="InvoiceCreatedSuccessfully" xml:space="preserve">
+    <value>Faktura je uspešno kreirana.</value>
+    <comment>Poruka da je faktura uspešno kreirana.</comment>
+  </data>
+  <data name="InvoiceNotFound" xml:space="preserve">
+    <value>Faktura nije pronađena.</value>
+    <comment>Poruka da faktura nije pronađena.</comment>
+  </data>
+  <data name="InvoiceItemUnitPriceGreaterThanZero" xml:space="preserve">
+    <value>Cena po jedinici za stavku računa mora biti veća od 0.</value>
+    <comment>Poruka kako cena po jedinici za stavku računa mora biti veća od 0.</comment>
+  </data>
+  <data name="InvalidPaymentType" xml:space="preserve">
+    <value>Tip plaćanja nije validan.</value>
+    <comment>Poruka da tip plaćanja nije validan.</comment>
+  </data>
+  <data name="EntityIdRequired" xml:space="preserve">
+    <value>Id entiteta je obavezan.</value>
+    <comment>Poruka da je Id entiteta obavezan.</comment>
+  </data>
+  <data name="PaymentNotFound" xml:space="preserve">
+    <value>Plaćanje nije pronađeno.</value>
+    <comment>Poruka kako plaćanje nije pronađeno.</comment>
+  </data>
+  <data name="InvoiceAlreadyPaid" xml:space="preserve">
+    <value>Faktura je već plaćena.</value>
+    <comment>Poruka da je fakutra već plaćena.</comment>
+  </data>
+  <data name="PaymentExceedsRemainingAmount" xml:space="preserve">
+    <value>Uplata prevazilazi preostali unos.</value>
+    <comment>Poruka kada uplata prevazilazi preostali unos.</comment>
+  </data>
+  <data name="TaxObligationAlreadyPaid" xml:space="preserve">
+    <value>Poreska obaveza je već plaćena.</value>
+    <comment>Poruka kada je poreska obaveza već plaćena.</comment>
+  </data>
+  <data name="TaxObligationMustBePaidInFull" xml:space="preserve">
+    <value>Poreska obaveza mora biti plaćena u potpunosti.</value>
+    <comment>Poruka kada poreska obaveza mora biti plaćena u potpunosti.</comment>
+  </data>
+  <data name="ExpenseAlreadyPaid" xml:space="preserve">
+    <value>Trošak je već plaćen.</value>
+    <comment>Poruka kada je trošak već plaćen.</comment>
+  </data>
+  <data name="ExpenseMustBePaidInFull" xml:space="preserve">
+    <value>Trošak mora biti plaćen u potpunosti.</value>
+    <comment>Poruka kada trošak mora biti plaćen u potpunosti.</comment>
+  </data>
+  <data name="PaymentCreatedSuccessfully" xml:space="preserve">
+    <value>Plaćanje je uspešno obavljeno.</value>
+    <comment>Poruka da je plaćanje uspešno obavljeno.</comment>
+  </data>
+  <data name="PaymentUpdatedSuccessfully" xml:space="preserve">
+    <value>Plaćanje uspešno izmenjeno.</value>
+    <comment>Poruka kada je plaćanje uspešno izmenjeno.</comment>
+  </data>
+  <data name="PaymentDeletedSuccessfully" xml:space="preserve">
+    <value>Plaćanje uspešno obrisano.</value>
+    <comment>Poruka kada je plaćanje uspešno obrisano.</comment>
+  </data>
 </root>

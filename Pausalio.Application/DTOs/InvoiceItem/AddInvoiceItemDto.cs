@@ -9,7 +9,6 @@ namespace Pausalio.Application.DTOs.InvoiceItem
 {
     public class AddInvoiceItemDto
     {
-        public Guid InvoiceId { get; set; }
         public string Name { get; set; } = null!;
         public string? Description { get; set; }
         public ItemType ItemType { get; set; }

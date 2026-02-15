@@ -6,10 +6,8 @@ namespace Pausalio.Application.Validators
 {
     public class AddInvoiceDtoValidator : AbstractValidator<AddInvoiceDto>
     {
-
         public AddInvoiceDtoValidator(ILocalizationHelper _localizationHelper)
         {
-
             RuleFor(x => x.ClientId)
                 .NotEmpty().WithMessage(_localizationHelper.InvoiceClientIdRequired);
 
@@ -25,15 +23,27 @@ namespace Pausalio.Application.Validators
             RuleFor(x => x.Items)
                 .NotEmpty()
                 .WithMessage(_localizationHelper.InvoiceItemsRequired);
+
+            // 🆕 Validacija svake stavke posebno
+            RuleForEach(x => x.Items).ChildRules(item =>
+            {
+                item.RuleFor(i => i.Name)
+                    .NotEmpty().WithMessage(_localizationHelper.InvoiceItemNameRequired)
+                    .MaximumLength(200).WithMessage(_localizationHelper.InvoiceItemNameMaxLength);
+
+                item.RuleFor(i => i.Quantity)
+                    .GreaterThan(0).WithMessage(_localizationHelper.InvoiceItemQuantityGreaterThanZero);
+
+                item.RuleFor(i => i.UnitPrice)
+                    .GreaterThan(0).WithMessage(_localizationHelper.InvoiceItemUnitPriceGreaterThanZero);
+            });
         }
     }
 
     public class UpdateInvoiceDtoValidator : AbstractValidator<UpdateInvoiceDto>
     {
-
         public UpdateInvoiceDtoValidator(ILocalizationHelper _localizationHelper)
         {
-
             RuleFor(x => x.ClientId)
                 .NotEmpty().WithMessage(_localizationHelper.InvoiceClientIdRequired);
 
@@ -49,6 +59,20 @@ namespace Pausalio.Application.Validators
             RuleFor(x => x.Items)
                 .NotEmpty()
                 .WithMessage(_localizationHelper.InvoiceItemsRequired);
+
+            // 🆕 Validacija svake stavke posebno
+            RuleForEach(x => x.Items).ChildRules(item =>
+            {
+                item.RuleFor(i => i.Name)
+                    .NotEmpty().WithMessage(_localizationHelper.InvoiceItemNameRequired)
+                    .MaximumLength(200).WithMessage(_localizationHelper.InvoiceItemNameMaxLength);
+
+                item.RuleFor(i => i.Quantity)
+                    .GreaterThan(0).WithMessage(_localizationHelper.InvoiceItemQuantityGreaterThanZero);
+
+                item.RuleFor(i => i.UnitPrice)
+                    .GreaterThan(0).WithMessage(_localizationHelper.InvoiceItemUnitPriceGreaterThanZero);
+            });
         }
     }
 }

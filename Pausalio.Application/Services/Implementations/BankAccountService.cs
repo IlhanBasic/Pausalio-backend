@@ -3,6 +3,7 @@ using Pausalio.Application.DTOs.BankAccount;
 using Pausalio.Application.Services.Interfaces;
 using Pausalio.Domain.Entities;
 using Pausalio.Infrastructure.Repositories.Interfaces;
+using Pausalio.Shared.Enums;
 using Pausalio.Shared.Localization;
 
 namespace Pausalio.Application.Services.Implementations
@@ -53,6 +54,8 @@ namespace Pausalio.Application.Services.Implementations
         {
             var companyId = GetCurrentCompanyId();
 
+            ValidateForeignCurrencyFields(dto.Currency, dto.IBAN, dto.SWIFT);
+
             var entity = _mapper.Map<BankAccount>(dto);
             entity.BusinessProfileId = companyId;
             entity.CreatedAt = DateTime.UtcNow;
@@ -70,6 +73,8 @@ namespace Pausalio.Application.Services.Implementations
 
             if (account == null)
                 throw new KeyNotFoundException(_localizationHelper.BankAccountNotFound);
+
+            ValidateForeignCurrencyFields(dto.Currency, dto.IBAN, dto.SWIFT);
 
             _mapper.Map(dto, account);
             account.UpdatedAt = DateTime.UtcNow;
@@ -95,10 +100,23 @@ namespace Pausalio.Application.Services.Implementations
         private Guid GetCurrentCompanyId()
         {
             var companyIdString = _currentUserService.GetCompany();
+
             if (companyIdString == null || !Guid.TryParse(companyIdString, out Guid companyId))
                 throw new UnauthorizedAccessException(_localizationHelper.InvalidCompanyId);
 
             return companyId;
+        }
+
+        private void ValidateForeignCurrencyFields(Currency currency, string? iban, string? swift)
+        {
+            if (currency != Currency.RSD)
+            {
+                if (string.IsNullOrWhiteSpace(iban))
+                    throw new InvalidOperationException(_localizationHelper.IBANRequiredForForeignCurrency);
+
+                if (string.IsNullOrWhiteSpace(swift))
+                    throw new InvalidOperationException(_localizationHelper.SWIFTRequiredForForeignCurrency);
+            }
         }
     }
 }

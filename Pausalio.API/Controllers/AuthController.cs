@@ -127,8 +127,9 @@ namespace Pausalio.API.Controllers
                 return BadRequest(new { success = false, message = ex.Message });
             }
         }
+
         [HttpPost("register-admin")]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> RegisterAdmin([FromBody] AddUserProfileDto dto)
         {
             var existingUser = await _userProfileService.GetByEmailAsync(dto.Email);
@@ -159,6 +160,7 @@ namespace Pausalio.API.Controllers
 
                 if (userBusiness == null)
                     return BadRequest(new { success = false, message = _localizationHelper.RegistrationFailed});
+                await _userProfileService.DeleteBusinessInvite(invite.Id);
                 await transaction.CommitAsync();
                 
                 var verificationToken = Guid.NewGuid().ToString();

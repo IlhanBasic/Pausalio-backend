@@ -61,6 +61,7 @@ builder.Services.AddScoped<IUserProfileRepository, UserProfileRepository>();
 builder.Services.AddScoped<IBusinessInviteRepository, BusinessInviteRepository>();
 
 // -------------------- Configuration --------------------
+builder.Services.Configure<ExchangeRateSettings>(builder.Configuration.GetSection("ExchangeRateSettings"));
 builder.Services.Configure<AzureBlobStorageSettings>(builder.Configuration.GetSection("AzureBlobStorageSettings"));
 builder.Services.Configure<UrlSettings>(builder.Configuration.GetSection("UrlSettings"));
 builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("Email"));
@@ -126,7 +127,7 @@ builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IEmailTemplateService, EmailTemplateService>();
 builder.Services.AddScoped<IBusinessInviteService, BusinessInviteService>();
 builder.Services.AddScoped<IUploadFileService, UploadFileService>();
-
+builder.Services.AddScoped<IExchangeRateService, ExchangeRateService>();
 // -------------------- FluentValidation --------------------
 builder.Services.AddValidatorsFromAssemblyContaining<AddBankAccountDtoValidator>();
 builder.Services.AddFluentValidationAutoValidation();
@@ -146,6 +147,8 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 });
 
 builder.Services.AddScoped<ILocalizationHelper, LocalizationHelper>();
+builder.Services.AddMemoryCache();
+builder.Services.AddHttpClient();
 
 // -------------------- Swagger --------------------
 builder.Services.AddEndpointsApiExplorer();

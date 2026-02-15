@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
+using Pausalio.Infrastructure.Persistence;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,7 @@ namespace Pausalio.Infrastructure.Repositories.Interfaces
 {
     public interface IUnitOfWork
     {
+        PausalioDbContext GetContext();
         IActivityCodeRepository ActivityCodeRepository { get; }
         IBankAccountRepository BankAccountRepository { get; }
         IBusinessProfileRepository BusinessProfileRepository { get; }

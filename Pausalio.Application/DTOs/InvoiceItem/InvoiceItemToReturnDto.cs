@@ -11,7 +11,7 @@ namespace Pausalio.Application.DTOs.InvoiceItem
     public class InvoiceItemToReturnDto
     {
         public Guid Id { get; set; }
-        public InvoiceToReturnDto Invoice { get; set; } = null!;
+        //public InvoiceToReturnDto Invoice { get; set; } = null!;
         public string Name { get; set; } = null!;
         public string? Description { get; set; }
         public ItemType ItemType { get; set; }

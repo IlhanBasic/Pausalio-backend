@@ -26,8 +26,7 @@ namespace Pausalio.Infrastructure.Persistence.Configurations
                 .HasColumnType("decimal(18,4)");
 
             builder.Property(x => x.Currency)
-                .HasConversion<string>()
-                .HasMaxLength(3)
+                .HasConversion<int>()
                 .IsRequired();
 
             builder.Property(x => x.ReferenceNumber)
@@ -44,8 +43,7 @@ namespace Pausalio.Infrastructure.Persistence.Configurations
                 .IsRequired();
 
             builder.Property(x => x.PaymentType)
-                .HasConversion<string>()
-                .HasMaxLength(50)
+                .HasConversion<int>()
                 .IsRequired();
 
             builder.HasIndex(x => x.BusinessProfileId);
