@@ -1153,4 +1153,8 @@
     <value>Plaćanje uspešno obrisano.</value>
     <comment>Poruka kada je plaćanje uspešno obrisano.</comment>
   </data>
+  <data name="LogoutSuccessful" xml:space="preserve">
+    <value>Uspešno ste se odjavili.</value>
+    <comment>Poruka o uspešnoj odjavil.</comment>
+  </data>
 </root>

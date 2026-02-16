@@ -120,15 +120,7 @@ namespace Pausalio.Application.Services.Implementations
             if (dto.Currency != Currency.RSD)
             {
                 var currentRate = await _exchangeRateService.GetExchangeRateAsync(dto.Currency);
-
-                if (currentRate.HasValue)
-                {
-                    invoice.ExchangeRate = currentRate.Value;
-                }
-                else
-                {
-                    invoice.ExchangeRate = dto.ExchangeRate > 0 ? dto.ExchangeRate : 1;
-                }
+                             
             }
             else
             {
@@ -192,7 +184,11 @@ namespace Pausalio.Application.Services.Implementations
             if (dto.Currency != Currency.RSD)
             {
                 var currentRate = await _exchangeRateService.GetExchangeRateAsync(dto.Currency);
-                exchangeRate = currentRate ?? (dto.ExchangeRate > 0 ? dto.ExchangeRate : 1);
+
+                if (currentRate == null)
+                    throw new InvalidOperationException("Exchange rate unavailable");
+
+                exchangeRate = currentRate.Value;
             }
 
             await using var transaction = await _unitOfWork.BeginTransactionAsync();

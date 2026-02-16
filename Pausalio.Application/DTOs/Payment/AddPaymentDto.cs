@@ -13,7 +13,6 @@ namespace Pausalio.Application.DTOs.Payment
         public Guid EntityId { get; set; }
         public decimal Amount { get; set; } = 0;
         public Currency Currency { get; set; } = Currency.RSD;
-        public decimal? ExchangeRate { get; set; }
         public string? ReferenceNumber { get; set; }
         public string? Description { get; set; }
     }

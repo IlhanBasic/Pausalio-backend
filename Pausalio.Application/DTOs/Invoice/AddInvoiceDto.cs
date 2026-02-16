@@ -13,7 +13,6 @@ namespace Pausalio.Application.DTOs.Invoice
         public Guid ClientId { get; set; }
         public DateTime? DueDate { get; set; }
         public Currency Currency { get; set; } = Currency.RSD;
-        public decimal ExchangeRate { get; set; } = 1;
         public string? Notes { get; set; }
         public ICollection<AddInvoiceItemDto> Items { get; set; } = new List<AddInvoiceItemDto>();
     }

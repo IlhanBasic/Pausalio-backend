@@ -2,6 +2,7 @@
 {
     public interface ILocalizationHelper
     {
+        string LogoutSuccessful { get;  }
         string PaymentCreatedSuccessfully { get; }
         string PaymentUpdatedSuccessfully { get; }
         string PaymentDeletedSuccessfully { get; }

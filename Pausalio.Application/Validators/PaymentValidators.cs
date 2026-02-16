@@ -26,10 +26,6 @@ namespace Pausalio.Application.Validators
                 .IsInEnum()
                 .WithMessage(_localizationHelper.PaymentUnknownCurrency);
 
-            RuleFor(x => x.ExchangeRate)
-                .GreaterThan(0)
-                .When(x => x.ExchangeRate.HasValue)
-                .WithMessage(_localizationHelper.PaymentExchangeRateGreaterThanZero);
 
             RuleFor(x => x.ReferenceNumber)
                 .MaximumLength(50)

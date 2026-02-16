@@ -16,10 +16,6 @@ namespace Pausalio.Application.Validators
                 .When(x => x.DueDate.HasValue)
                 .WithMessage(_localizationHelper.InvoiceDueDateNotInPast);
 
-            RuleFor(x => x.ExchangeRate)
-                .GreaterThan(0)
-                .WithMessage(_localizationHelper.InvoiceExchangeRateGreaterThanZero);
-
             RuleFor(x => x.Items)
                 .NotEmpty()
                 .WithMessage(_localizationHelper.InvoiceItemsRequired);
@@ -51,16 +47,11 @@ namespace Pausalio.Application.Validators
                 .GreaterThanOrEqualTo(DateTime.Today)
                 .When(x => x.DueDate.HasValue)
                 .WithMessage(_localizationHelper.InvoiceDueDateNotInPast);
-
-            RuleFor(x => x.ExchangeRate)
-                .GreaterThan(0)
-                .WithMessage(_localizationHelper.InvoiceExchangeRateGreaterThanZero);
-
+                       
             RuleFor(x => x.Items)
                 .NotEmpty()
                 .WithMessage(_localizationHelper.InvoiceItemsRequired);
 
-            // 🆕 Validacija svake stavke posebno
             RuleForEach(x => x.Items).ChildRules(item =>
             {
                 item.RuleFor(i => i.Name)

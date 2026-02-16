@@ -96,7 +96,7 @@ namespace Pausalio.Application.Services.Implementations
             if (dto.Currency != Currency.RSD)
             {
                 var currentRate = await _exchangeRateService.GetExchangeRateAsync(dto.Currency);
-                payment.ExchangeRate = currentRate ?? dto.ExchangeRate ?? 1;
+                payment.ExchangeRate = currentRate;
             }
             else
             {

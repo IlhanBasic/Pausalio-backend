@@ -427,5 +427,7 @@ namespace Pausalio.Shared.Localization
         public string PaymentUpdatedSuccessfully => _localizer["PaymentUpdatedSuccessfully"];
 
         public string PaymentDeletedSuccessfully => _localizer["PaymentDeletedSuccessfully"];
+
+        public string LogoutSuccessful => _localizer["LogoutSuccessful"];
     }
 }

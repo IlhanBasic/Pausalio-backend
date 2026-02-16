@@ -60,7 +60,7 @@ namespace Pausalio.API.Controllers
 
                 Response.Cookies.Append("access_token", token, cookieOptions);
 
-                return Ok(new { success = true, message = _localizationHelper.LoginSuccessfull, Token = token });
+                return Ok(new { success = true, message = _localizationHelper.LoginSuccessfull, token = token });
             }
             catch (Exception ex)
             {
@@ -327,6 +327,30 @@ namespace Pausalio.API.Controllers
             await _emailService.SendEmailAsync(userProfile.Email, _localizationHelper.ConfirmEmail, emailBody);
 
             return Ok(new { success = true, message = _localizationHelper.VerificationEmailResent });
+        }
+
+        [HttpPost("logout")]
+        [Authorize]
+        public IActionResult Logout()
+        {
+            try
+            {
+                var cookieOptions = new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Strict,
+                    Expires = DateTime.UtcNow.AddDays(-1) // Set expiry to past date to delete cookie
+                };
+
+                Response.Cookies.Append("access_token", "", cookieOptions);
+
+                return Ok(new { success = true, message = _localizationHelper.LogoutSuccessful });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
         }
     }
 }
