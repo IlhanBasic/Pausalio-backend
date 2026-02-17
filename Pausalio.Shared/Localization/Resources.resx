@@ -1157,4 +1157,52 @@
     <value>Uspešno ste se odjavili.</value>
     <comment>Poruka o uspešnoj odjavil.</comment>
   </data>
+  <data name="NewPasswordMustBeDifferent" xml:space="preserve">
+    <value>Nova lozinka mora biti drugačija od stare.</value>
+    <comment>Poruka da nova lozinka mora biti drugačija od stare.</comment>
+  </data>
+  <data name="InvalidOldPassword" xml:space="preserve">
+    <value>Stara lozinka se ne poklapa sa onom u bazi.</value>
+    <comment>Poruka da se stara lozinka ne poklapa sa onom u bazi.</comment>
+  </data>
+  <data name="PasswordChangedSuccessfully" xml:space="preserve">
+    <value>Lozinka uspešno promenjena.</value>
+    <comment>Poruka da je lozinka uspešno promenjena.</comment>
+  </data>
+  <data name="PasswordChangeFailed" xml:space="preserve">
+    <value>Promena lozinke nije bila uspešna.</value>
+    <comment>Poruka da promena lozinke nije bila uspešna.</comment>
+  </data>
+  <data name="PasswordRequired" xml:space="preserve">
+    <value>Lozinka je obavezna.</value>
+    <comment>Poruka da je lozinka obavezna.</comment>
+  </data>
+  <data name="PasswordReset" xml:space="preserve">
+    <value>Restartovanje lozinke.</value>
+    <comment>Poruka o restartovanju lozinke.</comment>
+  </data>
+  <data name="PasswordResetEmailSent" xml:space="preserve">
+    <value>Email za promenu lozinke uspešno poslat.</value>
+    <comment>Poruka da je email o promeni lozinke uspešno poslat.</comment>
+  </data>
+  <data name="PasswordResetTokenInvalidOrExpired" xml:space="preserve">
+    <value>Pin za restartovanje lozinke nije ispravan ili je istekao.</value>
+    <comment>Poruka da je pin za restartovanje lozinke neispravan ili je istekao.</comment>
+  </data>
+  <data name="PasswordResetFailed" xml:space="preserve">
+    <value>Restartovanje lozinke nije bilo uspešno.</value>
+    <comment>Poruka da restartovanje lozinke nije bilo uspešno.</comment>
+  </data>
+  <data name="AllFieldsRequired" xml:space="preserve">
+    <value>Sva polja su obavezna da se popune.</value>
+    <comment>Poruka da su sva polja obavezna da se popune.</comment>
+  </data>
+  <data name="PasswordResetText" xml:space="preserve">
+    <value>Zahtevali ste resetovanje lozinke. Koristite PIN ispod da biste resetovali lozinku. PIN važi 15 minuta.</value>
+    <comment>Poruka za restartovanje lozinke u email-u.</comment>
+  </data>
+  <data name="PasswordResetGreeting" xml:space="preserve">
+    <value>Zdravo {0},</value>
+    <comment>Pozdrav za restartovanje lozinke.</comment>
+  </data>
 </root>

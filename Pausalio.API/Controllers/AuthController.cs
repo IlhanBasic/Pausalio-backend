@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Pausalio.Application.DTOs.BusinessInvite;
 using Pausalio.Application.DTOs.UserProfile;
+using Pausalio.Application.Helpers;
 using Pausalio.Application.Services.Implementations;
 using Pausalio.Application.Services.Interfaces;
 using Pausalio.Shared.Configuration;
@@ -47,8 +48,9 @@ namespace Pausalio.API.Controllers
             try
             {
                 var user = await _userProfileService.LoginAsync(dto.Email, dto.Password);
-               
-                var token = _jwtService.GenerateToken(user!);
+                if (user == null)
+                    return Unauthorized(_localizationHelper.Unauthorized);
+                var token = _jwtService.GenerateToken(user);
 
                 var cookieOptions = new CookieOptions
                 {
@@ -340,7 +342,7 @@ namespace Pausalio.API.Controllers
                     HttpOnly = true,
                     Secure = true,
                     SameSite = SameSiteMode.Strict,
-                    Expires = DateTime.UtcNow.AddDays(-1) // Set expiry to past date to delete cookie
+                    Expires = DateTime.UtcNow.AddDays(-1) 
                 };
 
                 Response.Cookies.Append("access_token", "", cookieOptions);
@@ -350,6 +352,124 @@ namespace Pausalio.API.Controllers
             catch (Exception ex)
             {
                 return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost("change-password")]
+        [Authorize]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(dto.OldPassword) || string.IsNullOrWhiteSpace(dto.NewPassword))
+                {
+                    return BadRequest(new
+                    {
+                        success = false,
+                        message = _localizationHelper.PasswordRequired
+                    });
+                }
+
+                await _userProfileService.ChangePassword(dto);
+
+                return Ok(new
+                {
+                    success = true,
+                    message = _localizationHelper.PasswordChangedSuccessfully
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
+        }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.Email))
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = _localizationHelper.EmailRequired
+                });
+            }
+
+            var pin = PasswordResetPinHelper.GeneratePin();
+
+            await _userProfileService.SetPasswordResetTokenAsync(
+                dto.Email,
+                pin,
+                DateTime.UtcNow.AddMinutes(15)
+            );
+
+            var user = await _userProfileService.GetByEmailAsync(dto.Email);
+
+            if (user != null)
+            {
+                var emailBody = _emailTemplateService.GetPasswordResetPinTemplate(user.FirstName, pin);
+                await _emailService.SendEmailAsync(user.Email, _localizationHelper.PasswordReset, emailBody);
+            }
+
+            return Ok(new
+            {
+                success = true,
+                message = _localizationHelper.PasswordResetEmailSent
+            });
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.Email) ||
+                string.IsNullOrWhiteSpace(dto.Pin) ||
+                string.IsNullOrWhiteSpace(dto.NewPassword))
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = _localizationHelper.AllFieldsRequired
+                });
+            }
+
+            try
+            {
+                await _userProfileService.ResetPasswordAsync(dto);
+
+                return Ok(new
+                {
+                    success = true,
+                    message = _localizationHelper.PasswordChangedSuccessfully
+                });
+            }
+            catch (KeyNotFoundException)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = _localizationHelper.PasswordResetFailed
+                });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = _localizationHelper.PasswordResetFailed
+                });
             }
         }
     }

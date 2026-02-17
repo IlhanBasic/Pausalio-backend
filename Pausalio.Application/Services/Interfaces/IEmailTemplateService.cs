@@ -12,5 +12,7 @@ namespace Pausalio.Application.Services.Interfaces
         string GetVerificationSuccessPage(string loginLink);
         string GetVerificationErrorPage(string resendLink, string homeLink, string errorMessage);
         string GetInviteEmailTemplate(string token, string registerLink);
+        string GetPasswordResetPinTemplate(string firstName, string pin);
+        
     }
 }

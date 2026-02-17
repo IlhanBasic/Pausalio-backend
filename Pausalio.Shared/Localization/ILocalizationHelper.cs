@@ -2,6 +2,18 @@
 {
     public interface ILocalizationHelper
     {
+        string PasswordResetText { get;  }
+        string PasswordResetGreeting { get; }
+        string PasswordResetFailed { get; }
+        string AllFieldsRequired {  get; }
+        string PasswordResetTokenInvalidOrExpired { get; }
+        string PasswordReset { get; }
+        string PasswordResetEmailSent {  get; }
+        string NewPasswordMustBeDifferent {  get; }
+        string InvalidOldPassword { get; }
+        string PasswordChangedSuccessfully {  get; }
+        string PasswordChangeFailed { get; }
+        string PasswordRequired {  get; }
         string LogoutSuccessful { get;  }
         string PaymentCreatedSuccessfully { get; }
         string PaymentUpdatedSuccessfully { get; }

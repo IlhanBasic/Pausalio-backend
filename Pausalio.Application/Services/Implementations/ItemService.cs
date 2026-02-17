@@ -89,7 +89,7 @@ namespace Pausalio.Application.Services.Implementations
             if (item == null)
                 throw new KeyNotFoundException(_localizationHelper.ItemNotFound);
 
-            _unitOfWork.ItemRepository.Update(item);
+            _unitOfWork.ItemRepository.Remove(item);
             await _unitOfWork.SaveChangesAsync();
         }
 

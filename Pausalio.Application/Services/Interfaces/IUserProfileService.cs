@@ -26,5 +26,8 @@ namespace Pausalio.Application.Services.Interfaces
         Task<bool> IsUserInBusiness(Guid userId, Guid businessProfileId);
         Task DeleteBusinessInvite(Guid inviteId);
         Task<bool> IsUserOwnerInAnyBusiness(Guid userId);
+        Task ChangePassword(ChangePasswordDto changePasswordDto);
+        Task SetPasswordResetTokenAsync(string email, string token, DateTime expiration);
+        Task ResetPasswordAsync(ResetPasswordDto dto);
     }
 }

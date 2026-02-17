@@ -429,5 +429,29 @@ namespace Pausalio.Shared.Localization
         public string PaymentDeletedSuccessfully => _localizer["PaymentDeletedSuccessfully"];
 
         public string LogoutSuccessful => _localizer["LogoutSuccessful"];
+
+        public string NewPasswordMustBeDifferent => _localizer["NewPasswordMustBeDifferent"];
+
+        public string InvalidOldPassword => _localizer["InvalidOldPassword"];
+
+        public string PasswordChangedSuccessfully => _localizer["PasswordChangedSuccessfully"];
+
+        public string PasswordChangeFailed => _localizer["PasswordChangeFailed"];
+
+        public string PasswordRequired => _localizer["PasswordRequired"];
+
+        public string PasswordReset => _localizer["PasswordReset"];
+
+        public string PasswordResetEmailSent => _localizer["PasswordResetEmailSent"];
+
+        public string PasswordResetTokenInvalidOrExpired => _localizer["PasswordResetTokenInvalidOrExpired"];
+
+        public string PasswordResetFailed => _localizer["PasswordResetFailed"];
+
+        public string AllFieldsRequired => _localizer["AllFieldsRequired"];
+
+        public string PasswordResetText => _localizer["PasswordResetText"];
+
+        public string PasswordResetGreeting => _localizer["PasswordResetGreeting"];
     }
 }

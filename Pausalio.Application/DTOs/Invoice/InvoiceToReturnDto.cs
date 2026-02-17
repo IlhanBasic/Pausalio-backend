@@ -31,6 +31,6 @@ namespace Pausalio.Application.DTOs.Invoice
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
         public ICollection<InvoiceItemToReturnDto> Items { get; set; } = new List<InvoiceItemToReturnDto>();
-        public ICollection<PaymentToReturnDto> Payments { get; set; } = new List<PaymentToReturnDto>();
+        //public ICollection<PaymentToReturnDto> Payments { get; set; } = new List<PaymentToReturnDto>();
     }
 }

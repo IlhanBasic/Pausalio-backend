@@ -182,6 +182,17 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+// -------------------- CORS --------------------
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularApp", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
 
 // -------------------- Build Application --------------------
 var app = builder.Build();
@@ -191,6 +202,7 @@ app.UseSerilogRequestLogging();
 app.UseRequestLocalization();
 app.UseHttpsRedirection();
 
+app.UseCors("AllowAngularApp");
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<BusinessContextMiddleware>();

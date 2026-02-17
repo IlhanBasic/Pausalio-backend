@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BCrypt.Net;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Pausalio.Application.DTOs.BusinessInvite;
@@ -19,12 +20,14 @@ namespace Pausalio.Application.Services.Implementations
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILocalizationHelper _localizationHelper;
+        private readonly ICurrentUserService _currentUserService;
 
-        public UserProfileService(ILocalizationHelper localizationHelper, IMapper mapper, IUnitOfWork unitOfWork)
+        public UserProfileService(ILocalizationHelper localizationHelper, IMapper mapper, IUnitOfWork unitOfWork, ICurrentUserService currentUserService)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
             _localizationHelper = localizationHelper;
+            _currentUserService = currentUserService;
         }
 
         public async Task<UserProfileToReturnDto?> LoginAsync(string email, string password)
@@ -260,6 +263,71 @@ namespace Pausalio.Application.Services.Implementations
                 .FindFirstOrDefaultAsync(x => x.UserId == userId && x.Role == UserBusinessRole.Owner);
 
             return ownerRole != null;
+        }
+
+        public async Task ChangePassword(ChangePasswordDto dto)
+        {
+            var email = _currentUserService.GetEmail();
+            if (email == null)
+                throw new UnauthorizedAccessException(_localizationHelper.Unauthorized);
+
+            var user = await _unitOfWork.UserProfileRepository
+                .FindFirstOrDefaultAsync(x => x.Email == email);
+
+            if (user == null)
+                throw new KeyNotFoundException(_localizationHelper.UserNotFound);
+
+            if (!BCrypt.Net.BCrypt.Verify(dto.OldPassword, user.PasswordHash))
+                throw new InvalidOperationException(_localizationHelper.InvalidOldPassword);
+
+            if (BCrypt.Net.BCrypt.Verify(dto.NewPassword, user.PasswordHash))
+                throw new InvalidOperationException(_localizationHelper.NewPasswordMustBeDifferent);
+
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+
+            _unitOfWork.UserProfileRepository.Update(user);
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+        public async Task SetPasswordResetTokenAsync(string email, string token, DateTime expiration)
+        {
+            var user = await _unitOfWork.UserProfileRepository
+                .FindFirstOrDefaultAsync(x => x.Email == email);
+
+            if (user == null)
+                return;
+
+            user.PasswordResetToken = token;
+            user.PasswordResetTokenExpiration = expiration;
+
+            _unitOfWork.UserProfileRepository.Update(user);
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+        public async Task ResetPasswordAsync(ResetPasswordDto dto)
+        {
+            var user = await _unitOfWork.UserProfileRepository
+                .FindFirstOrDefaultAsync(x => x.Email == dto.Email);
+
+            if (user == null)
+                throw new KeyNotFoundException(_localizationHelper.UserNotFound);
+
+            if (string.IsNullOrEmpty(user.PasswordResetToken) || user.PasswordResetTokenExpiration == null
+                || user.PasswordResetTokenExpiration < DateTime.UtcNow)
+            {
+                throw new InvalidOperationException(_localizationHelper.PasswordResetTokenInvalidOrExpired);
+            }
+
+            if (user.PasswordResetToken != dto.Pin)
+                throw new InvalidOperationException(_localizationHelper.PasswordResetTokenInvalidOrExpired);
+
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+
+            user.PasswordResetToken = null;
+            user.PasswordResetTokenExpiration = null;
+
+            _unitOfWork.UserProfileRepository.Update(user);
+            await _unitOfWork.SaveChangesAsync();
         }
 
     }

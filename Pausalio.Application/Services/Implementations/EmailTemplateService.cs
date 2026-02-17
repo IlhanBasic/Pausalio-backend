@@ -98,5 +98,23 @@ namespace Pausalio.Application.Services.Implementations
 
             return template;
         }
+        public string GetPasswordResetPinTemplate(string firstName, string pin)
+        {
+            var assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var path = Path.Combine(assemblyFolder!, "Templates", "PasswordResetPinEmail.html");
+
+            if (!File.Exists(path))
+                throw new FileNotFoundException($"Password reset email template not found at path: {path}");
+
+            var template = File.ReadAllText(path);
+
+            template = template.Replace("{{PageTitle}}", _localizationHelper.PasswordReset)
+                               .Replace("{{Title}}", string.Format(_localizationHelper.PasswordResetGreeting, firstName))
+                               .Replace("{{Message}}", _localizationHelper.PasswordResetText)
+                               .Replace("{{Token}}", pin)
+                               .Replace("{{Footer}}", _localizationHelper.EmailVerifyFooter);
+
+            return template;
+        }
     }
 }
