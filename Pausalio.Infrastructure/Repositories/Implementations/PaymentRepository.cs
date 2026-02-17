@@ -22,9 +22,9 @@ namespace Pausalio.Infrastructure.Repositories.Implementations
         {
             return await _context.Payments
                 .Include(p => p.Invoice)
-                    .ThenInclude(i => i.Client)
+                    .ThenInclude(i => i!.Client)
                 .Include(p => p.Invoice)
-                    .ThenInclude(i => i.Items)
+                    .ThenInclude(i => i!.Items)
                 .Include(p => p.TaxObligation)
                 .Include(p => p.Expense)
                 .Where(predicate)
@@ -35,9 +35,9 @@ namespace Pausalio.Infrastructure.Repositories.Implementations
         {
             return await _context.Payments
                 .Include(p => p.Invoice)
-                    .ThenInclude(i => i.Client)
+                    .ThenInclude(i => i!.Client)
                 .Include(p => p.Invoice)
-                    .ThenInclude(i => i.Items)
+                    .ThenInclude(i => i!.Items)
                 .Include(p => p.TaxObligation)
                 .Include(p => p.Expense)
                 .FirstOrDefaultAsync(predicate);

@@ -1205,4 +1205,12 @@
     <value>Zdravo {0},</value>
     <comment>Pozdrav za restartovanje lozinke.</comment>
   </data>
+  <data name="UserUpdatedSuccessfully" xml:space="preserve">
+    <value>Korisnik uspešno izmenjen.</value>
+    <comment>Poruka da je korisnik uspešno izmenjen.</comment>
+  </data>
+  <data name="ReminderMarkedFailed" xml:space="preserve">
+    <value>Ne možete završiti ovaj podsetnik jer datum završetka nije prošao.</value>
+    <comment>Poruka o netačnom završetku podsetnika.</comment>
+  </data>
 </root>

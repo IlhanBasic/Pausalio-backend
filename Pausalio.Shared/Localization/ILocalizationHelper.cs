@@ -2,6 +2,8 @@
 {
     public interface ILocalizationHelper
     {
+        string ReminderMarkedFailed {  get; }
+        string UserUpdatedSuccessfully {  get; }
         string PasswordResetText { get;  }
         string PasswordResetGreeting { get; }
         string PasswordResetFailed { get; }

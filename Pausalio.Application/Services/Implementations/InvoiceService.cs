@@ -214,7 +214,7 @@ namespace Pausalio.Application.Services.Implementations
                 UpdatedAt = {7}
             WHERE Id = {8}",
                     dto.ClientId,
-                    dto.DueDate,
+                    dto.DueDate.HasValue ? (object)dto.DueDate.Value : DBNull.Value,
                     (int)dto.Currency,
                     (int)dto.InvoiceStatus,
                     (int)dto.PaymentStatus,

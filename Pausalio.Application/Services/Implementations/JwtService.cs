@@ -56,6 +56,8 @@ namespace Pausalio.Application.Services.Implementations
                     claims.Add(new Claim(ClaimTypes.Role, role));
                 }
             }
+            if (user.ProfilePicture != null)
+                claims.Add(new Claim("ProfilePicture", user.ProfilePicture));
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {

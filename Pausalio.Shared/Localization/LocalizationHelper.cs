@@ -453,5 +453,9 @@ namespace Pausalio.Shared.Localization
         public string PasswordResetText => _localizer["PasswordResetText"];
 
         public string PasswordResetGreeting => _localizer["PasswordResetGreeting"];
+
+        public string UserUpdatedSuccessfully => _localizer["UserUpdatedSuccessfully"];
+
+        public string ReminderMarkedFailed => _localizer["ReminderMarkedFailed"];
     }
 }

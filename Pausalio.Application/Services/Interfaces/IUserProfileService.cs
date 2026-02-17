@@ -29,5 +29,6 @@ namespace Pausalio.Application.Services.Interfaces
         Task ChangePassword(ChangePasswordDto changePasswordDto);
         Task SetPasswordResetTokenAsync(string email, string token, DateTime expiration);
         Task ResetPasswordAsync(ResetPasswordDto dto);
+        Task<UserProfileToReturnDto?> UpdateProfile(Guid id, UpdateUserProfileDto dto);
     }
 }

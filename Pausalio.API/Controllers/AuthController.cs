@@ -172,7 +172,7 @@ namespace Pausalio.API.Controllers
                     DateTime.UtcNow.AddHours(24)
                 );
 
-                var verificationLink = $"{_urlSettings.Value.BackendUrl}/api/auth/verify-email?token={verificationToken}&email={newUser.Email}";
+                var verificationLink = $"{_urlSettings.Value.FrontendUrl}/verify-email?token={verificationToken}&email={newUser.Email}";
                 var emailBody = _emailTemplateService.GetVerifyEmailTemplate(newUser.FirstName, verificationLink);
 
                 await _emailService.SendEmailAsync(newUser.Email, _localizationHelper.ConfirmEmail, emailBody);
@@ -230,7 +230,7 @@ namespace Pausalio.API.Controllers
 
                 await transaction.CommitAsync();
 
-                var verificationLink = $"{_urlSettings.Value.BackendUrl}/api/auth/verify-email?token={verificationToken}&email={newUser.Email}";
+                var verificationLink = $"{_urlSettings.Value.FrontendUrl}/verify-email?token={verificationToken}&email={newUser.Email}";
                 var emailBody = _emailTemplateService.GetVerifyEmailTemplate(newUser.FirstName, verificationLink);
                 await _emailService.SendEmailAsync(newUser.Email, _localizationHelper.ConfirmEmail, emailBody);
 
@@ -244,67 +244,22 @@ namespace Pausalio.API.Controllers
         }
 
         [HttpGet("verify-email")]
-        public async Task<ContentResult> VerifyEmail([FromQuery] string token, [FromQuery] string email)
+        public async Task<IActionResult> VerifyEmail([FromQuery] string token, [FromQuery] string email)
         {
-            if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(email))
-            {
-                var errorHtml = _emailTemplateService.GetVerificationErrorPage(
-                    $"{_urlSettings.Value.BackendUrl}/api/auth/resend-verification?email={email}",
-                    _urlSettings.Value.BackendUrl,
-                    _localizationHelper.InvalidRequest
-                );
-                return new ContentResult
-                {
-                    ContentType = "text/html",
-                    StatusCode = 400,
-                    Content = errorHtml
-                };
-            }
+            if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(email))
+                return BadRequest(new { success = false, message = _localizationHelper.InvalidRequest });
 
             var userProfile = await _userProfileService.GetByEmailAsync(email);
             if (userProfile == null)
-            {
-                var errorHtml = _emailTemplateService.GetVerificationErrorPage(
-                    $"{_urlSettings.Value.BackendUrl}/api/auth/resend-verification?email={email}",
-                    _urlSettings.Value.BackendUrl,
-                    _localizationHelper.UserNotFound
-                );
-                return new ContentResult
-                {
-                    ContentType = "text/html",
-                    StatusCode = 404,
-                    Content = errorHtml
-                };
-            }
+                return NotFound(new { success = false, message = _localizationHelper.UserNotFound });
 
             var isValid = await _userProfileService.VerifyEmailToken(email, token);
             if (!isValid)
-            {
-                var errorHtml = _emailTemplateService.GetVerificationErrorPage(
-                    $"{_urlSettings.Value.BackendUrl}/api/auth/resend-verification?email={email}",
-                    _urlSettings.Value.BackendUrl,
-                    _localizationHelper.InvalidOrExpiredToken
-                );
-                return new ContentResult
-                {
-                    ContentType = "text/html",
-                    StatusCode = 400,
-                    Content = errorHtml
-                };
-            }
+                return BadRequest(new { success = false, message = _localizationHelper.InvalidOrExpiredToken });
 
             await _userProfileService.MarkEmailAsVerified(userProfile.Id);
 
-            var successHtml = _emailTemplateService.GetVerificationSuccessPage(
-                $"{_urlSettings.Value.FrontendUrl}/api/auth/login"
-            );
-
-            return new ContentResult
-            {
-                ContentType = "text/html",
-                StatusCode = 200,
-                Content = successHtml
-            };
+            return Ok(new { success = true });
         }
 
         [HttpGet("resend-verification")]
@@ -324,7 +279,7 @@ namespace Pausalio.API.Controllers
                 DateTime.UtcNow.AddHours(24)
             );
 
-            var verificationLink = $"{_urlSettings.Value.BackendUrl}/api/auth/verify-email?token={verificationToken}&email={userProfile.Email}";
+            var verificationLink = $"{_urlSettings.Value.FrontendUrl}/verify-email?token={verificationToken}&email={userProfile.Email}";
             var emailBody = _emailTemplateService.GetVerifyEmailTemplate(userProfile.FirstName, verificationLink);
             await _emailService.SendEmailAsync(userProfile.Email, _localizationHelper.ConfirmEmail, emailBody);
 
@@ -332,7 +287,6 @@ namespace Pausalio.API.Controllers
         }
 
         [HttpPost("logout")]
-        [Authorize]
         public IActionResult Logout()
         {
             try

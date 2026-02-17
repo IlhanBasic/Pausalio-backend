@@ -330,5 +330,17 @@ namespace Pausalio.Application.Services.Implementations
             await _unitOfWork.SaveChangesAsync();
         }
 
+        public async Task<UserProfileToReturnDto?> UpdateProfile(Guid id, UpdateUserProfileDto dto)
+        {
+            var user = await _unitOfWork.UserProfileRepository.FindFirstOrDefaultAsync(x => x.Id == id);
+            if (user == null)
+                throw new Exception(_localizationHelper.UserNotFound);
+
+            _mapper.Map(dto, user);
+
+            await _unitOfWork.SaveChangesAsync();
+
+            return _mapper.Map<UserProfileToReturnDto>(user);
+        }
     }
 }

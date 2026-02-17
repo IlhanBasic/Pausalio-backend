@@ -66,7 +66,8 @@ builder.Services.Configure<AzureBlobStorageSettings>(builder.Configuration.GetSe
 builder.Services.Configure<UrlSettings>(builder.Configuration.GetSection("UrlSettings"));
 builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("Email"));
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
-var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
+var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>()
+    ?? throw new InvalidOperationException("JwtSettings nije konfigurisan.");
 var key = Encoding.UTF8.GetBytes(jwtSettings.Key);
 
 // -------------------- JWT Authentication --------------------

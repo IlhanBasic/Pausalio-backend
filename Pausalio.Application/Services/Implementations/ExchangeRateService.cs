@@ -127,7 +127,7 @@ namespace Pausalio.Application.Services.Implementations
         {
             var cacheKey = $"all_exchange_rates_{DateTime.UtcNow:yyyy-MM-dd}";
 
-            if (_cache.TryGetValue(cacheKey, out Dictionary<Currency, decimal> cached))
+            if (_cache.TryGetValue(cacheKey, out Dictionary<Currency, decimal>? cached) && cached != null)
             {
                 _logger.LogInformation("Using cached all rates");
                 return cached;

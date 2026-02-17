@@ -86,7 +86,8 @@ namespace Pausalio.Application.Services.Implementations
 
             if (reminder == null)
                 throw new KeyNotFoundException(_localizationHelper.ReminderNotFound);
-
+            if (reminder.DueDate > DateTime.UtcNow)
+                throw new Exception(_localizationHelper.ReminderMarkedFailed);
             reminder.IsCompleted = true;
             reminder.CompletedAt = DateTime.UtcNow;
 
