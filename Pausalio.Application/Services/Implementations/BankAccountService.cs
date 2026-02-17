@@ -67,18 +67,22 @@ namespace Pausalio.Application.Services.Implementations
         public async Task UpdateAsync(Guid id, UpdateBankAccountDto dto)
         {
             var companyId = GetCurrentCompanyId();
-
             var account = await _unitOfWork.BankAccountRepository
                 .FindFirstOrDefaultAsync(x => x.Id == id && x.BusinessProfileId == companyId);
-
             if (account == null)
                 throw new KeyNotFoundException(_localizationHelper.BankAccountNotFound);
 
-            ValidateForeignCurrencyFields(dto.Currency, dto.IBAN, dto.SWIFT);
+            if (account.Currency != dto.Currency)
+                throw new InvalidOperationException(_localizationHelper.CurrencyCannotBeChanged);
 
+            bool existingIsForeign = account.Currency != Currency.RSD;
+            bool newIsForeign = dto.Currency != Currency.RSD;
+            if (existingIsForeign != newIsForeign)
+                throw new InvalidOperationException(_localizationHelper.CurrencyTypeCannotBeChanged);
+
+            ValidateForeignCurrencyFields(dto.Currency, dto.IBAN, dto.SWIFT);
             _mapper.Map(dto, account);
             account.UpdatedAt = DateTime.UtcNow;
-
             _unitOfWork.BankAccountRepository.Update(account);
             await _unitOfWork.SaveChangesAsync();
         }

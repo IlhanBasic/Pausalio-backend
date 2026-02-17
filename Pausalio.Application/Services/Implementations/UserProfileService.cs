@@ -342,5 +342,28 @@ namespace Pausalio.Application.Services.Implementations
 
             return _mapper.Map<UserProfileToReturnDto>(user);
         }
+
+        public async Task<IEnumerable<UserProfileToReturnDto>> GetAllUsers()
+        {
+            var users = await _unitOfWork.UserProfileRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<UserProfileToReturnDto>>(users);
+        }
+
+        public async Task DeleteUser(Guid userId)
+        {
+            var currentUser = _currentUserService.GetUserId();
+            if (!Guid.TryParse(currentUser, out Guid currentUserId))
+                throw new Exception(_localizationHelper.InvalidUserId);
+            if (currentUserId == userId)
+                throw new Exception(_localizationHelper.CannotDeleteYourselfProfile);
+            var user = await _unitOfWork.UserProfileRepository.FindFirstOrDefaultAsync(x => x.Id == userId);
+            if (user == null)
+                throw new Exception(_localizationHelper.UserNotFound);
+            if (user.Role == UserRole.Admin)
+                throw new Exception(_localizationHelper.CannotDeleteAdmin);
+            _unitOfWork.UserProfileRepository.Remove(user);
+            await _unitOfWork.SaveChangesAsync();
+
+        }
     }
 }

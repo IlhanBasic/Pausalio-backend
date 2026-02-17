@@ -2,6 +2,12 @@
 {
     public interface ILocalizationHelper
     {
+        string CurrencyTypeCannotBeChanged { get; }
+        string CurrencyCannotBeChanged { get; }
+        string CannotDeleteAdmin {  get; }
+        string InvalidUserId { get; }
+        string CannotDeleteYourselfProfile {  get; }
+        string UserDeletedSuccessfully { get; }
         string ReminderMarkedFailed {  get; }
         string UserUpdatedSuccessfully {  get; }
         string PasswordResetText { get;  }

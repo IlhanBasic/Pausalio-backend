@@ -457,5 +457,16 @@ namespace Pausalio.Shared.Localization
         public string UserUpdatedSuccessfully => _localizer["UserUpdatedSuccessfully"];
 
         public string ReminderMarkedFailed => _localizer["ReminderMarkedFailed"];
+
+        public string UserDeletedSuccessfully => _localizer["UserDeletedSuccessfully"];
+
+        public string CannotDeleteYourselfProfile => _localizer["CannotDeleteYourselfProfile"];
+
+        public string InvalidUserId => _localizer["InvalidUserId"];
+
+        public string CannotDeleteAdmin => _localizer["CannotDeleteAdmin"];
+
+        public string CurrencyCannotBeChanged => _localizer["CurrencyCannotBeChanged"];
+        public string CurrencyTypeCannotBeChanged => _localizer["CurrencyTypeCannotBeChanged"];
     }
 }

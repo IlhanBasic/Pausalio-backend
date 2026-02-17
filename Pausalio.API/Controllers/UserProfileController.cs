@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Pausalio.Application.DTOs.UserProfile;
 using Pausalio.Application.Services.Interfaces;
+using Pausalio.Domain.Entities;
 using Pausalio.Shared.Enums;
 using Pausalio.Shared.Localization;
 
@@ -69,6 +70,29 @@ namespace Pausalio.API.Controllers
             }
 
             return Ok(new ProfileToReturnDto { UserProfile = user });
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var users = await _userProfileService.GetAllUsers();
+            return Ok(users);
+        }
+
+        [HttpDelete("{id:guid}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteUser(Guid id)
+        {
+            try
+            {
+                await _userProfileService.DeleteUser(id);
+                return Ok(new { success = true, message = _localizationHelper.UserDeletedSuccessfully});
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new {success = false, message = ex.Message});
+            }
         }
     }
 }

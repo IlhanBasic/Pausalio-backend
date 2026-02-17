@@ -1213,4 +1213,28 @@
     <value>Ne možete završiti ovaj podsetnik jer datum završetka nije prošao.</value>
     <comment>Poruka o netačnom završetku podsetnika.</comment>
   </data>
+  <data name="UserDeletedSuccessfully" xml:space="preserve">
+    <value>Korisnik je uspešno obrisan.</value>
+    <comment>Poruka o uspešnom brisanju korisnika.</comment>
+  </data>
+  <data name="CannotDeleteYourselfProfile" xml:space="preserve">
+    <value>Ne možete brisati sopstveni profil.</value>
+    <comment>Poruka da ne možete brisati svoj profil.</comment>
+  </data>
+  <data name="InvalidUserId" xml:space="preserve">
+    <value>Id korisnika nije validan.</value>
+    <comment>Poruka da Id korisnika nije validan.</comment>
+  </data>
+  <data name="CannotDeleteAdmin" xml:space="preserve">
+    <value>Ne možete obrisati admina.</value>
+    <comment>Poruka da ne možete obrisati admina.</comment>
+  </data>
+  <data name="CurrencyCannotBeChanged" xml:space="preserve">
+    <value>Valuta ne sme biti menjana.</value>
+    <comment>Poruka da valuta ne sme biti menjana.</comment>
+  </data>
+  <data name="CurrencyTypeCannotBeChanged" xml:space="preserve">
+    <value>Tip valute ne sme biti menjan.</value>
+    <comment>Poruka da tip valute ne sme biti menjan.</comment>
+  </data>
 </root>

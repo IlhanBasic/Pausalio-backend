@@ -40,7 +40,7 @@ namespace Pausalio.Application.Services.Implementations
                 throw new UnauthorizedAccessException(_localizationHelper.InvalidCompanyId);
 
             var clients = await _unitOfWork.ClientRepository
-                .FindAllAsync(x => x.BusinessProfileId == companyId);
+                .GetAllClientsWithEntities(x => x.BusinessProfileId == companyId);
 
             return _mapper.Map<IEnumerable<ClientToReturnDto>>(clients);
         }
@@ -53,7 +53,7 @@ namespace Pausalio.Application.Services.Implementations
                 throw new UnauthorizedAccessException(_localizationHelper.InvalidCompanyId);
 
             var clients = await _unitOfWork.ClientRepository
-                .FindAllAsync(x => x.BusinessProfileId == companyId && x.ClientType == clientType);
+                .GetAllClientsWithEntities(x => x.BusinessProfileId == companyId && x.ClientType == clientType);
 
             return _mapper.Map<IEnumerable<ClientToReturnDto>>(clients);
         }

@@ -30,5 +30,7 @@ namespace Pausalio.Application.Services.Interfaces
         Task SetPasswordResetTokenAsync(string email, string token, DateTime expiration);
         Task ResetPasswordAsync(ResetPasswordDto dto);
         Task<UserProfileToReturnDto?> UpdateProfile(Guid id, UpdateUserProfileDto dto);
+        Task<IEnumerable<UserProfileToReturnDto>> GetAllUsers();
+        Task DeleteUser(Guid userId);
     }
 }
