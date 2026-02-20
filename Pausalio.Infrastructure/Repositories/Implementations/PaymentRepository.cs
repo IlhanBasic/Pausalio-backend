@@ -27,6 +27,7 @@ namespace Pausalio.Infrastructure.Repositories.Implementations
                     .ThenInclude(i => i!.Items)
                 .Include(p => p.TaxObligation)
                 .Include(p => p.Expense)
+                .Include(p => p.BankAccount)
                 .Where(predicate)
                 .ToListAsync();
         }
@@ -40,6 +41,7 @@ namespace Pausalio.Infrastructure.Repositories.Implementations
                     .ThenInclude(i => i!.Items)
                 .Include(p => p.TaxObligation)
                 .Include(p => p.Expense)
+                .Include(p => p.BankAccount)
                 .FirstOrDefaultAsync(predicate);
         }
     }

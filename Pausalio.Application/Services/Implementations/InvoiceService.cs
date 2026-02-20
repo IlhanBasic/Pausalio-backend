@@ -120,7 +120,11 @@ namespace Pausalio.Application.Services.Implementations
             if (dto.Currency != Currency.RSD)
             {
                 var currentRate = await _exchangeRateService.GetExchangeRateAsync(dto.Currency);
-                             
+
+                if (currentRate == null)
+                    throw new InvalidOperationException("Kurs nije dostupan za odabranu valutu");
+
+                invoice.ExchangeRate = currentRate.Value;
             }
             else
             {
@@ -280,8 +284,8 @@ namespace Pausalio.Application.Services.Implementations
             if (invoice == null)
                 throw new KeyNotFoundException(_localizationHelper.InvoiceNotFound);
 
-            if (invoice.PaymentStatus == PaymentStatus.Paid)
-                throw new InvalidOperationException(_localizationHelper.CannotDeletePaidInvoice);
+            //if (invoice.PaymentStatus == PaymentStatus.Paid)
+            //    throw new InvalidOperationException(_localizationHelper.CannotDeletePaidInvoice);
 
             invoice.IsDeleted = true;
             invoice.DeletedAt = DateTime.UtcNow;
@@ -360,6 +364,48 @@ namespace Pausalio.Application.Services.Implementations
                 throw new UnauthorizedAccessException(_localizationHelper.InvalidCompanyId);
 
             return companyId;
+        }
+
+        public async Task ArchiveInvoice(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+
+            var invoiceExists = await _unitOfWork.InvoiceRepository
+                .FindFirstOrDefaultAsync(x => x.Id == id &&
+                                              x.BusinessProfileId == companyId &&
+                                              !x.IsDeleted);
+
+            if (invoiceExists == null)
+                throw new KeyNotFoundException(_localizationHelper.InvoiceNotFound);
+
+            if (invoiceExists.InvoiceStatus != InvoiceStatus.Finished)
+                throw new InvalidOperationException(_localizationHelper.CannotArchiveUnfinishedInvoice);
+
+            if (invoiceExists.PaymentStatus != PaymentStatus.Paid)
+                throw new InvalidOperationException(_localizationHelper.CannotModifyPaidInvoice);
+            invoiceExists.InvoiceStatus = InvoiceStatus.Archived;
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+        public async Task CancelInvoice(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+
+            var invoiceExists = await _unitOfWork.InvoiceRepository
+                .FindFirstOrDefaultAsync(x => x.Id == id &&
+                                              x.BusinessProfileId == companyId &&
+                                              !x.IsDeleted);
+
+            if (invoiceExists == null)
+                throw new KeyNotFoundException(_localizationHelper.InvoiceNotFound);
+
+            if (invoiceExists.InvoiceStatus == InvoiceStatus.Finished)
+                throw new InvalidOperationException(_localizationHelper.CannotCancelFinishedInvoice);
+
+            if (invoiceExists.PaymentStatus == PaymentStatus.Paid)
+                throw new InvalidOperationException(_localizationHelper.CannotModifyPaidInvoice);
+            invoiceExists.InvoiceStatus = InvoiceStatus.Cancelled;
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }

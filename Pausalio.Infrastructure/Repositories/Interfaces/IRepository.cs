@@ -14,5 +14,6 @@ namespace Pausalio.Infrastructure.Repositories.Interfaces
         void Remove(T entity);
         void RemoveRange(IEnumerable<T> entities);
         Task<int> CountAsync();
+        Task<T?> FindFirstOrDefaultWithoutTrackingAsync(Expression<Func<T, bool>> predicate);
     }
 }

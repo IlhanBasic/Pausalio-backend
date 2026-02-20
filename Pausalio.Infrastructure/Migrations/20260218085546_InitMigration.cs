@@ -496,11 +496,17 @@ namespace Pausalio.Infrastructure.Migrations
                     Description = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     PaymentDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "UTC_TIMESTAMP()")
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "UTC_TIMESTAMP()"),
+                    BankAccountId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Payments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Payments_BankAccounts_BankAccountId",
+                        column: x => x.BankAccountId,
+                        principalTable: "BankAccounts",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Payments_BusinessProfiles_BusinessProfileId",
                         column: x => x.BusinessProfileId,
@@ -1175,6 +1181,11 @@ namespace Pausalio.Infrastructure.Migrations
                 column: "BusinessProfileId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Payments_BankAccountId",
+                table: "Payments",
+                column: "BankAccountId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Payments_BusinessProfileId",
                 table: "Payments",
                 column: "BusinessProfileId");
@@ -1257,6 +1268,10 @@ namespace Pausalio.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
+                name: "FK_BankAccounts_BusinessProfiles_BusinessProfileId",
+                table: "BankAccounts");
+
+            migrationBuilder.DropForeignKey(
                 name: "FK_Clients_BusinessProfiles_BusinessProfileId",
                 table: "Clients");
 
@@ -1279,9 +1294,6 @@ namespace Pausalio.Infrastructure.Migrations
             migrationBuilder.DropForeignKey(
                 name: "FK_Expenses_Payments_PaymentId",
                 table: "Expenses");
-
-            migrationBuilder.DropTable(
-                name: "BankAccounts");
 
             migrationBuilder.DropTable(
                 name: "BusinessInvites");
@@ -1321,6 +1333,9 @@ namespace Pausalio.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Payments");
+
+            migrationBuilder.DropTable(
+                name: "BankAccounts");
 
             migrationBuilder.DropTable(
                 name: "Expenses");

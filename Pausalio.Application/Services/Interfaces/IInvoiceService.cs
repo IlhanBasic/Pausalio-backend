@@ -16,6 +16,8 @@ namespace Pausalio.Application.Services.Interfaces
         Task<InvoiceToReturnDto?> GetByIdAsync(Guid id);
         Task<InvoiceToReturnDto> CreateAsync(AddInvoiceDto dto);
         Task UpdateAsync(Guid id, UpdateInvoiceDto dto);
+        Task ArchiveInvoice(Guid id);
+        Task CancelInvoice(Guid id);
         Task DeleteAsync(Guid id);
         Task<InvoiceSummaryDto> GetSummaryAsync();
         Task<string> GenerateInvoiceNumberAsync();

@@ -1,4 +1,5 @@
-﻿using Pausalio.Application.DTOs.BusinessProfile;
+﻿using Pausalio.Application.DTOs.BankAccount;
+using Pausalio.Application.DTOs.BusinessProfile;
 using Pausalio.Application.DTOs.Expense;
 using Pausalio.Application.DTOs.Invoice;
 using Pausalio.Application.DTOs.TaxObligation;
@@ -26,5 +27,6 @@ namespace Pausalio.Application.DTOs.Payment
         public string? Description { get; set; }
         public DateTime PaymentDate { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public BankAccountToReturnDto? BankAccount { get; set; }
     }
 }

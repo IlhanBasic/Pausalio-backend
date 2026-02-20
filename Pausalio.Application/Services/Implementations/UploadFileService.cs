@@ -15,7 +15,6 @@ namespace Pausalio.Application.Services.Implementations
     public class UploadFileService : IUploadFileService
     {
         private readonly BlobContainerClient _containerClient;
-
         public UploadFileService(IOptions<AzureBlobStorageSettings> _azureBlobStorageSettings)
         {
             var connectionString = _azureBlobStorageSettings.Value.ConnectionString;

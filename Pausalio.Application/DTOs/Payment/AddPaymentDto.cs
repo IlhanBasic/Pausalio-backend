@@ -15,5 +15,6 @@ namespace Pausalio.Application.DTOs.Payment
         public Currency Currency { get; set; } = Currency.RSD;
         public string? ReferenceNumber { get; set; }
         public string? Description { get; set; }
+        public Guid? BankAccountId { get; set; }
     }
 }

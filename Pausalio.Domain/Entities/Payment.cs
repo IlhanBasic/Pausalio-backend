@@ -27,5 +27,7 @@ namespace Pausalio.Domain.Entities
         public string? Description { get; set; }
         public DateTime PaymentDate { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public Guid? BankAccountId { get; set; }
+        public BankAccount? BankAccount { get; set; }
     }
 }

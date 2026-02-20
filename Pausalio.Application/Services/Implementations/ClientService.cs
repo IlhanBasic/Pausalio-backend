@@ -102,41 +102,23 @@ namespace Pausalio.Application.Services.Implementations
             var client = _mapper.Map<Client>(dto);
             client.BusinessProfileId = companyId;
             client.CreatedAt = DateTime.UtcNow;
-
-            if (dto.ClientType == ClientType.Domestic)
-            {
-                var serbia = await _unitOfWork.CountryRepository
+            var serbia = await _unitOfWork.CountryRepository
                     .FindFirstOrDefaultAsync(x => x.Code == "RS" || x.Name == "Srbija");
-
-                if (serbia == null)
-                    throw new InvalidOperationException(_localizationHelper.CountrySerbiaNotFound);
-
+            if (serbia == null)
+                throw new InvalidOperationException(_localizationHelper.CountrySerbiaNotFound);
+            if (dto.ClientType == ClientType.Domestic || dto.ClientType == ClientType.Individual)
+            {
                 client.CountryId = serbia.Id;
             }
             else if (dto.ClientType == ClientType.Foreign)
             {
                 if (dto.CountryId == null)
                     throw new InvalidOperationException(_localizationHelper.ForeignClientMustHaveCountry);
-
+                if (client.CountryId == serbia.Id)
+                    throw new InvalidOperationException(_localizationHelper.ForeignClientCannotBeFromSerbia);
                 client.CountryId = dto.CountryId;
             }
-            else if (dto.ClientType == ClientType.Individual)
-            {
-                if (dto.CountryId == null || dto.CountryId == Guid.Empty)
-                {
-                    var serbia = await _unitOfWork.CountryRepository
-                        .FindFirstOrDefaultAsync(x => x.Code == "RS" || x.Name == "Srbija");
-
-                    if (serbia != null)
-                    {
-                        client.CountryId = serbia.Id;
-                    }
-                }
-                else
-                {
-                    client.CountryId = dto.CountryId;
-                }
-            }
+            
 
             await _unitOfWork.ClientRepository.AddAsync(client);
             await _unitOfWork.SaveChangesAsync();
@@ -183,21 +165,20 @@ namespace Pausalio.Application.Services.Implementations
             _mapper.Map(dto, client);
             client.UpdatedAt = DateTime.UtcNow;
 
-            if (dto.ClientType == ClientType.Domestic)
-            {
-                var serbia = await _unitOfWork.CountryRepository
+            var serbia = await _unitOfWork.CountryRepository
                     .FindFirstOrDefaultAsync(x => x.Code == "RS" || x.Name == "Srbija");
-
-                if (serbia == null)
-                    throw new InvalidOperationException(_localizationHelper.CountrySerbiaNotFound);
-
+            if (serbia == null)
+                throw new InvalidOperationException(_localizationHelper.CountrySerbiaNotFound);
+            if (dto.ClientType == ClientType.Domestic || dto.ClientType == ClientType.Individual)
+            {
                 client.CountryId = serbia.Id;
             }
             else if (dto.ClientType == ClientType.Foreign)
             {
                 if (dto.CountryId == null)
                     throw new InvalidOperationException(_localizationHelper.ForeignClientMustHaveCountry);
-
+                if (client.CountryId == serbia.Id)
+                    throw new InvalidOperationException(_localizationHelper.ForeignClientCannotBeFromSerbia);
                 client.CountryId = dto.CountryId;
             }
 

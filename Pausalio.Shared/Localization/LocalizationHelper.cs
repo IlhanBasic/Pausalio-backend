@@ -468,5 +468,14 @@ namespace Pausalio.Shared.Localization
 
         public string CurrencyCannotBeChanged => _localizer["CurrencyCannotBeChanged"];
         public string CurrencyTypeCannotBeChanged => _localizer["CurrencyTypeCannotBeChanged"];
+
+        public string InvoiceArchivedSuccessfully => _localizer["InvoiceArchivedSuccessfully"];
+
+        public string CannotArchiveUnfinishedInvoice => _localizer["CannotArchiveUnfinishedInvoice"];
+        public string CannotCancelFinishedInvoice => _localizer["CannotCancelFinishedInvoice"];
+
+        public string CannotModifyOtherProfile => _localizer["CannotModifyOtherProfile"];
+
+        public string ForeignClientCannotBeFromSerbia => _localizer["ForeignClientCannotBeFromSerbia"];
     }
 }

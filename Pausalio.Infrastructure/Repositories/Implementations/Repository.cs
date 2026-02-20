@@ -63,5 +63,10 @@ namespace Pausalio.Infrastructure.Repositories.Implementations
         {
             return await _context.Set<T>().CountAsync();
         }
+
+        public async Task<T?> FindFirstOrDefaultWithoutTrackingAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await _context.Set<T>().AsNoTracking().Where(predicate).FirstOrDefaultAsync();
+        }
     }
 }

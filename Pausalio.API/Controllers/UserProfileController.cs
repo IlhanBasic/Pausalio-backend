@@ -23,7 +23,7 @@ namespace Pausalio.API.Controllers
             _currentUserService = currentUserService;
         }
 
-        [HttpPut("id:{guid}")]
+        [HttpPut("{id:guid}")]
         [Authorize]
         public async Task<IActionResult> UpdateProfile(Guid id, [FromBody] UpdateUserProfileDto dto)
         {
@@ -46,6 +46,8 @@ namespace Pausalio.API.Controllers
                 return BadRequest(new { success = false, message = _localizationHelper.Unauthorized });
 
             var user = await _userProfileService.GetByEmailAsync(contextUser);
+            Console.WriteLine($"=== GET ME === ProfilePicture: {user?.ProfilePicture ?? "NULL"}");
+
             if (user == null)
                 return NotFound(new { success = false, message = _localizationHelper.UserNotFound });
 

@@ -87,6 +87,7 @@ namespace Pausalio.Application.Services.Implementations
                 PaymentType = dto.PaymentType,
                 Amount = dto.Amount,
                 Currency = dto.Currency,
+                BankAccountId = dto.BankAccountId,
                 ReferenceNumber = dto.ReferenceNumber ?? GenerateReferenceNumber(dto.PaymentType),
                 Description = dto.Description,
                 PaymentDate = DateTime.UtcNow,
@@ -197,19 +198,22 @@ namespace Pausalio.Application.Services.Implementations
             if (invoice.PaymentStatus == PaymentStatus.Paid)
                 throw new InvalidOperationException(_localizationHelper.InvoiceAlreadyPaid);
 
-            if (payment.AmountRSD > invoice.AmountToPay)
+            if (payment.Amount > invoice.AmountToPay)
                 throw new InvalidOperationException(_localizationHelper.PaymentExceedsRemainingAmount);
 
             payment.InvoiceId = invoiceId;
 
-            invoice.AmountToPay -= payment.AmountRSD;
+            invoice.AmountToPay -= payment.Amount;
 
             if (invoice.AmountToPay <= 0)
             {
+                // Placeno u potpunosti
                 invoice.PaymentStatus = PaymentStatus.Paid;
+                invoice.InvoiceStatus = InvoiceStatus.Finished;
             }
             else
             {
+                // Delimicno placeno
                 invoice.PaymentStatus = PaymentStatus.PartiallyPaid;
             }
 
@@ -228,7 +232,7 @@ namespace Pausalio.Application.Services.Implementations
             if (taxObligation.Status == TaxObligationStatus.Paid)
                 throw new InvalidOperationException(_localizationHelper.TaxObligationAlreadyPaid);
 
-            if (payment.AmountRSD != taxObligation.TotalAmount)
+            if (Math.Abs(payment.AmountRSD - taxObligation.TotalAmount) > 0.01m)
                 throw new InvalidOperationException(_localizationHelper.TaxObligationMustBePaidInFull);
 
             payment.TaxObligationId = taxObligationId;
@@ -252,7 +256,7 @@ namespace Pausalio.Application.Services.Implementations
             if (expense.Status == ExpenseStatus.Paid)
                 throw new InvalidOperationException(_localizationHelper.ExpenseAlreadyPaid);
 
-            if (payment.AmountRSD != expense.Amount)
+            if (Math.Abs(payment.AmountRSD - expense.Amount) > 0.01m)
                 throw new InvalidOperationException(_localizationHelper.ExpenseMustBePaidInFull);
 
             payment.ExpenseId = expenseId;
@@ -269,14 +273,17 @@ namespace Pausalio.Application.Services.Implementations
                 case PaymentType.InvoicePayment:
                     if (payment.InvoiceId.HasValue)
                     {
-                        var invoice = await _unitOfWork.InvoiceRepository.GetByIdAsync(payment.InvoiceId.Value);
+                        var invoice = await _unitOfWork.InvoiceRepository
+                            .GetByIdAsync(payment.InvoiceId.Value);
                         if (invoice != null)
                         {
-                            invoice.AmountToPay += payment.AmountRSD;
+                            invoice.AmountToPay += payment.Amount;
 
-                            if (invoice.AmountToPay >= invoice.TotalAmountRSD)
+                            if (invoice.AmountToPay >= invoice.TotalAmount)
                             {
                                 invoice.PaymentStatus = PaymentStatus.Unpaid;
+                                if (invoice.InvoiceStatus == InvoiceStatus.Finished)
+                                    invoice.InvoiceStatus = InvoiceStatus.Draft;
                             }
                             else
                             {
@@ -291,7 +298,8 @@ namespace Pausalio.Application.Services.Implementations
                 case PaymentType.TaxPayment:
                     if (payment.TaxObligationId.HasValue)
                     {
-                        var taxObligation = await _unitOfWork.TaxObligationRepository.GetByIdAsync(payment.TaxObligationId.Value);
+                        var taxObligation = await _unitOfWork.TaxObligationRepository
+                            .GetByIdAsync(payment.TaxObligationId.Value);
                         if (taxObligation != null)
                         {
                             taxObligation.Status = TaxObligationStatus.Pending;
@@ -304,7 +312,8 @@ namespace Pausalio.Application.Services.Implementations
                 case PaymentType.ExpensePayment:
                     if (payment.ExpenseId.HasValue)
                     {
-                        var expense = await _unitOfWork.ExpenseRepository.GetByIdAsync(payment.ExpenseId.Value);
+                        var expense = await _unitOfWork.ExpenseRepository
+                            .GetByIdAsync(payment.ExpenseId.Value);
                         if (expense != null)
                         {
                             expense.Status = ExpenseStatus.Pending;

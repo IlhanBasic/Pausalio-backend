@@ -2,6 +2,11 @@
 {
     public interface ILocalizationHelper
     {
+        string ForeignClientCannotBeFromSerbia { get; }
+        string CannotModifyOtherProfile { get; }
+        string CannotCancelFinishedInvoice {  get; }
+        string CannotArchiveUnfinishedInvoice {  get; }
+        string InvoiceArchivedSuccessfully {  get; }
         string CurrencyTypeCannotBeChanged { get; }
         string CurrencyCannotBeChanged { get; }
         string CannotDeleteAdmin {  get; }

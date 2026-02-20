@@ -68,6 +68,7 @@ namespace Pausalio.Application.Services.Implementations
                 if (businessInvite != null)
                 {
                     businessInvite.IsUsed = true;
+                    _unitOfWork.BusinessInviteRepository.Update(businessInvite);
                 }
             }
             await _unitOfWork.SaveChangesAsync();
@@ -122,11 +123,9 @@ namespace Pausalio.Application.Services.Implementations
                 var newUser = _mapper.Map<UserProfile>(dto.User);
                 newUser.PasswordHash = PasswordHelper.HashPassword(newUser.PasswordHash);
                 await _unitOfWork.UserProfileRepository.AddAsync(newUser);
-                await _unitOfWork.SaveChangesAsync();
 
                 var newBusiness = _mapper.Map<BusinessProfile>(dto.Business);
                 await _unitOfWork.BusinessProfileRepository.AddAsync(newBusiness);
-                await _unitOfWork.SaveChangesAsync();
 
                 var userBusiness = new UserBusinessProfile
                 {
@@ -168,7 +167,7 @@ namespace Pausalio.Application.Services.Implementations
 
         public async Task<UserProfileToReturnDto?> GetByEmailAsync(string email)
         {
-            var userProfile = await _unitOfWork.UserProfileRepository.FindFirstOrDefaultAsync(x => x.Email == email);
+            var userProfile = await _unitOfWork.UserProfileRepository.FindFirstOrDefaultWithoutTrackingAsync(x => x.Email == email);
             return _mapper.Map<UserProfileToReturnDto>(userProfile);
         }
 
@@ -224,25 +223,25 @@ namespace Pausalio.Application.Services.Implementations
 
         public async Task<BusinessProfileToReturnDto?> GetCompanyByPibOrMb(string pib, string mb)
         {
-            var company = await _unitOfWork.BusinessProfileRepository.FindFirstOrDefaultAsync(x =>(x.MB == mb) || (x.PIB == pib));
+            var company = await _unitOfWork.BusinessProfileRepository.FindFirstOrDefaultWithoutTrackingAsync(x =>(x.MB == mb) || (x.PIB == pib));
             return _mapper.Map<BusinessProfileToReturnDto>(company);
         }
 
         public async Task<BusinessInviteToReturnDto?> GetBusinessInvite(string email, string token)
         {
-            var businessInvite = await _unitOfWork.BusinessInviteRepository.FindFirstOrDefaultAsync(x => x.Email == email && x.Token == token);
+            var businessInvite = await _unitOfWork.BusinessInviteRepository.FindFirstOrDefaultWithoutTrackingAsync(x => x.Email == email && x.Token == token);
             return _mapper.Map<BusinessInviteToReturnDto>(businessInvite);
         }
 
         public async Task<BusinessProfileToReturnDto?> GetCompanyById(Guid id)
         {
-            var business = await _unitOfWork.BusinessProfileRepository.FindFirstOrDefaultAsync(x => x.Id == id);
+            var business = await _unitOfWork.BusinessProfileRepository.FindFirstOrDefaultWithoutTrackingAsync(x => x.Id == id);
             return _mapper.Map<BusinessProfileToReturnDto>(business);
         }
         public async Task<bool> IsUserInBusiness(Guid userId, Guid businessProfileId)
         {
             var userBusiness = await _unitOfWork.UserBusinessProfileRepository
-                .FindFirstOrDefaultAsync(x => x.UserId == userId && x.BusinessProfileId == businessProfileId);
+                .FindFirstOrDefaultWithoutTrackingAsync(x => x.UserId == userId && x.BusinessProfileId == businessProfileId);
 
             return userBusiness != null;
         }
@@ -260,7 +259,7 @@ namespace Pausalio.Application.Services.Implementations
         public async Task<bool> IsUserOwnerInAnyBusiness(Guid userId)
         {
             var ownerRole = await _unitOfWork.UserBusinessProfileRepository
-                .FindFirstOrDefaultAsync(x => x.UserId == userId && x.Role == UserBusinessRole.Owner);
+                .FindFirstOrDefaultWithoutTrackingAsync(x => x.UserId == userId && x.Role == UserBusinessRole.Owner);
 
             return ownerRole != null;
         }
@@ -332,12 +331,17 @@ namespace Pausalio.Application.Services.Implementations
 
         public async Task<UserProfileToReturnDto?> UpdateProfile(Guid id, UpdateUserProfileDto dto)
         {
+            var currentUser = _currentUserService.GetUserId();
+            if (!Guid.TryParse(currentUser, out Guid currentUserId))
+                throw new Exception(_localizationHelper.InvalidUserId);
+            if (currentUserId != id)
+                throw new Exception(_localizationHelper.CannotModifyOtherProfile);
             var user = await _unitOfWork.UserProfileRepository.FindFirstOrDefaultAsync(x => x.Id == id);
             if (user == null)
                 throw new Exception(_localizationHelper.UserNotFound);
 
             _mapper.Map(dto, user);
-
+            _unitOfWork.UserProfileRepository.Update(user!);
             await _unitOfWork.SaveChangesAsync();
 
             return _mapper.Map<UserProfileToReturnDto>(user);
@@ -365,5 +369,6 @@ namespace Pausalio.Application.Services.Implementations
             await _unitOfWork.SaveChangesAsync();
 
         }
+
     }
 }

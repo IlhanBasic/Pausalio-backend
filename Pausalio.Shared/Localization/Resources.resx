@@ -1237,4 +1237,24 @@
     <value>Tip valute ne sme biti menjan.</value>
     <comment>Poruka da tip valute ne sme biti menjan.</comment>
   </data>
+  <data name="InvoiceArchivedSuccessfully" xml:space="preserve">
+    <value>Faktura je uspešno arhivirana.</value>
+    <comment>Poruka da je faktura uspešno arhivirana.</comment>
+  </data>
+  <data name="CannotArchiveUnfinishedInvoice" xml:space="preserve">
+    <value>Ne možete arhivirati nezavršene fakture.</value>
+    <comment>Poruka da ne možete arhivirati nezavršene fakture.</comment>
+  </data>
+  <data name="CannotCancelFinishedInvoice" xml:space="preserve">
+    <value>Ne možete poništiti završene fakture.</value>
+    <comment>Poruka o neuspelom poništavanju.</comment>
+  </data>
+  <data name="CannotModifyOtherProfile" xml:space="preserve">
+    <value>Ne možete modifikovati tuđi profil.</value>
+    <comment>Poruka kada ne može da se edituje tuđi profil.</comment>
+  </data>
+  <data name="ForeignClientCannotBeFromSerbia" xml:space="preserve">
+    <value>Strani klijent ne može biti iz Srbije.</value>
+    <comment>Poruka da strani klijent ne može biti iz Srbije.</comment>
+  </data>
 </root>

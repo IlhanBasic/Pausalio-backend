@@ -4,7 +4,6 @@ using Microsoft.Extensions.Options;
 using Pausalio.Application.DTOs.BusinessInvite;
 using Pausalio.Application.DTOs.UserProfile;
 using Pausalio.Application.Helpers;
-using Pausalio.Application.Services.Implementations;
 using Pausalio.Application.Services.Interfaces;
 using Pausalio.Shared.Configuration;
 using Pausalio.Shared.Enums;
@@ -163,19 +162,19 @@ namespace Pausalio.API.Controllers
                 if (userBusiness == null)
                     return BadRequest(new { success = false, message = _localizationHelper.RegistrationFailed});
                 await _userProfileService.DeleteBusinessInvite(invite.Id);
-                await transaction.CommitAsync();
-                
                 var verificationToken = Guid.NewGuid().ToString();
                 await _userProfileService.SetEmailVerificationToken(
                     newUser.Id,
                     verificationToken,
                     DateTime.UtcNow.AddHours(24)
                 );
-
+                await transaction.CommitAsync();
+                
                 var verificationLink = $"{_urlSettings.Value.FrontendUrl}/verify-email?token={verificationToken}&email={newUser.Email}";
                 var emailBody = _emailTemplateService.GetVerifyEmailTemplate(newUser.FirstName, verificationLink);
 
                 await _emailService.SendEmailAsync(newUser.Email, _localizationHelper.ConfirmEmail, emailBody);
+
             }
             catch (Exception ex)
             {

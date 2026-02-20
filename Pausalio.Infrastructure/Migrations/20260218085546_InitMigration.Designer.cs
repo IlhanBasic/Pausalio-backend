@@ -12,7 +12,7 @@ using Pausalio.Infrastructure.Persistence;
 namespace Pausalio.Infrastructure.Migrations
 {
     [DbContext(typeof(PausalioDbContext))]
-    [Migration("20260215191901_InitMigration")]
+    [Migration("20260218085546_InitMigration")]
     partial class InitMigration
     {
         /// <inheritdoc />
@@ -3195,6 +3195,9 @@ namespace Pausalio.Infrastructure.Migrations
                     b.Property<decimal>("AmountRSD")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<Guid?>("BankAccountId")
+                        .HasColumnType("char(36)");
+
                     b.Property<Guid>("BusinessProfileId")
                         .HasColumnType("char(36)");
 
@@ -3233,6 +3236,8 @@ namespace Pausalio.Infrastructure.Migrations
                         .HasColumnType("char(36)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BankAccountId");
 
                     b.HasIndex("BusinessProfileId");
 
@@ -3614,6 +3619,10 @@ namespace Pausalio.Infrastructure.Migrations
 
             modelBuilder.Entity("Pausalio.Domain.Entities.Payment", b =>
                 {
+                    b.HasOne("Pausalio.Domain.Entities.BankAccount", "BankAccount")
+                        .WithMany()
+                        .HasForeignKey("BankAccountId");
+
                     b.HasOne("Pausalio.Domain.Entities.BusinessProfile", "BusinessProfile")
                         .WithMany("Payments")
                         .HasForeignKey("BusinessProfileId")
@@ -3629,6 +3638,8 @@ namespace Pausalio.Infrastructure.Migrations
                         .WithMany("Payments")
                         .HasForeignKey("InvoiceId")
                         .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("BankAccount");
 
                     b.Navigation("BusinessProfile");
 

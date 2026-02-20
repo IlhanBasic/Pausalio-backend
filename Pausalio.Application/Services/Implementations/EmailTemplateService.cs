@@ -33,49 +33,6 @@ namespace Pausalio.Application.Services.Implementations
 
             return template;
         }
-
-        public string GetVerificationSuccessPage(string loginLink)
-        {
-            var assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            var path = Path.Combine(assemblyFolder!, "Templates", "VerificationSuccess.html");
-
-            if (!File.Exists(path))
-                throw new FileNotFoundException($"Verification success template not found at path: {path}");
-
-            var template = File.ReadAllText(path);
-
-            template = template.Replace("{{PageTitle}}", _localizationHelper.VerificationSuccessTitle)
-                               .Replace("{{Title}}", _localizationHelper.VerificationSuccessHeading)
-                               .Replace("{{Message}}", _localizationHelper.VerificationSuccessMessage)
-                               .Replace("{{ButtonText}}", _localizationHelper.GoToLogin)
-                               .Replace("{{LoginLink}}", loginLink)
-                               .Replace("{{Footer}}", _localizationHelper.EmailVerifyFooter);
-
-            return template;
-        }
-
-        public string GetVerificationErrorPage(string resendLink, string homeLink, string errorMessage)
-        {
-            var assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            var path = Path.Combine(assemblyFolder!, "Templates", "VerificationError.html");
-
-            if (!File.Exists(path))
-                throw new FileNotFoundException($"Verification error template not found at path: {path}");
-
-            var template = File.ReadAllText(path);
-
-            template = template.Replace("{{PageTitle}}", _localizationHelper.VerificationErrorTitle)
-                               .Replace("{{Title}}", _localizationHelper.VerificationErrorHeading)
-                               .Replace("{{Message}}", errorMessage)
-                               .Replace("{{ResendButtonText}}", _localizationHelper.ResendVerificationEmail)
-                               .Replace("{{HomeButtonText}}", _localizationHelper.GoToHome)
-                               .Replace("{{ResendLink}}", resendLink)
-                               .Replace("{{HomeLink}}", homeLink)
-                               .Replace("{{Footer}}", _localizationHelper.EmailVerifyFooter);
-
-            return template;
-        }
-
         public string GetInviteEmailTemplate(string token, string registerLink)
         {
             var assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -85,8 +42,6 @@ namespace Pausalio.Application.Services.Implementations
                 throw new FileNotFoundException($"Verification success template not found at path: {path}");
 
             var template = File.ReadAllText(path);
-
-
 
             template = template.Replace("{{PageTitle}}", _localizationHelper.InviteTokenPageTitle)
                                .Replace("{{Title}}", _localizationHelper.InviteTokenTitle)

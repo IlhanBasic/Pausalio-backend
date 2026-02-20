@@ -3,7 +3,6 @@ using Pausalio.Application.Services.Interfaces;
 using Pausalio.Shared.Configuration;
 using System.Net;
 using System.Net.Mail;
-using System.Threading.Tasks;
 
 namespace Pausalio.Application.Services.Implementations
 {

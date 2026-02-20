@@ -226,5 +226,35 @@ namespace Pausalio.API.Controllers
                 return BadRequest(new { success = false, message = ex.Message });
             }
         }
+
+        [HttpPatch("archive/{id:guid}")]
+        [Authorize(Roles="Owner, Assistant")]
+        public async Task<IActionResult> ArchiveInvoice(Guid id)
+        {
+            try
+            {
+                await _invoiceService.ArchiveInvoice(id);
+                return Ok(new {success = true, message = _localizationHelper.InvoiceArchivedSuccessfully});
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(new {success = false, message = ex.Message});
+            }
+        }
+
+        [HttpPatch("cancel/{id:guid}")]
+        [Authorize(Roles = "Owner, Assistant")]
+        public async Task<IActionResult> CancelInvoice(Guid id)
+        {
+            try
+            {
+                await _invoiceService.CancelInvoice(id);
+                return Ok(new { success = true, message = _localizationHelper.InvoiceArchivedSuccessfully });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
     }
 }

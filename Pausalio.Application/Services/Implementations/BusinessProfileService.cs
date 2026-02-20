@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Pausalio.Application.DTOs.BusinessProfile;
 using Pausalio.Application.Services.Interfaces;
+using Pausalio.Domain.Entities;
 using Pausalio.Infrastructure.Repositories.Interfaces;
 using Pausalio.Shared.Localization;
 using System;
@@ -16,15 +17,17 @@ namespace Pausalio.Application.Services.Implementations
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ILocalizationHelper _localizationHelper;
-
+        private readonly ICurrentUserService _currentUserService;
         public BusinessProfileService(
             IUnitOfWork unitOfWork,
             IMapper mapper,
-            ILocalizationHelper localizationHelper)
+            ILocalizationHelper localizationHelper,
+            ICurrentUserService currentUserService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _localizationHelper = localizationHelper;
+            _currentUserService = currentUserService;
         }
 
         public async Task<BusinessProfileToReturnDto?> GetByIdAsync(Guid id)
@@ -76,9 +79,9 @@ namespace Pausalio.Application.Services.Implementations
                     throw new InvalidOperationException(_localizationHelper.CompanyWithPIBOrMBAlreadyExists);
             }
 
-            _mapper.Map(dto, business);
+                     
             business.UpdatedAt = DateTime.UtcNow;
-
+            _mapper.Map(dto,business);
             _unitOfWork.BusinessProfileRepository.Update(business);
             await _unitOfWork.SaveChangesAsync();
         }
