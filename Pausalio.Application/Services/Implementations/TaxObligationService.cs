@@ -27,12 +27,19 @@ namespace Pausalio.Application.Services.Implementations
             _currentUserService = currentUserService;
         }
 
-        public async Task<IEnumerable<TaxObligationToReturnDto>> GetAllAsync()
+        private Guid GetCompanyIdOrThrow()
         {
             var companyIdString = _currentUserService.GetCompany();
 
             if (companyIdString == null || !Guid.TryParse(companyIdString, out Guid companyId))
                 throw new UnauthorizedAccessException(_localizationHelper.InvalidCompanyId);
+
+            return companyId;
+        }
+
+        public async Task<IEnumerable<TaxObligationToReturnDto>> GetAllAsync()
+        {
+            var companyId = GetCompanyIdOrThrow();
 
             var obligations = await _unitOfWork.TaxObligationRepository
                 .FindAllAsync(x => x.BusinessProfileId == companyId);
@@ -42,10 +49,7 @@ namespace Pausalio.Application.Services.Implementations
 
         public async Task<IEnumerable<TaxObligationToReturnDto>> GetByYearAsync(int year)
         {
-            var companyIdString = _currentUserService.GetCompany();
-
-            if (companyIdString == null || !Guid.TryParse(companyIdString, out Guid companyId))
-                throw new UnauthorizedAccessException(_localizationHelper.InvalidCompanyId);
+            var companyId = GetCompanyIdOrThrow();
 
             var obligations = await _unitOfWork.TaxObligationRepository
                 .FindAllAsync(x => x.BusinessProfileId == companyId && x.Year == year);
@@ -53,30 +57,21 @@ namespace Pausalio.Application.Services.Implementations
             return _mapper.Map<IEnumerable<TaxObligationToReturnDto>>(obligations);
         }
 
-        public async Task<TaxObligationToReturnDto?> GetByYearAndMonthAsync(int year, int month)
+        public async Task<IEnumerable<TaxObligationToReturnDto>> GetByYearAndMonthAsync(int year, int month)
         {
-            var companyIdString = _currentUserService.GetCompany();
+            var companyId = GetCompanyIdOrThrow();
 
-            if (companyIdString == null || !Guid.TryParse(companyIdString, out Guid companyId))
-                throw new UnauthorizedAccessException(_localizationHelper.InvalidCompanyId);
+            var obligations = await _unitOfWork.TaxObligationRepository
+                .FindAllAsync(x => x.BusinessProfileId == companyId &&
+                                   x.Year == year &&
+                                   x.Month == month);
 
-            var obligation = await _unitOfWork.TaxObligationRepository
-                .FindFirstOrDefaultAsync(x => x.BusinessProfileId == companyId &&
-                                              x.Year == year &&
-                                              x.Month == month);
-
-            if (obligation == null)
-                return null;
-
-            return _mapper.Map<TaxObligationToReturnDto>(obligation);
+            return _mapper.Map<IEnumerable<TaxObligationToReturnDto>>(obligations);
         }
 
         public async Task<IEnumerable<TaxObligationToReturnDto>> GetByStatusAsync(TaxObligationStatus status)
         {
-            var companyIdString = _currentUserService.GetCompany();
-
-            if (companyIdString == null || !Guid.TryParse(companyIdString, out Guid companyId))
-                throw new UnauthorizedAccessException(_localizationHelper.InvalidCompanyId);
+            var companyId = GetCompanyIdOrThrow();
 
             var obligations = await _unitOfWork.TaxObligationRepository
                 .FindAllAsync(x => x.BusinessProfileId == companyId && x.Status == status);
@@ -86,10 +81,7 @@ namespace Pausalio.Application.Services.Implementations
 
         public async Task<TaxObligationToReturnDto?> GetByIdAsync(Guid id)
         {
-            var companyIdString = _currentUserService.GetCompany();
-
-            if (companyIdString == null || !Guid.TryParse(companyIdString, out Guid companyId))
-                throw new UnauthorizedAccessException(_localizationHelper.InvalidCompanyId);
+            var companyId = GetCompanyIdOrThrow();
 
             var obligation = await _unitOfWork.TaxObligationRepository
                 .FindFirstOrDefaultAsync(x => x.Id == id && x.BusinessProfileId == companyId);
@@ -102,13 +94,10 @@ namespace Pausalio.Application.Services.Implementations
 
         public async Task<IEnumerable<TaxObligationToReturnDto>> GenerateAnnualObligationsAsync(GenerateTaxObligationsDto dto)
         {
-            var companyIdString = _currentUserService.GetCompany();
-
-            if (companyIdString == null || !Guid.TryParse(companyIdString, out Guid companyId))
-                throw new UnauthorizedAccessException(_localizationHelper.InvalidCompanyId);
-
-            if (dto.Year < 2000 || dto.Year > 2100)
-                throw new InvalidOperationException(_localizationHelper.InvalidYear);
+            var companyId = GetCompanyIdOrThrow();
+            int currentYear = DateTime.UtcNow.Year;
+            if (dto.Year < currentYear || dto.Year > currentYear)
+                dto.Year = currentYear;
 
             if (dto.MonthlyAmount <= 0)
                 throw new InvalidOperationException(_localizationHelper.AmountMustBePositive);
@@ -117,18 +106,19 @@ namespace Pausalio.Application.Services.Implementations
                 throw new InvalidOperationException(_localizationHelper.InvalidDueDay);
 
             var existingObligations = await _unitOfWork.TaxObligationRepository
-                .FindAllAsync(x => x.BusinessProfileId == companyId && x.Year == dto.Year);
+                .FindAllAsync(x => x.BusinessProfileId == companyId &&
+                                   x.Year == dto.Year &&
+                                   x.Type == dto.Type);
 
             if (existingObligations.Any())
-                throw new InvalidOperationException(_localizationHelper.ObligationsAlreadyExistForYear);
+                throw new InvalidOperationException(_localizationHelper.ObligationsAlreadyExistForYearAndType);
 
             var generatedObligations = new List<TaxObligation>();
 
             for (int month = 1; month <= 12; month++)
             {
                 var daysInMonth = DateTime.DaysInMonth(dto.Year, month);
-                var dueDay = Math.Min(dto.DueDayOfMonth, daysInMonth); // Ako je 31. a mesec ima 30 dana
-
+                var dueDay = Math.Min(dto.DueDayOfMonth, daysInMonth);
                 var dueDate = new DateTime(dto.Year, month, dueDay);
 
                 var obligation = new TaxObligation
@@ -149,9 +139,7 @@ namespace Pausalio.Application.Services.Implementations
             }
 
             foreach (var obligation in generatedObligations)
-            {
                 await _unitOfWork.TaxObligationRepository.AddAsync(obligation);
-            }
 
             await _unitOfWork.SaveChangesAsync();
 
@@ -160,23 +148,22 @@ namespace Pausalio.Application.Services.Implementations
 
         public async Task<TaxObligationToReturnDto> CreateAsync(AddTaxObligationDto dto)
         {
-            var companyIdString = _currentUserService.GetCompany();
-
-            if (companyIdString == null || !Guid.TryParse(companyIdString, out Guid companyId))
-                throw new UnauthorizedAccessException(_localizationHelper.InvalidCompanyId);
+            var companyId = GetCompanyIdOrThrow();
 
             if (dto.TotalAmount <= 0)
                 throw new InvalidOperationException(_localizationHelper.AmountMustBePositive);
 
-            var year = dto.DueDate.Year;
+            var year = DateTime.UtcNow.Year;
             var month = dto.DueDate.Month;
+
             var existing = await _unitOfWork.TaxObligationRepository
                 .FindFirstOrDefaultAsync(x => x.BusinessProfileId == companyId &&
                                               x.Year == year &&
-                                              x.Month == month);
+                                              x.Month == month &&
+                                              x.Type == dto.Type);
 
             if (existing != null)
-                throw new InvalidOperationException(_localizationHelper.ObligationAlreadyExistsForMonth);
+                throw new InvalidOperationException(_localizationHelper.ObligationAlreadyExistsForMonthAndType);
 
             var obligation = new TaxObligation
             {
@@ -199,10 +186,7 @@ namespace Pausalio.Application.Services.Implementations
 
         public async Task UpdateAsync(Guid id, UpdateTaxObligationDto dto)
         {
-            var companyIdString = _currentUserService.GetCompany();
-
-            if (companyIdString == null || !Guid.TryParse(companyIdString, out Guid companyId))
-                throw new UnauthorizedAccessException(_localizationHelper.InvalidCompanyId);
+            var companyId = GetCompanyIdOrThrow();
 
             var obligation = await _unitOfWork.TaxObligationRepository
                 .FindFirstOrDefaultAsync(x => x.Id == id && x.BusinessProfileId == companyId);
@@ -216,11 +200,23 @@ namespace Pausalio.Application.Services.Implementations
             if (dto.TotalAmount <= 0)
                 throw new InvalidOperationException(_localizationHelper.AmountMustBePositive);
 
-            _mapper.Map(dto, obligation);
-            obligation.UpdatedAt = DateTime.UtcNow;
+            var newYear = dto.DueDate.Year;
+            var newMonth = dto.DueDate.Month;
 
-            obligation.Year = dto.DueDate.Year;
-            obligation.Month = dto.DueDate.Month;
+            var duplicate = await _unitOfWork.TaxObligationRepository
+                .FindFirstOrDefaultAsync(x => x.BusinessProfileId == companyId &&
+                                              x.Year == newYear &&
+                                              x.Month == newMonth &&
+                                              x.Type == dto.Type &&
+                                              x.Id != id);
+
+            if (duplicate != null)
+                throw new InvalidOperationException(_localizationHelper.ObligationAlreadyExistsForMonthAndType);
+
+            _mapper.Map(dto, obligation);
+            obligation.Year = newYear;
+            obligation.Month = newMonth;
+            obligation.UpdatedAt = DateTime.UtcNow;
 
             _unitOfWork.TaxObligationRepository.Update(obligation);
             await _unitOfWork.SaveChangesAsync();
@@ -228,10 +224,7 @@ namespace Pausalio.Application.Services.Implementations
 
         public async Task DeleteAsync(Guid id)
         {
-            var companyIdString = _currentUserService.GetCompany();
-
-            if (companyIdString == null || !Guid.TryParse(companyIdString, out Guid companyId))
-                throw new UnauthorizedAccessException(_localizationHelper.InvalidCompanyId);
+            var companyId = GetCompanyIdOrThrow();
 
             var obligation = await _unitOfWork.TaxObligationRepository
                 .FindFirstOrDefaultAsync(x => x.Id == id && x.BusinessProfileId == companyId);
@@ -248,16 +241,22 @@ namespace Pausalio.Application.Services.Implementations
 
         public async Task MarkAsPaidAsync(Guid id)
         {
-            var companyIdString = _currentUserService.GetCompany();
-
-            if (companyIdString == null || !Guid.TryParse(companyIdString, out Guid companyId))
-                throw new UnauthorizedAccessException(_localizationHelper.InvalidCompanyId);
+            var companyId = GetCompanyIdOrThrow();
 
             var obligation = await _unitOfWork.TaxObligationRepository
                 .FindFirstOrDefaultAsync(x => x.Id == id && x.BusinessProfileId == companyId);
 
             if (obligation == null)
                 throw new KeyNotFoundException(_localizationHelper.TaxObligationNotFound);
+
+            if (obligation.Status == TaxObligationStatus.Paid)
+                throw new InvalidOperationException(_localizationHelper.ObligationAlreadyPaid);
+
+            var obligationPeriod = new DateTime(obligation.Year, obligation.Month, 1);
+            var currentPeriod = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1);
+
+            if (obligationPeriod > currentPeriod)
+                throw new InvalidOperationException(_localizationHelper.CannotMarkFutureObligationAsPaid);
 
             obligation.Status = TaxObligationStatus.Paid;
             obligation.PaidDate = DateTime.UtcNow;
@@ -269,13 +268,11 @@ namespace Pausalio.Application.Services.Implementations
 
         public async Task<TaxObligationSummaryDto> GetSummaryAsync(int? year)
         {
-            var companyIdString = _currentUserService.GetCompany();
-
-            if (companyIdString == null || !Guid.TryParse(companyIdString, out Guid companyId))
-                throw new UnauthorizedAccessException(_localizationHelper.InvalidCompanyId);
+            var companyId = GetCompanyIdOrThrow();
 
             var obligations = await _unitOfWork.TaxObligationRepository
-                .FindAllAsync(x => x.BusinessProfileId == companyId && (!year.HasValue || x.Year == year.Value));
+                .FindAllAsync(x => x.BusinessProfileId == companyId &&
+                                   (!year.HasValue || x.Year == year.Value));
 
             var now = DateTime.UtcNow;
 

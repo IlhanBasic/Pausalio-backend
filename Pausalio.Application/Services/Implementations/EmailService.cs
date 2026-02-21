@@ -17,18 +17,41 @@ namespace Pausalio.Application.Services.Implementations
 
         public async Task SendEmailAsync(string to, string subject, string body)
         {
-            using var client = new SmtpClient(_smtpSettings.SmtpHost, _smtpSettings.SmtpPort)
+            using var client = CreateSmtpClient();
+            var mailMessage = new MailMessage(_smtpSettings.From, to, subject, body)
             {
-                Credentials = new NetworkCredential(_smtpSettings.SmtpUser, _smtpSettings.SmtpPass),
-                EnableSsl = true
+                IsBodyHtml = true
             };
+            await client.SendMailAsync(mailMessage);
+        }
 
+        public async Task SendEmailWithAttachmentAsync(
+            string to,
+            string subject,
+            string body,
+            byte[] attachmentBytes,
+            string attachmentFileName)
+        {
+            using var client = CreateSmtpClient();
             var mailMessage = new MailMessage(_smtpSettings.From, to, subject, body)
             {
                 IsBodyHtml = true
             };
 
+            var stream = new MemoryStream(attachmentBytes);
+            var attachment = new Attachment(stream, attachmentFileName, "application/pdf");
+            mailMessage.Attachments.Add(attachment);
+
             await client.SendMailAsync(mailMessage);
+        }
+
+        private SmtpClient CreateSmtpClient()
+        {
+            return new SmtpClient(_smtpSettings.SmtpHost, _smtpSettings.SmtpPort)
+            {
+                Credentials = new NetworkCredential(_smtpSettings.SmtpUser, _smtpSettings.SmtpPass),
+                EnableSsl = true
+            };
         }
     }
 }

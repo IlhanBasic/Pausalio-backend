@@ -2,6 +2,13 @@
 {
     public interface ILocalizationHelper
     {
+        string InvoiceSentSuccessfully { get; }
+        string NoEmailsProvided { get; }
+        string BusinessProfileNotFound { get; }
+        string ObligationsAlreadyExistForYearAndType { get; }
+        string ObligationAlreadyExistsForMonthAndType { get; }
+        string ObligationAlreadyPaid { get; }
+        string CannotMarkFutureObligationAsPaid { get; }
         string ForeignClientCannotBeFromSerbia { get; }
         string CannotModifyOtherProfile { get; }
         string CannotCancelFinishedInvoice {  get; }

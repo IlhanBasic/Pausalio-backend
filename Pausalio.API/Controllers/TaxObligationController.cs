@@ -73,12 +73,8 @@ namespace Pausalio.API.Controllers
         {
             try
             {
-                var obligation = await _taxObligationService.GetByYearAndMonthAsync(year, month);
-
-                if (obligation == null)
-                    return NotFound(new { success = false, message = _localizationHelper.TaxObligationNotFound });
-
-                return Ok(new { success = true, data = obligation });
+                var obligations = await _taxObligationService.GetByYearAndMonthAsync(year, month);
+                return Ok(new { success = true, data = obligations, count = obligations.Count() });
             }
             catch (UnauthorizedAccessException ex)
             {

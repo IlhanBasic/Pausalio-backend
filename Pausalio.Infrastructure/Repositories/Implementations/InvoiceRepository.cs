@@ -39,5 +39,26 @@ namespace Pausalio.Infrastructure.Repositories.Implementations
                 .Include(x => x.Payments)
                 .FirstOrDefaultAsync(predicate);
         }
+        public async Task<IList<Invoice>> FindInvoicesWithEntitiesAsync(Expression<Func<Invoice, bool>> predicate)
+        {
+            return await _context.Invoices
+                .Include(x => x.Client)
+                    .ThenInclude(c => c.Country)
+                .Include(x => x.Items)
+                .Include(x => x.Payments)
+                .Where(predicate)
+                .ToListAsync();
+        }
+
+        public async Task<Invoice?> FindInvoiceWithDetailsAsync(Expression<Func<Invoice, bool>> predicate)
+        {
+            return await _context.Invoices
+                .Include(x => x.Client)
+                    .ThenInclude(c => c.Country)
+                .Include(x => x.Items)
+                .Include(x => x.Payments)
+                .Include(x => x.BusinessProfile)
+                .FirstOrDefaultAsync(predicate);
+        }
     }
 }

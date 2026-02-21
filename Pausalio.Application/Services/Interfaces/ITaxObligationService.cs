@@ -12,7 +12,7 @@ namespace Pausalio.Application.Services.Interfaces
     {
         Task<IEnumerable<TaxObligationToReturnDto>> GetAllAsync();
         Task<IEnumerable<TaxObligationToReturnDto>> GetByYearAsync(int year);
-        Task<TaxObligationToReturnDto?> GetByYearAndMonthAsync(int year, int month);
+        Task<IEnumerable<TaxObligationToReturnDto>> GetByYearAndMonthAsync(int year, int month);
         Task<IEnumerable<TaxObligationToReturnDto>> GetByStatusAsync(TaxObligationStatus status);
         Task<TaxObligationToReturnDto?> GetByIdAsync(Guid id);
 

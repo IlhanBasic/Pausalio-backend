@@ -232,6 +232,12 @@ namespace Pausalio.Application.Services.Implementations
             if (taxObligation.Status == TaxObligationStatus.Paid)
                 throw new InvalidOperationException(_localizationHelper.TaxObligationAlreadyPaid);
 
+            var obligationPeriod = new DateTime(taxObligation.Year, taxObligation.Month, 1);
+            var currentPeriod = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1);
+
+            if (obligationPeriod > currentPeriod)
+                throw new InvalidOperationException(_localizationHelper.CannotMarkFutureObligationAsPaid);
+
             if (Math.Abs(payment.AmountRSD - taxObligation.TotalAmount) > 0.01m)
                 throw new InvalidOperationException(_localizationHelper.TaxObligationMustBePaidInFull);
 

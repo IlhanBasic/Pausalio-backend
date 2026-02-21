@@ -1257,4 +1257,32 @@
     <value>Strani klijent ne može biti iz Srbije.</value>
     <comment>Poruka da strani klijent ne može biti iz Srbije.</comment>
   </data>
+  <data name="ObligationsAlreadyExistForYearAndType" xml:space="preserve">
+    <value>Poreske obaveze već postoje za unetu godinu i tip obaveze.</value>
+    <comment>Poruka da poreske obaveze već postoje za unetu godinu i tip.</comment>
+  </data>
+  <data name="ObligationAlreadyExistsForMonthAndType" xml:space="preserve">
+    <value>Poreska obaveza već postoji za mesec i tip.</value>
+    <comment>Poruka da poreska obaveza već postoji za mesec i tip.</comment>
+  </data>
+  <data name="ObligationAlreadyPaid" xml:space="preserve">
+    <value>Poreska obaveza je već plaćena.</value>
+    <comment>Poruka da je poreska obaveza već plaćena.</comment>
+  </data>
+  <data name="CannotMarkFutureObligationAsPaid" xml:space="preserve">
+    <value>Ne možete označiti da su plaćene buduće obaveze.</value>
+    <comment>Poruka kada se ne mogu platiti buduće obaveze.</comment>
+  </data>
+  <data name="NoEmailsProvided" xml:space="preserve">
+    <value>Nema prosleđenih email-ova.</value>
+    <comment>Poruka kad anema prosleđenih emailova.</comment>
+  </data>
+  <data name="BusinessProfileNotFound" xml:space="preserve">
+    <value>Profil firme ne postoji.</value>
+    <comment>Poruka da profil firme ne postoji.</comment>
+  </data>
+  <data name="InvoiceSentSuccessfully" xml:space="preserve">
+    <value>Faktura uspešno prosleđena klijentu.</value>
+    <comment>Poruka da je faktura uspešno prosleđena klijentu.</comment>
+  </data>
 </root>

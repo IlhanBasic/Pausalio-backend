@@ -10,6 +10,8 @@ namespace Pausalio.Infrastructure.Repositories.Interfaces
 {
     public interface IInvoiceRepository : IRepository<Invoice>
     {
+        Task<Invoice?> FindInvoiceWithDetailsAsync(Expression<Func<Invoice, bool>> predicate);
+        Task<IList<Invoice>> FindInvoicesWithEntitiesAsync(Expression<Func<Invoice, bool>> predicate);
         Task<IList<Invoice>> FindInvoicesWithEntities(Expression<Func<Invoice, bool>> predicate);
         Task<Invoice?> FindInvoiceWithEntities(Expression<Func<Invoice, bool>> predicate);
     }

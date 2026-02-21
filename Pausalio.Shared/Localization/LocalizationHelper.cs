@@ -477,5 +477,19 @@ namespace Pausalio.Shared.Localization
         public string CannotModifyOtherProfile => _localizer["CannotModifyOtherProfile"];
 
         public string ForeignClientCannotBeFromSerbia => _localizer["ForeignClientCannotBeFromSerbia"];
+
+        public string ObligationsAlreadyExistForYearAndType => _localizer["ObligationsAlreadyExistForYearAndType"];
+
+        public string ObligationAlreadyExistsForMonthAndType => _localizer["ObligationAlreadyExistsForMonthAndType"];
+
+        public string ObligationAlreadyPaid => _localizer["ObligationAlreadyPaid"];
+
+        public string CannotMarkFutureObligationAsPaid => _localizer["CannotMarkFutureObligationAsPaid"];
+
+        public string NoEmailsProvided => _localizer["NoEmailsProvided"];
+
+        public string BusinessProfileNotFound => _localizer["BusinessProfileNotFound"];
+
+        public string InvoiceSentSuccessfully => _localizer["InvoiceSentSuccessfully"];
     }
 }

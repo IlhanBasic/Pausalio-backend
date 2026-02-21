@@ -15,6 +15,7 @@ using Pausalio.Infrastructure.Repositories.Implementations;
 using Pausalio.Infrastructure.Repositories.Interfaces;
 using Pausalio.Shared.Configuration;
 using Pausalio.Shared.Localization;
+using QuestPDF.Infrastructure;
 using Serilog;
 using Serilog.Events;
 using System.Globalization;
@@ -22,6 +23,7 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpContextAccessor();
+QuestPDF.Settings.License = LicenseType.Community;
 // -------------------- Serilog --------------------
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
@@ -129,6 +131,7 @@ builder.Services.AddScoped<IEmailTemplateService, EmailTemplateService>();
 builder.Services.AddScoped<IBusinessInviteService, BusinessInviteService>();
 builder.Services.AddScoped<IUploadFileService, UploadFileService>();
 builder.Services.AddScoped<IExchangeRateService, ExchangeRateService>();
+builder.Services.AddScoped<IInvoiceExportService, InvoiceExportService>();
 // -------------------- FluentValidation --------------------
 builder.Services.AddValidatorsFromAssemblyContaining<AddBankAccountDtoValidator>();
 builder.Services.AddFluentValidationAutoValidation();

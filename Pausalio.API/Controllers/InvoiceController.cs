@@ -14,12 +14,14 @@ namespace Pausalio.API.Controllers
     {
         private readonly IInvoiceService _invoiceService;
         private readonly ILocalizationHelper _localizationHelper;
-
+        private readonly IInvoiceExportService _invoiceExportService;
         public InvoiceController(
-            IInvoiceService invoiceService,
-            ILocalizationHelper localizationHelper)
+        IInvoiceService invoiceService,
+        IInvoiceExportService invoiceExportService,
+        ILocalizationHelper localizationHelper)
         {
             _invoiceService = invoiceService;
+            _invoiceExportService = invoiceExportService;
             _localizationHelper = localizationHelper;
         }
 
@@ -250,6 +252,88 @@ namespace Pausalio.API.Controllers
             {
                 await _invoiceService.CancelInvoice(id);
                 return Ok(new { success = true, message = _localizationHelper.InvoiceArchivedSuccessfully });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Vraća HTML preview fakture
+        /// </summary>
+        [HttpGet("{id:guid}/preview")]
+        public async Task<IActionResult> GetPreview(Guid id)
+        {
+            try
+            {
+                var html = await _invoiceExportService.GenerateHtmlAsync(id);
+                return Ok(new { success = true, data = html });
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new { success = false, message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { success = false, message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Download PDF fakture
+        /// </summary>
+        [HttpGet("{id:guid}/export")]
+        public async Task<IActionResult> ExportPdf(Guid id)
+        {
+            try
+            {
+                var data = await _invoiceExportService.GetExportDataAsync(id);
+                var pdfBytes = await _invoiceExportService.GeneratePdfAsync(id);
+                var fileName = $"Faktura_{data.InvoiceNumber}.pdf";
+                return File(pdfBytes, "application/pdf", fileName);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new { success = false, message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { success = false, message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Šalje fakturu na email adrese
+        /// </summary>
+        [HttpPost("{id:guid}/send")]
+        [Authorize(Roles = "Owner, Assistant")]
+        public async Task<IActionResult> SendInvoice(Guid id, [FromBody] SendInvoiceDto dto)
+        {
+            try
+            {
+                await _invoiceExportService.SendInvoiceAsync(id, dto);
+                return Ok(new { success = true, message = _localizationHelper.InvoiceSentSuccessfully });
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new { success = false, message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { success = false, message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
             }
             catch (Exception ex)
             {
