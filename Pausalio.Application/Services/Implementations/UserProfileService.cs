@@ -11,7 +11,6 @@ using Pausalio.Domain.Entities;
 using Pausalio.Infrastructure.Repositories.Interfaces;
 using Pausalio.Shared.Enums;
 using Pausalio.Shared.Localization;
-using System.Runtime.InteropServices;
 
 namespace Pausalio.Application.Services.Implementations
 {
@@ -235,7 +234,7 @@ namespace Pausalio.Application.Services.Implementations
 
         public async Task<BusinessProfileToReturnDto?> GetCompanyById(Guid id)
         {
-            var business = await _unitOfWork.BusinessProfileRepository.FindFirstOrDefaultWithoutTrackingAsync(x => x.Id == id);
+            var business = await _unitOfWork.BusinessProfileRepository.GetCompanyByIdWithEntities(id);
             return _mapper.Map<BusinessProfileToReturnDto>(business);
         }
         public async Task<bool> IsUserInBusiness(Guid userId, Guid businessProfileId)
