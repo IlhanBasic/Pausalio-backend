@@ -20,6 +20,7 @@ using Serilog;
 using Serilog.Events;
 using System.Globalization;
 using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpContextAccessor();
@@ -102,7 +103,10 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAutoMapper(typeof(ClientMappingProfile).Assembly);
 
 // -------------------- Controllers --------------------
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+});
 
 // -------------------- Authorization --------------------
 builder.Services.AddAuthorization();

@@ -46,12 +46,7 @@ namespace Pausalio.Infrastructure.Persistence.Configurations
                 .IsRequired(false);
 
             builder.HasIndex(x => x.BusinessProfileId);
-            builder.HasIndex(x => x.PaymentId);
-
-            builder.HasOne(x => x.Payment)
-                   .WithOne(p => p.TaxObligation)
-                   .HasForeignKey<TaxObligation>(x => x.PaymentId)
-                   .OnDelete(DeleteBehavior.SetNull);
+           
         }
     }
 }

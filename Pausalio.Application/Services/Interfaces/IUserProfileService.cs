@@ -31,6 +31,7 @@ namespace Pausalio.Application.Services.Interfaces
         Task ResetPasswordAsync(ResetPasswordDto dto);
         Task<UserProfileToReturnDto?> UpdateProfile(Guid id, UpdateUserProfileDto dto);
         Task<IEnumerable<UserProfileToReturnDto>> GetAllUsers();
+        Task SetUserActiveStatus (Guid userId, bool isActive);
         Task DeleteUser(Guid userId);
     }
 }

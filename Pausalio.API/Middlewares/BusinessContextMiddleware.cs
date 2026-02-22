@@ -13,6 +13,11 @@ namespace Pausalio.API.Middlewares
 
         public async Task InvokeAsync(HttpContext context, ICurrentUserService currentUserService)
         {
+            if (context.Request.Path.StartsWithSegments("/api/Auth/refresh-token"))
+            {
+                await _next(context);
+                return;
+            }
             var businessId = context.Request.Headers["X-Business-Context"].FirstOrDefault();
 
             if (!string.IsNullOrEmpty(businessId))

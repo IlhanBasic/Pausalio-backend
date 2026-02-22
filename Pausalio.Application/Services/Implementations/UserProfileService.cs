@@ -166,7 +166,7 @@ namespace Pausalio.Application.Services.Implementations
 
         public async Task<UserProfileToReturnDto?> GetByEmailAsync(string email)
         {
-            var userProfile = await _unitOfWork.UserProfileRepository.FindFirstOrDefaultWithoutTrackingAsync(x => x.Email == email);
+            var userProfile = await _unitOfWork.UserProfileRepository.GetByEmailWithEntitiesAsync(email);
             return _mapper.Map<UserProfileToReturnDto>(userProfile);
         }
 
@@ -369,5 +369,17 @@ namespace Pausalio.Application.Services.Implementations
 
         }
 
+        public async Task SetUserActiveStatus(Guid userId, bool isActive)
+        {
+           
+            var user = await _unitOfWork.UserProfileRepository.FindFirstOrDefaultAsync(x => x.Id == userId);
+            if (user == null)
+                throw new Exception(_localizationHelper.UserNotFound);
+            if (user.Role == UserRole.Admin)
+                throw new Exception(_localizationHelper.CannotChangeStatusAdmin);
+            user.IsActive = isActive;
+            _unitOfWork.UserProfileRepository.Update(user);
+            await _unitOfWork.SaveChangesAsync();
+        }
     }
 }

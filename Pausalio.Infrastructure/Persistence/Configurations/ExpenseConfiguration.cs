@@ -65,11 +65,6 @@ namespace Pausalio.Infrastructure.Persistence.Configurations
                 .WithMany(x => x.Expenses)
                 .HasForeignKey(x => x.BusinessProfileId)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            builder.HasOne(x => x.Payment)
-                .WithOne()
-                .HasForeignKey<Expense>(x => x.PaymentId)
-                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

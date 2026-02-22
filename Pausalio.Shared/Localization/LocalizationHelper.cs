@@ -491,5 +491,11 @@ namespace Pausalio.Shared.Localization
         public string BusinessProfileNotFound => _localizer["BusinessProfileNotFound"];
 
         public string InvoiceSentSuccessfully => _localizer["InvoiceSentSuccessfully"];
+
+        public string CannotChangeStatusAdmin => _localizer["CannotChangeStatusAdmin"];
+
+        public string UserActivatedSuccessfully => _localizer["UserActivatedSuccessfully"];
+
+        public string UserDeactivatedSuccessfully => _localizer["UserDeactivatedSuccessfully"];
     }
 }

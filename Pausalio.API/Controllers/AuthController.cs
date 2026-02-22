@@ -41,6 +41,20 @@ namespace Pausalio.API.Controllers
             _urlSettings = urlSettings;
         }
 
+        [HttpPost("refresh-token")]
+        [Authorize]
+        public async Task<IActionResult> RefreshToken()
+        {
+            var userEmail = _currentUserService.GetEmail();
+            if (userEmail == null)
+                return Unauthorized(new { success = false, message = _localizationHelper.Unauthorized });
+            var user = await _userProfileService.GetByEmailAsync(userEmail);
+            if (user == null)
+                return NotFound(new { success = false, message = _localizationHelper.UserNotFound });
+            var newToken = _jwtService.GenerateToken(user);
+            return Ok(new { token = newToken });
+        }
+
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {

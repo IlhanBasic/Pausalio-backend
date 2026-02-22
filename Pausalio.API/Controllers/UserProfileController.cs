@@ -29,12 +29,12 @@ namespace Pausalio.API.Controllers
         {
             try
             {
-                var user = await _userProfileService.UpdateProfile(id,dto);
-                return Ok(new {success = true, message = _localizationHelper.UserUpdatedSuccessfully});
+                var user = await _userProfileService.UpdateProfile(id, dto);
+                return Ok(new { success = true, message = _localizationHelper.UserUpdatedSuccessfully });
             }
             catch (Exception ex)
             {
-                return BadRequest(new {success = false, message = ex.Message});
+                return BadRequest(new { success = false, message = ex.Message });
             }
         }
         [HttpGet("me")]
@@ -89,11 +89,41 @@ namespace Pausalio.API.Controllers
             try
             {
                 await _userProfileService.DeleteUser(id);
-                return Ok(new { success = true, message = _localizationHelper.UserDeletedSuccessfully});
+                return Ok(new { success = true, message = _localizationHelper.UserDeletedSuccessfully });
             }
             catch (Exception ex)
             {
-                return NotFound(new {success = false, message = ex.Message});
+                return NotFound(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPatch("{id:guid}/activate")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ActivateUser(Guid id)
+        {
+            try
+            {
+                await _userProfileService.SetUserActiveStatus(id, true);
+                return Ok(new { success = true, message = _localizationHelper.UserActivatedSuccessfully });
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPatch("{id:guid}/deactivate")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeactivateUser(Guid id)
+        {
+            try
+            {
+                await _userProfileService.SetUserActiveStatus(id, false);
+                return Ok(new { success = true, message = _localizationHelper.UserDeactivatedSuccessfully });
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { success = false, message = ex.Message });
             }
         }
     }

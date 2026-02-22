@@ -22,7 +22,5 @@ namespace Pausalio.Domain.Entities
         public DateTime? PaidDate { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
-        public Guid? PaymentId { get; set; }
-        public Payment? Payment { get; set; }
     }
 }

@@ -1285,4 +1285,16 @@
     <value>Faktura uspešno prosleđena klijentu.</value>
     <comment>Poruka da je faktura uspešno prosleđena klijentu.</comment>
   </data>
+  <data name="CannotChangeStatusAdmin" xml:space="preserve">
+    <value>Ne možete menjati status admina.</value>
+    <comment>Poruka kada ne možete menjati status admina.</comment>
+  </data>
+  <data name="UserActivatedSuccessfully" xml:space="preserve">
+    <value>Korisnik uspešno aktiviran.</value>
+    <comment>Poruka kada je korisnik uspešno aktiviran.</comment>
+  </data>
+  <data name="UserDeactivatedSuccessfully" xml:space="preserve">
+    <value>Korisnik je uspešno deaktiviran.</value>
+    <comment>Poruka kada je korisnik uspešno deaktiviran.</comment>
+  </data>
 </root>

@@ -41,7 +41,8 @@ namespace Pausalio.Application.Services.Implementations
 
             var payments = await _unitOfWork.PaymentRepository
                 .FindPaymentsWithEntitiesAsync(x => x.BusinessProfileId == companyId);
-
+            var withTax = payments.Where(p => p.TaxObligation != null).ToList();
+            Console.WriteLine($"Payments with tax obligations: {withTax.Count}");
             return _mapper.Map<IEnumerable<PaymentToReturnDto>>(payments);
         }
 

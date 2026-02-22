@@ -19,7 +19,5 @@ namespace Pausalio.Domain.Entities
         public bool IsDeleted { get; set; } = false;
         public DateTime? DeletedAt { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public Guid? PaymentId { get; set; }
-        public Payment? Payment { get; set; }
     }
 }

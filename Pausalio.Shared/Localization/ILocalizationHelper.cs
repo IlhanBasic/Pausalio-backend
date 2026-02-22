@@ -2,6 +2,9 @@
 {
     public interface ILocalizationHelper
     {
+        string UserActivatedSuccessfully { get; }
+        string UserDeactivatedSuccessfully { get; }
+        string CannotChangeStatusAdmin { get; }
         string InvoiceSentSuccessfully { get; }
         string NoEmailsProvided { get; }
         string BusinessProfileNotFound { get; }
