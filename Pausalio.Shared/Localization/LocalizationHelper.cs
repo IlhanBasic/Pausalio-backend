@@ -497,5 +497,19 @@ namespace Pausalio.Shared.Localization
         public string UserActivatedSuccessfully => _localizer["UserActivatedSuccessfully"];
 
         public string UserDeactivatedSuccessfully => _localizer["UserDeactivatedSuccessfully"];
+
+        public string CountryAlreadyExists => _localizer["CountryAlreadyExists"];
+
+        public string ItemNameAlreadyExists => _localizer["ItemNameAlreadyExists"];
+
+        public string CityAlreadyExists => _localizer["CityAlreadyExists"];
+
+        public string InvalidFileExtension => _localizer["InvalidFileExtension"];
+
+        public string InvalidFileType => _localizer["InvalidFileType"];
+
+        public string FileMaxSizeIs25Mb => _localizer["FileMaxSizeIs25Mb"];
+        public string ExpenseAlreadyExists => _localizer["ExpenseAlreadyExists"];
+        public string BankAccountAlreadyExists => _localizer["BankAccountAlreadyExists"];
     }
 }

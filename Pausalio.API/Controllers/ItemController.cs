@@ -50,7 +50,7 @@ namespace Pausalio.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new {success = false, message =ex.Message});
             }
         }
 

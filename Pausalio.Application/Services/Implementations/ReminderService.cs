@@ -52,10 +52,13 @@ namespace Pausalio.Application.Services.Implementations
         public async Task CreateAsync(AddReminderDto dto)
         {
             var companyId = GetCurrentCompanyId();
-
             var entity = _mapper.Map<Reminder>(dto);
             entity.BusinessProfileId = companyId;
             entity.CreatedAt = DateTime.UtcNow;
+    
+            entity.DueDate = dto.DueDate.Kind == DateTimeKind.Unspecified 
+                ? DateTime.SpecifyKind(dto.DueDate, DateTimeKind.Utc)
+                : dto.DueDate.ToUniversalTime();
 
             await _unitOfWork.ReminderRepository.AddAsync(entity);
             await _unitOfWork.SaveChangesAsync();
@@ -70,7 +73,9 @@ namespace Pausalio.Application.Services.Implementations
 
             if (reminder == null)
                 throw new KeyNotFoundException(_localizationHelper.ReminderNotFound);
-
+            reminder.DueDate = dto.DueDate.Kind == DateTimeKind.Unspecified
+                ? DateTime.SpecifyKind(dto.DueDate, DateTimeKind.Utc)
+                : dto.DueDate.ToUniversalTime();
             _mapper.Map(dto, reminder);
 
             _unitOfWork.ReminderRepository.Update(reminder);
@@ -108,7 +113,7 @@ namespace Pausalio.Application.Services.Implementations
             reminder.IsDeleted = true;
             reminder.DeletedAt = DateTime.UtcNow;
 
-            _unitOfWork.ReminderRepository.Update(reminder);
+            _unitOfWork.ReminderRepository.Remove(reminder);
             await _unitOfWork.SaveChangesAsync();
         }
 

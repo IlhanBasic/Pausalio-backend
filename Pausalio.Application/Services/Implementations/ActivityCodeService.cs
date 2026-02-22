@@ -42,7 +42,7 @@ namespace Pausalio.Application.Services.Implementations
         public async Task CreateAsync(AddActivityCodeDto dto)
         {
             var exists = await _unitOfWork.ActivityCodeRepository
-                .FindFirstOrDefaultAsync(x => x.Code == dto.Code);
+                .FindFirstOrDefaultAsync(x => x.Code.Trim().ToLower() == dto.Code.Trim().ToLower() || x.Description.Trim().ToLower() == dto.Description.Trim().ToLower());
 
             if (exists != null)
                 throw new InvalidOperationException(_localizationHelper.ActivityCodeAlreadyExists);
@@ -61,7 +61,7 @@ namespace Pausalio.Application.Services.Implementations
                 throw new KeyNotFoundException(_localizationHelper.ActivityCodeNotFound);
 
             var duplicate = await _unitOfWork.ActivityCodeRepository
-                .FindFirstOrDefaultAsync(x => x.Code == dto.Code && x.Id != id);
+                .FindFirstOrDefaultAsync(x => (x.Code.Trim().ToLower() == dto.Code.Trim().ToLower() || x.Description.Trim().ToLower() == dto.Description.Trim().ToLower()) && x.Id != id);
 
             if (duplicate != null)
                 throw new InvalidOperationException(_localizationHelper.ActivityCodeAlreadyExists);

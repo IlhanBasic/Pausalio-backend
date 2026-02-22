@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Pausalio.Application.Services.Interfaces;
 using Pausalio.Shared.Configuration;
+using Pausalio.Shared.Localization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,18 +16,25 @@ namespace Pausalio.Application.Services.Implementations
     public class UploadFileService : IUploadFileService
     {
         private readonly BlobContainerClient _containerClient;
-        public UploadFileService(IOptions<AzureBlobStorageSettings> _azureBlobStorageSettings)
+        private readonly ILocalizationHelper _localizationHelper;
+        public UploadFileService(IOptions<AzureBlobStorageSettings> _azureBlobStorageSettings, ILocalizationHelper localizationHelper )
         {
             var connectionString = _azureBlobStorageSettings.Value.ConnectionString;
             var containerName = _azureBlobStorageSettings.Value.ContainerName;
-
+            _localizationHelper = localizationHelper;
             var blobServiceClient = new BlobServiceClient(connectionString);
             _containerClient = blobServiceClient.GetBlobContainerClient(containerName);
         }
 
         public async Task<string> UploadFileAsync(Stream fileStream, string originalFileName, string contentType)
         {
-            var fileExtension = Path.GetExtension(originalFileName);
+            const long maxSize = 25 * 1024 * 1024;
+
+            if (fileStream.Length > maxSize)
+                throw new InvalidOperationException(_localizationHelper.FileMaxSizeIs25Mb);
+
+            var fileExtension = Path.GetExtension(originalFileName).ToLower();
+
             var uniqueName = $"{Guid.NewGuid()}{fileExtension}";
             var blobClient = _containerClient.GetBlobClient(uniqueName);
 
@@ -40,12 +48,12 @@ namespace Pausalio.Application.Services.Implementations
                 HttpHeaders = headers
             });
 
-            return blobClient.Uri.ToString(); // npr. https://yourstorage.blob.core.windows.net/images/abc-123.pdf
+            return blobClient.Uri.ToString();
         }
         public async Task DeleteFileAsync(string fileUrl)
         {
             if (string.IsNullOrWhiteSpace(fileUrl))
-                throw new ArgumentException("File URL is required.");
+                throw new ArgumentException(_localizationHelper.UrlIsRequired);
 
             var uri = new Uri(fileUrl);
 

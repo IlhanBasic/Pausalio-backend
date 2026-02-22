@@ -38,6 +38,9 @@ namespace Pausalio.Application.Services.Implementations
 
         public async Task CreateCountry(AddCountryDto dto)
         {
+            var duplicate = _unitOfWork.CountryRepository.FindFirstOrDefaultAsync(x =>(x.Code.Trim().ToLower() == dto.Code.Trim().ToLower()) || (x.Name.Trim().ToLower() == dto.Name.Trim().ToLower())).Result;
+            if (duplicate != null)
+                throw new InvalidOperationException(_localizationHelper.CountryAlreadyExists);
             var country = _mapper.Map<Country>(dto);
 
             await _unitOfWork.CountryRepository.AddAsync(country);
@@ -50,7 +53,9 @@ namespace Pausalio.Application.Services.Implementations
 
             if (country == null)
                 throw new KeyNotFoundException(_localizationHelper.CountryNotFound);
-
+            var duplicate = _unitOfWork.CountryRepository.FindFirstOrDefaultAsync(x => ((x.Code.Trim().ToLower() == dto.Code.Trim().ToLower()) || (x.Name.Trim().ToLower() == dto.Name.Trim().ToLower())) && x.Id != id).Result;
+            if (duplicate != null)
+                throw new InvalidOperationException(_localizationHelper.CountryAlreadyExists);
             _mapper.Map(dto, country);
 
             _unitOfWork.CountryRepository.Update(country);

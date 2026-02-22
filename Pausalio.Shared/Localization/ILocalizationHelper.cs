@@ -2,6 +2,14 @@
 {
     public interface ILocalizationHelper
     {
+        string BankAccountAlreadyExists { get; }
+        string ExpenseAlreadyExists {  get; }
+        string InvalidFileExtension { get; }
+        string InvalidFileType { get; }
+        string FileMaxSizeIs25Mb { get; }
+        string ItemNameAlreadyExists { get; }
+        string CityAlreadyExists { get; }
+        string CountryAlreadyExists { get; }
         string UserActivatedSuccessfully { get; }
         string UserDeactivatedSuccessfully { get; }
         string CannotChangeStatusAdmin { get; }

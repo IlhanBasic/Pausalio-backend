@@ -1297,4 +1297,36 @@
     <value>Korisnik je uspešno deaktiviran.</value>
     <comment>Poruka kada je korisnik uspešno deaktiviran.</comment>
   </data>
+  <data name="CountryAlreadyExists" xml:space="preserve">
+    <value>Država već postoji.</value>
+    <comment>Poruka kada država već postoji.</comment>
+  </data>
+  <data name="ItemNameAlreadyExists" xml:space="preserve">
+    <value>Usluga već postoji sa tim imenom.</value>
+    <comment>Poruka da usluga već postoji sa tim imenom.</comment>
+  </data>
+  <data name="CityAlreadyExists" xml:space="preserve">
+    <value>Grad već postoji.</value>
+    <comment>Poruka da grad sa tim imenom već postoji.</comment>
+  </data>
+  <data name="InvalidFileExtension" xml:space="preserve">
+    <value>Ekstenzija fajla nije validna.</value>
+    <comment>Poruka da ekstenzija fajla nije validna.</comment>
+  </data>
+  <data name="InvalidFileType" xml:space="preserve">
+    <value>Tip fajla nije validan.</value>
+    <comment>Poruka da tip fajla nije validan.</comment>
+  </data>
+  <data name="FileMaxSizeIs25Mb" xml:space="preserve">
+    <value>Maksimalna veličina fajla je 25 megabajta.</value>
+    <comment>Poruka kada je veličina fajla preko 25 megabajta.</comment>
+  </data>
+  <data name="ExpenseAlreadyExists" xml:space="preserve">
+    <value>Trošak već postoji.</value>
+    <comment>Poruka da trošak već postoji.</comment>
+  </data>
+  <data name="BankAccountAlreadyExists" xml:space="preserve">
+    <value>Bankovni račun već postoji.</value>
+    <comment>Poruka da taj bankovni račun već postoji.</comment>
+  </data>
 </root>

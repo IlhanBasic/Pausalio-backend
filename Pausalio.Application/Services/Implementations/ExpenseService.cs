@@ -82,7 +82,9 @@ namespace Pausalio.Application.Services.Implementations
 
             if (dto.Amount <= 0)
                 throw new InvalidOperationException(_localizationHelper.AmountMustBePositive);
-
+            var duplicate = await _unitOfWork.ExpenseRepository.FindFirstOrDefaultAsync(x => ( x.Name.Trim().ToLower() == dto.Name.Trim().ToLower() ) && x.BusinessProfileId == companyId);
+            if (duplicate != null)
+                throw new Exception(_localizationHelper.ExpenseAlreadyExists);
             var expense = _mapper.Map<Expense>(dto);
             expense.BusinessProfileId = companyId;
             expense.Status = ExpenseStatus.Pending;
@@ -115,7 +117,9 @@ namespace Pausalio.Application.Services.Implementations
 
             if (dto.Amount <= 0)
                 throw new InvalidOperationException(_localizationHelper.AmountMustBePositive);
-
+            var duplicate = await _unitOfWork.ExpenseRepository.FindFirstOrDefaultAsync(x => (x.Name.Trim().ToLower() == dto.Name.Trim().ToLower()) && x.BusinessProfileId == companyId && x.Id != id);
+            if (duplicate != null)
+                throw new Exception(_localizationHelper.ExpenseAlreadyExists);
             _mapper.Map(dto, expense);
 
             _unitOfWork.ExpenseRepository.Update(expense);

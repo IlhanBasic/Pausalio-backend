@@ -52,8 +52,13 @@ namespace Pausalio.Application.Services.Implementations
 
         public async Task CreateAsync(AddItemDto dto)
         {
-            var companyId = GetCurrentCompanyId();
 
+            var companyId = GetCurrentCompanyId();
+            var duplicate = await _unitOfWork.ItemRepository
+                .FindFirstOrDefaultAsync(x => x.Name.Trim().ToLower() == dto.Name.Trim().ToLower() &&
+                                              x.BusinessProfileId == companyId);
+            if (duplicate != null)
+                throw new InvalidOperationException(_localizationHelper.ItemNameAlreadyExists);
             var entity = _mapper.Map<Item>(dto);
             entity.BusinessProfileId = companyId;
 
@@ -71,7 +76,11 @@ namespace Pausalio.Application.Services.Implementations
 
             if (item == null)
                 throw new KeyNotFoundException(_localizationHelper.ItemNotFound);
-
+            var duplicate = await _unitOfWork.ItemRepository
+                .FindFirstOrDefaultAsync(x => x.Name.Trim().ToLower() == dto.Name.Trim().ToLower() &&
+                                              x.BusinessProfileId == companyId && x.Id != id);
+            if (duplicate != null)
+                throw new InvalidOperationException(_localizationHelper.ItemNameAlreadyExists);
             _mapper.Map(dto, item);
 
             _unitOfWork.ItemRepository.Update(item);

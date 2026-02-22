@@ -55,7 +55,14 @@ namespace Pausalio.Application.Services.Implementations
             var companyId = GetCurrentCompanyId();
 
             ValidateForeignCurrencyFields(dto.Currency, dto.IBAN, dto.SWIFT);
-
+            var duplicate = await _unitOfWork.BankAccountRepository
+             .FindFirstOrDefaultAsync(x =>
+                 (x.AccountNumber == dto.AccountNumber ||
+                  (!string.IsNullOrEmpty(dto.IBAN) && dto.IBAN == x.IBAN))
+                 && x.BusinessProfileId == companyId
+             );
+            if (duplicate != null)
+                throw new Exception(_localizationHelper.BankAccountAlreadyExists);
             var entity = _mapper.Map<BankAccount>(dto);
             entity.BusinessProfileId = companyId;
             entity.CreatedAt = DateTime.UtcNow;
@@ -81,6 +88,17 @@ namespace Pausalio.Application.Services.Implementations
                 throw new InvalidOperationException(_localizationHelper.CurrencyTypeCannotBeChanged);
 
             ValidateForeignCurrencyFields(dto.Currency, dto.IBAN, dto.SWIFT);
+
+            var duplicate = await _unitOfWork.BankAccountRepository
+                .FindFirstOrDefaultAsync(x =>
+                    (x.AccountNumber == dto.AccountNumber ||
+                     (!string.IsNullOrEmpty(dto.IBAN) && dto.IBAN == x.IBAN))
+                    && x.BusinessProfileId == companyId
+                    && x.Id != id
+                );
+            if (duplicate != null)
+                throw new Exception(_localizationHelper.BankAccountAlreadyExists);
+
             _mapper.Map(dto, account);
             account.UpdatedAt = DateTime.UtcNow;
             _unitOfWork.BankAccountRepository.Update(account);

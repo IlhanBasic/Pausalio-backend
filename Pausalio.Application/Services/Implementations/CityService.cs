@@ -38,6 +38,9 @@ namespace Pausalio.Application.Services.Implementations
 
         public async Task CreateCity(AddCityDto dto)
         {
+            var duplicate = await _unitOfWork.CityRepository.FindFirstOrDefaultAsync(c => (c.Name.Trim().ToLower() == dto.Name.Trim().ToLower()) || (c.PostalCode.Trim().ToLower() == dto.PostalCode.Trim().ToLower()));
+            if (duplicate != null)
+                throw new InvalidOperationException(_localizationHelper.CityAlreadyExists);
             var city = _mapper.Map<City>(dto);
 
             await _unitOfWork.CityRepository.AddAsync(city);
@@ -50,7 +53,9 @@ namespace Pausalio.Application.Services.Implementations
 
             if (city == null)
                 throw new KeyNotFoundException(_localizationHelper.CityNotFound);
-
+            var duplicate = await _unitOfWork.CityRepository.FindFirstOrDefaultAsync(c => ((c.Name.Trim().ToLower() == dto.Name.Trim().ToLower()) || (c.PostalCode.Trim().ToLower() == dto.PostalCode.Trim().ToLower())) && c.Id != id);
+            if (duplicate != null)
+                throw new InvalidOperationException(_localizationHelper.CityAlreadyExists);
             _mapper.Map(dto, city);
 
             _unitOfWork.CityRepository.Update(city);
