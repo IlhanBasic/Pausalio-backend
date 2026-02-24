@@ -289,7 +289,7 @@ namespace Pausalio.Application.Services.Implementations
                             if (invoice.AmountToPay >= invoice.TotalAmount)
                             {
                                 invoice.PaymentStatus = PaymentStatus.Unpaid;
-                                if (invoice.InvoiceStatus == InvoiceStatus.Finished)
+                                if (invoice.InvoiceStatus == InvoiceStatus.Finished || invoice.InvoiceStatus == InvoiceStatus.Archived)
                                     invoice.InvoiceStatus = InvoiceStatus.Draft;
                             }
                             else

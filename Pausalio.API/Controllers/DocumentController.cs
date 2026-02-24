@@ -13,13 +13,15 @@ namespace Pausalio.API.Controllers
     {
         private readonly IDocumentService _service;
         private readonly ILocalizationHelper _localizationHelper;
-
+        private readonly IUploadFileService _uploadFileService;
         public DocumentController(
             IDocumentService service,
-            ILocalizationHelper localizationHelper)
+            ILocalizationHelper localizationHelper,
+            IUploadFileService uploadFileService)
         {
             _service = service;
             _localizationHelper = localizationHelper;
+            _uploadFileService = uploadFileService;
         }
 
         [HttpGet]
@@ -80,6 +82,13 @@ namespace Pausalio.API.Controllers
         {
             try
             {
+                var document = await _service.GetByIdAsync(id);
+                if (document == null)
+                    return NotFound(new { success = false, message = _localizationHelper.DocumentNotFound });
+                if(!string.IsNullOrEmpty(document.FilePath))
+                {
+                    await _uploadFileService.DeleteFileAsync(document.FilePath);
+                }
                 await _service.DeleteAsync(id);
                 return Ok(new { success = true, message = _localizationHelper.DocumentDeletedSuccessfully });
             }
