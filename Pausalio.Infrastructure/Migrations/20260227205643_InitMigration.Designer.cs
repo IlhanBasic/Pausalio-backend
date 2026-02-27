@@ -12,7 +12,7 @@ using Pausalio.Infrastructure.Persistence;
 namespace Pausalio.Infrastructure.Migrations
 {
     [DbContext(typeof(PausalioDbContext))]
-    [Migration("20260218085546_InitMigration")]
+    [Migration("20260227205643_InitMigration")]
     partial class InitMigration
     {
         /// <inheritdoc />
@@ -433,7 +433,7 @@ namespace Pausalio.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime(6)")
-                        .HasDefaultValueSql("UTC_TIMESTAMP()");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
 
                     b.Property<string>("Currency")
                         .IsRequired()
@@ -488,7 +488,7 @@ namespace Pausalio.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime(6)")
-                        .HasDefaultValueSql("UTC_TIMESTAMP()");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
 
                     b.Property<Guid>("CreatedById")
                         .HasColumnType("char(36)");
@@ -554,7 +554,7 @@ namespace Pausalio.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime(6)")
-                        .HasDefaultValueSql("UTC_TIMESTAMP()");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -1609,7 +1609,7 @@ namespace Pausalio.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime(6)")
-                        .HasDefaultValueSql("UTC_TIMESTAMP()");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -2948,7 +2948,7 @@ namespace Pausalio.Infrastructure.Migrations
                     b.Property<DateTime>("UploadedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime(6)")
-                        .HasDefaultValueSql("UTC_TIMESTAMP()");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
 
                     b.HasKey("Id");
 
@@ -2982,7 +2982,7 @@ namespace Pausalio.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime(6)")
-                        .HasDefaultValueSql("UTC_TIMESTAMP()");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime(6)");
@@ -2997,9 +2997,6 @@ namespace Pausalio.Infrastructure.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("varchar(200)");
 
-                    b.Property<Guid?>("PaymentId")
-                        .HasColumnType("char(36)");
-
                     b.Property<string>("ReferenceNumber")
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
@@ -3010,9 +3007,6 @@ namespace Pausalio.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BusinessProfileId");
-
-                    b.HasIndex("PaymentId")
-                        .IsUnique();
 
                     b.HasIndex("ReferenceNumber");
 
@@ -3048,7 +3042,7 @@ namespace Pausalio.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime(6)")
-                        .HasDefaultValueSql("UTC_TIMESTAMP()");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
 
                     b.Property<int>("Currency")
                         .HasColumnType("int");
@@ -3204,7 +3198,7 @@ namespace Pausalio.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime(6)")
-                        .HasDefaultValueSql("UTC_TIMESTAMP()");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
 
                     b.Property<int>("Currency")
                         .HasColumnType("int");
@@ -3267,7 +3261,7 @@ namespace Pausalio.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime(6)")
-                        .HasDefaultValueSql("UTC_TIMESTAMP()");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime(6)");
@@ -3327,7 +3321,7 @@ namespace Pausalio.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime(6)")
-                        .HasDefaultValueSql("UTC_TIMESTAMP()");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
 
                     b.Property<DateTime>("DueDate")
                         .HasColumnType("datetime(6)");
@@ -3337,9 +3331,6 @@ namespace Pausalio.Infrastructure.Migrations
 
                     b.Property<DateTime?>("PaidDate")
                         .HasColumnType("datetime(6)");
-
-                    b.Property<Guid?>("PaymentId")
-                        .HasColumnType("char(36)");
 
                     b.Property<string>("ReferenceNumber")
                         .HasMaxLength(50)
@@ -3364,9 +3355,6 @@ namespace Pausalio.Infrastructure.Migrations
 
                     b.HasIndex("BusinessProfileId");
 
-                    b.HasIndex("PaymentId")
-                        .IsUnique();
-
                     b.ToTable("TaxObligations", (string)null);
                 });
 
@@ -3382,7 +3370,7 @@ namespace Pausalio.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime(6)")
-                        .HasDefaultValueSql("UTC_TIMESTAMP()");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
 
                     b.Property<int>("Role")
                         .HasColumnType("int");
@@ -3420,7 +3408,7 @@ namespace Pausalio.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime(6)")
-                        .HasDefaultValueSql("UTC_TIMESTAMP()");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -3566,14 +3554,7 @@ namespace Pausalio.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Pausalio.Domain.Entities.Payment", "Payment")
-                        .WithOne()
-                        .HasForeignKey("Pausalio.Domain.Entities.Expense", "PaymentId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.Navigation("BusinessProfile");
-
-                    b.Navigation("Payment");
                 });
 
             modelBuilder.Entity("Pausalio.Domain.Entities.Invoice", b =>
@@ -3639,6 +3620,11 @@ namespace Pausalio.Infrastructure.Migrations
                         .HasForeignKey("InvoiceId")
                         .OnDelete(DeleteBehavior.SetNull);
 
+                    b.HasOne("Pausalio.Domain.Entities.TaxObligation", "TaxObligation")
+                        .WithOne()
+                        .HasForeignKey("Pausalio.Domain.Entities.Payment", "TaxObligationId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.Navigation("BankAccount");
 
                     b.Navigation("BusinessProfile");
@@ -3646,6 +3632,8 @@ namespace Pausalio.Infrastructure.Migrations
                     b.Navigation("Expense");
 
                     b.Navigation("Invoice");
+
+                    b.Navigation("TaxObligation");
                 });
 
             modelBuilder.Entity("Pausalio.Domain.Entities.Reminder", b =>
@@ -3667,14 +3655,7 @@ namespace Pausalio.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Pausalio.Domain.Entities.Payment", "Payment")
-                        .WithOne("TaxObligation")
-                        .HasForeignKey("Pausalio.Domain.Entities.TaxObligation", "PaymentId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.Navigation("BusinessProfile");
-
-                    b.Navigation("Payment");
                 });
 
             modelBuilder.Entity("Pausalio.Domain.Entities.UserBusinessProfile", b =>
@@ -3731,11 +3712,6 @@ namespace Pausalio.Infrastructure.Migrations
                     b.Navigation("Items");
 
                     b.Navigation("Payments");
-                });
-
-            modelBuilder.Entity("Pausalio.Domain.Entities.Payment", b =>
-                {
-                    b.Navigation("TaxObligation");
                 });
 
             modelBuilder.Entity("Pausalio.Domain.Entities.UserProfile", b =>

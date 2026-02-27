@@ -87,7 +87,7 @@ namespace Pausalio.Infrastructure.Migrations
                     Address = table.Column<string>(type: "varchar(250)", maxLength: 250, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     IsActive = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "UTC_TIMESTAMP()"),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP(6)"),
                     UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     IsEmailVerified = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: false),
                     EmailVerificationToken = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: true)
@@ -128,7 +128,7 @@ namespace Pausalio.Infrastructure.Migrations
                     CompanyLogo = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     IsActive = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "UTC_TIMESTAMP()"),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP(6)"),
                     UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
@@ -162,7 +162,7 @@ namespace Pausalio.Infrastructure.Migrations
                     SWIFT = table.Column<string>(type: "varchar(11)", maxLength: 11, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     IsActive = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "UTC_TIMESTAMP()"),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP(6)"),
                     UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
@@ -191,7 +191,7 @@ namespace Pausalio.Infrastructure.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     ExpiresAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     IsUsed = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "UTC_TIMESTAMP()"),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP(6)"),
                     CreatedById = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
                 },
                 constraints: table =>
@@ -235,7 +235,7 @@ namespace Pausalio.Infrastructure.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CountryId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
                     IsActive = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "UTC_TIMESTAMP()"),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP(6)"),
                     UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
@@ -271,7 +271,7 @@ namespace Pausalio.Infrastructure.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     IsDeleted = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: false),
                     DeletedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    UploadedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "UTC_TIMESTAMP()")
+                    UploadedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP(6)")
                 },
                 constraints: table =>
                 {
@@ -280,6 +280,37 @@ namespace Pausalio.Infrastructure.Migrations
                     table.CheckConstraint("CK_Documents_IsDeleted", "IsDeleted IN (0,1)");
                     table.ForeignKey(
                         name: "FK_Documents_BusinessProfiles_BusinessProfileId",
+                        column: x => x.BusinessProfileId,
+                        principalTable: "BusinessProfiles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Expenses",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    BusinessProfileId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ReferenceNumber = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP(6)")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Expenses", x => x.Id);
+                    table.CheckConstraint("CK_Expenses_Dates", "DeletedAt IS NULL OR DeletedAt >= CreatedAt");
+                    table.CheckConstraint("CK_Expenses_IsDeleted", "IsDeleted IN (0,1)");
+                    table.CheckConstraint("CK_Expenses_Status", "Status IN (1,2,3)");
+                    table.ForeignKey(
+                        name: "FK_Expenses_BusinessProfiles_BusinessProfileId",
                         column: x => x.BusinessProfileId,
                         principalTable: "BusinessProfiles",
                         principalColumn: "Id",
@@ -328,7 +359,7 @@ namespace Pausalio.Infrastructure.Migrations
                     CompletedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     IsDeleted = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: false),
                     DeletedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "UTC_TIMESTAMP()")
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP(6)")
                 },
                 constraints: table =>
                 {
@@ -346,6 +377,36 @@ namespace Pausalio.Infrastructure.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "TaxObligations",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    BusinessProfileId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Year = table.Column<int>(type: "int", nullable: false),
+                    Month = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    DueDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    ReferenceNumber = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PaidDate = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP(6)"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TaxObligations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TaxObligations_BusinessProfiles_BusinessProfileId",
+                        column: x => x.BusinessProfileId,
+                        principalTable: "BusinessProfiles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "UserBusinessProfiles",
                 columns: table => new
                 {
@@ -353,7 +414,7 @@ namespace Pausalio.Infrastructure.Migrations
                     UserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     BusinessProfileId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     Role = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "UTC_TIMESTAMP()")
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP(6)")
                 },
                 constraints: table =>
                 {
@@ -397,7 +458,7 @@ namespace Pausalio.Infrastructure.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     IsDeleted = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: false),
                     DeletedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "UTC_TIMESTAMP()"),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP(6)"),
                     UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
@@ -446,38 +507,6 @@ namespace Pausalio.Infrastructure.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Expenses",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    BusinessProfileId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ReferenceNumber = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: false),
-                    DeletedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "UTC_TIMESTAMP()"),
-                    PaymentId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Expenses", x => x.Id);
-                    table.CheckConstraint("CK_Expenses_Dates", "DeletedAt IS NULL OR DeletedAt >= CreatedAt");
-                    table.CheckConstraint("CK_Expenses_IsDeleted", "IsDeleted IN (0,1)");
-                    table.CheckConstraint("CK_Expenses_Status", "Status IN (1,2,3)");
-                    table.ForeignKey(
-                        name: "FK_Expenses_BusinessProfiles_BusinessProfileId",
-                        column: x => x.BusinessProfileId,
-                        principalTable: "BusinessProfiles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
                 name: "Payments",
                 columns: table => new
                 {
@@ -496,7 +525,7 @@ namespace Pausalio.Infrastructure.Migrations
                     Description = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     PaymentDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "UTC_TIMESTAMP()"),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP(6)"),
                     BankAccountId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
                 },
                 constraints: table =>
@@ -525,41 +554,10 @@ namespace Pausalio.Infrastructure.Migrations
                         principalTable: "Invoices",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "TaxObligations",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    BusinessProfileId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Year = table.Column<int>(type: "int", nullable: false),
-                    Month = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    DueDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    ReferenceNumber = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Type = table.Column<int>(type: "int", nullable: false),
-                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    PaidDate = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "UTC_TIMESTAMP()"),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    PaymentId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TaxObligations", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_TaxObligations_BusinessProfiles_BusinessProfileId",
-                        column: x => x.BusinessProfileId,
-                        principalTable: "BusinessProfiles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_TaxObligations_Payments_PaymentId",
-                        column: x => x.PaymentId,
-                        principalTable: "Payments",
+                        name: "FK_Payments_TaxObligations_TaxObligationId",
+                        column: x => x.TaxObligationId,
+                        principalTable: "TaxObligations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
                 })
@@ -1145,12 +1143,6 @@ namespace Pausalio.Infrastructure.Migrations
                 columns: new[] { "BusinessProfileId", "IsDeleted" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Expenses_PaymentId",
-                table: "Expenses",
-                column: "PaymentId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Expenses_ReferenceNumber",
                 table: "Expenses",
                 column: "ReferenceNumber");
@@ -1228,12 +1220,6 @@ namespace Pausalio.Infrastructure.Migrations
                 column: "BusinessProfileId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TaxObligations_PaymentId",
-                table: "TaxObligations",
-                column: "PaymentId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_UserBusinessProfiles_BusinessProfileId",
                 table: "UserBusinessProfiles",
                 column: "BusinessProfileId");
@@ -1254,47 +1240,11 @@ namespace Pausalio.Infrastructure.Migrations
                 table: "UserProfiles",
                 column: "Email",
                 unique: true);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Expenses_Payments_PaymentId",
-                table: "Expenses",
-                column: "PaymentId",
-                principalTable: "Payments",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.SetNull);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_BankAccounts_BusinessProfiles_BusinessProfileId",
-                table: "BankAccounts");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Clients_BusinessProfiles_BusinessProfileId",
-                table: "Clients");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Expenses_BusinessProfiles_BusinessProfileId",
-                table: "Expenses");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Invoices_BusinessProfiles_BusinessProfileId",
-                table: "Invoices");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Payments_BusinessProfiles_BusinessProfileId",
-                table: "Payments");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Clients_Countries_CountryId",
-                table: "Clients");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Expenses_Payments_PaymentId",
-                table: "Expenses");
-
             migrationBuilder.DropTable(
                 name: "BusinessInvites");
 
@@ -1311,28 +1261,13 @@ namespace Pausalio.Infrastructure.Migrations
                 name: "Items");
 
             migrationBuilder.DropTable(
+                name: "Payments");
+
+            migrationBuilder.DropTable(
                 name: "Reminders");
 
             migrationBuilder.DropTable(
-                name: "TaxObligations");
-
-            migrationBuilder.DropTable(
                 name: "UserBusinessProfiles");
-
-            migrationBuilder.DropTable(
-                name: "UserProfiles");
-
-            migrationBuilder.DropTable(
-                name: "BusinessProfiles");
-
-            migrationBuilder.DropTable(
-                name: "ActivityCodes");
-
-            migrationBuilder.DropTable(
-                name: "Countries");
-
-            migrationBuilder.DropTable(
-                name: "Payments");
 
             migrationBuilder.DropTable(
                 name: "BankAccounts");
@@ -1344,7 +1279,22 @@ namespace Pausalio.Infrastructure.Migrations
                 name: "Invoices");
 
             migrationBuilder.DropTable(
+                name: "TaxObligations");
+
+            migrationBuilder.DropTable(
+                name: "UserProfiles");
+
+            migrationBuilder.DropTable(
                 name: "Clients");
+
+            migrationBuilder.DropTable(
+                name: "BusinessProfiles");
+
+            migrationBuilder.DropTable(
+                name: "Countries");
+
+            migrationBuilder.DropTable(
+                name: "ActivityCodes");
         }
     }
 }

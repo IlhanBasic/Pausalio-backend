@@ -110,13 +110,15 @@ namespace Pausalio.Application.Services.Implementations
                                    x.Year == dto.Year &&
                                    x.Type == dto.Type);
 
-            if (existingObligations.Any())
-                throw new InvalidOperationException(_localizationHelper.ObligationsAlreadyExistForYearAndType);
+            var existingMonths = existingObligations.Select(x => x.Month).ToHashSet();
 
             var generatedObligations = new List<TaxObligation>();
 
             for (int month = 1; month <= 12; month++)
             {
+                if (existingMonths.Contains(month))
+                    continue;
+
                 var daysInMonth = DateTime.DaysInMonth(dto.Year, month);
                 var dueDay = Math.Min(dto.DueDayOfMonth, daysInMonth);
                 var dueDate = new DateTime(dto.Year, month, dueDay);
@@ -137,6 +139,9 @@ namespace Pausalio.Application.Services.Implementations
 
                 generatedObligations.Add(obligation);
             }
+
+            if (!generatedObligations.Any())
+                throw new InvalidOperationException(_localizationHelper.ObligationsAlreadyExistForYearAndType);
 
             foreach (var obligation in generatedObligations)
                 await _unitOfWork.TaxObligationRepository.AddAsync(obligation);

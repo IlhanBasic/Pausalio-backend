@@ -57,7 +57,7 @@ namespace Pausalio.Infrastructure.Persistence.Configurations
 
             builder.Property(x => x.CreatedAt)
                 .IsRequired()
-                .HasDefaultValueSql("UTC_TIMESTAMP()");
+                .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
 
             builder.Property(x => x.UpdatedAt)
                 .IsRequired(false);

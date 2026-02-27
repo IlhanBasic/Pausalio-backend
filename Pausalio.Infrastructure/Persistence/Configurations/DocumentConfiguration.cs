@@ -43,7 +43,7 @@ namespace Pausalio.Infrastructure.Persistence.Configurations
                 .IsRequired();
 
             builder.Property(x => x.UploadedAt)
-                .HasDefaultValueSql("UTC_TIMESTAMP()")
+                .HasDefaultValueSql("CURRENT_TIMESTAMP(6)")
                 .IsRequired();
 
             builder.Property(x => x.DeletedAt)

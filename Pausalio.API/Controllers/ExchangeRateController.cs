@@ -31,15 +31,12 @@ namespace Pausalio.API.Controllers
             {
                 var cacheKey = $"exchange_rate_{currency}_{DateTime.UtcNow:yyyy-MM-dd}";
 
-                // Pokušaj iz cache-a
                 if (!_cache.TryGetValue(cacheKey, out decimal? rate))
                 {
-                    // Ako nema u cache-u, dohvati sa API-ja
                     rate = await _exchangeRateService.GetExchangeRateAsync(currency);
 
                     if (rate.HasValue)
                     {
-                        // Sačuvaj u cache do kraja dana
                         var cacheExpiration = DateTime.Today.AddDays(1) - DateTime.Now;
                         _cache.Set(cacheKey, rate.Value, cacheExpiration);
                     }
@@ -60,7 +57,7 @@ namespace Pausalio.API.Controllers
                         currency = currency.ToString(),
                         rate = rate.Value,
                         description = $"1 {currency} = {rate.Value:N4} RSD",
-                        cached = _cache.TryGetValue(cacheKey, out _) // Info: da li je iz cache-a
+                        cached = _cache.TryGetValue(cacheKey, out _)
                     }
                 });
             }

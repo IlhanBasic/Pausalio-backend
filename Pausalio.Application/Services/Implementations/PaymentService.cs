@@ -208,13 +208,11 @@ namespace Pausalio.Application.Services.Implementations
 
             if (invoice.AmountToPay <= 0)
             {
-                // Placeno u potpunosti
                 invoice.PaymentStatus = PaymentStatus.Paid;
                 invoice.InvoiceStatus = InvoiceStatus.Finished;
             }
             else
             {
-                // Delimicno placeno
                 invoice.PaymentStatus = PaymentStatus.PartiallyPaid;
             }
 

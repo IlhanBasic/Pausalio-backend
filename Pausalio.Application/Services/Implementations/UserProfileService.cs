@@ -94,7 +94,6 @@ namespace Pausalio.Application.Services.Implementations
                 return null;
 
             await _unitOfWork.BusinessProfileRepository.AddAsync(businessProfile);
-            await _unitOfWork.SaveChangesAsync();
 
             var userBusiness = new UserBusinessProfile
             {

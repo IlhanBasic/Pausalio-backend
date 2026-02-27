@@ -284,9 +284,6 @@ namespace Pausalio.Application.Services.Implementations
             if (invoice == null)
                 throw new KeyNotFoundException(_localizationHelper.InvoiceNotFound);
 
-            //if (invoice.PaymentStatus == PaymentStatus.Paid)
-            //    throw new InvalidOperationException(_localizationHelper.CannotDeletePaidInvoice);
-
             invoice.IsDeleted = true;
             invoice.DeletedAt = DateTime.UtcNow;
 

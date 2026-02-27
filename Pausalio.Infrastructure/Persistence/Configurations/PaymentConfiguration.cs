@@ -39,7 +39,7 @@ namespace Pausalio.Infrastructure.Persistence.Configurations
                 .IsRequired();
 
             builder.Property(x => x.CreatedAt)
-                .HasDefaultValueSql("UTC_TIMESTAMP()")
+                .HasDefaultValueSql("CURRENT_TIMESTAMP(6)")
                 .IsRequired();
 
             builder.Property(x => x.PaymentType)
