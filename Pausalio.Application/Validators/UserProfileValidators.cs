@@ -25,7 +25,7 @@ namespace Pausalio.Application.Validators
 
             RuleFor(x => x.Password)
                 .NotEmpty().WithMessage(_ => _localizationHelper.UserPasswordRequired)
-                .Matches(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-+={}[\];:'""<>.,?/\\|]).{8,}$")
+                .Matches(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,}$")
                 .WithMessage(_ => _localizationHelper.PasswordRegex);
 
             RuleFor(x => x.ProfilePicture)
@@ -106,7 +106,7 @@ namespace Pausalio.Application.Validators
 
             RuleFor(x => x.Password)
                 .NotEmpty().WithMessage(_ => _localizationHelper.UserPasswordRequired)
-                .Matches(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-+={}[\];:'""<>.,?/\\|]).{8,}$")
+                .Matches(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,}$")
                 .WithMessage(_ => _localizationHelper.PasswordRegex);
 
         }

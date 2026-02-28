@@ -25,6 +25,8 @@ using System.Text.Json.Serialization;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpContextAccessor();
 QuestPDF.Settings.License = LicenseType.Community;
+QuestPDF.Settings.EnableCaching = false;
+QuestPDF.Settings.CheckIfAllTextGlyphsAreAvailable = false;
 // -------------------- Serilog --------------------
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
@@ -136,6 +138,7 @@ builder.Services.AddScoped<IBusinessInviteService, BusinessInviteService>();
 builder.Services.AddScoped<IUploadFileService, UploadFileService>();
 builder.Services.AddScoped<IExchangeRateService, ExchangeRateService>();
 builder.Services.AddScoped<IInvoiceExportService, InvoiceExportService>();
+builder.Services.AddSingleton<IPdfFactoryService, PdfFactoryService>();
 // -------------------- FluentValidation --------------------
 builder.Services.AddValidatorsFromAssemblyContaining<AddBankAccountDtoValidator>();
 builder.Services.AddFluentValidationAutoValidation();

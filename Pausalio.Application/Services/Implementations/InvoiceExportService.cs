@@ -18,17 +18,20 @@ namespace Pausalio.Application.Services.Implementations
         private readonly ICurrentUserService _currentUserService;
         private readonly IEmailService _emailService;
         private readonly ILocalizationHelper _localizationHelper;
+        private readonly IPdfFactoryService _pdfFactoryService;
 
         public InvoiceExportService(
             IUnitOfWork unitOfWork,
             ICurrentUserService currentUserService,
             IEmailService emailService,
-            ILocalizationHelper localizationHelper)
+            ILocalizationHelper localizationHelper,
+            IPdfFactoryService pdfFactoryService)
         {
             _unitOfWork = unitOfWork;
             _currentUserService = currentUserService;
             _emailService = emailService;
             _localizationHelper = localizationHelper;
+            _pdfFactoryService = pdfFactoryService;
         }
 
         public async Task<InvoiceExportDto> GetExportDataAsync(Guid invoiceId)
@@ -108,214 +111,215 @@ namespace Pausalio.Application.Services.Implementations
         {
             var data = await GetExportDataAsync(invoiceId);
 
-            var document = Document.Create(container =>
+            return _pdfFactoryService.GeneratePdf(() =>
             {
-                container.Page(page =>
+                return Document.Create(container =>
                 {
-                    page.Size(PageSizes.A4);
-                    page.Margin(40);
-                    page.DefaultTextStyle(x => x.FontSize(10).FontFamily("Arial"));
-
-                    page.Content().Column(col =>
+                    container.Page(page =>
                     {
-                        // HEADER
-                        col.Item().Row(row =>
+                        page.Size(PageSizes.A4);
+                        page.Margin(40);
+                        page.DefaultTextStyle(x => x.FontSize(10).FontFamily("Arial"));
+
+                        page.Content().Column(col =>
                         {
-                            row.RelativeItem().Column(c =>
-                            {
-                                c.Item().Text(data.BusinessName)
-                                    .FontSize(18).Bold().FontColor("#4f46e5");
-                                c.Item().Text($"PIB: {data.BusinessPIB} | MB: {data.BusinessMB}")
-                                    .FontSize(9).FontColor("#6b7280");
-                                c.Item().Text($"{data.BusinessAddress}, {data.BusinessCity}")
-                                    .FontSize(9).FontColor("#6b7280");
-                                c.Item().Text(data.BusinessEmail)
-                                    .FontSize(9).FontColor("#6b7280");
-                                if (!string.IsNullOrEmpty(data.BusinessPhone))
-                                    c.Item().Text($"Tel: {data.BusinessPhone}")
-                                        .FontSize(9).FontColor("#6b7280");
-                            });
-
-                            row.RelativeItem().AlignRight().Column(c =>
-                            {
-                                c.Item().Text("FAKTURA").FontSize(26).Bold().FontColor("#4f46e5");
-                                c.Item().Text(data.InvoiceNumber).FontSize(11).FontColor("#6b7280");
-                            });
-                        });
-
-                        col.Item().PaddingVertical(12).LineHorizontal(2).LineColor("#4f46e5");
-
-                        // PARTIES
-                        col.Item().PaddingBottom(20).Row(row =>
-                        {
-                            row.RelativeItem().Column(c =>
-                            {
-                                c.Item().Text("IZDAVALAC").FontSize(8).Bold()
-                                    .FontColor("#9ca3af").LetterSpacing(1);
-                                c.Item().Text(data.BusinessName).Bold().FontSize(12);
-                                c.Item().Text($"{data.BusinessAddress}, {data.BusinessCity}")
-                                    .FontSize(9).FontColor("#6b7280");
-                                c.Item().Text(data.BusinessEmail).FontSize(9).FontColor("#6b7280");
-                            });
-
-                            row.RelativeItem().AlignRight().Column(c =>
-                            {
-                                c.Item().Text("PRIMALAC").FontSize(8).Bold()
-                                    .FontColor("#9ca3af").LetterSpacing(1);
-                                c.Item().Text(data.ClientName).Bold().FontSize(12);
-                                c.Item().Text($"{data.ClientAddress}, {data.ClientCity}")
-                                    .FontSize(9).FontColor("#6b7280");
-                                if (!string.IsNullOrEmpty(data.ClientPIB))
-                                    c.Item().Text($"PIB: {data.ClientPIB}").FontSize(9).FontColor("#6b7280");
-                                if (!string.IsNullOrEmpty(data.ClientMB))
-                                    c.Item().Text($"MB: {data.ClientMB}").FontSize(9).FontColor("#6b7280");
-                                c.Item().Text(data.ClientEmail).FontSize(9).FontColor("#6b7280");
-                            });
-                        });
-
-                        // META
-                        col.Item().PaddingBottom(20).Background("#f9fafb").Padding(12).Row(row =>
-                        {
-                            row.RelativeItem().Column(c =>
-                            {
-                                c.Item().Text("DATUM IZDAVANJA").FontSize(8).Bold().FontColor("#9ca3af");
-                                c.Item().Text(data.IssueDate.ToString("dd.MM.yyyy")).Bold();
-                            });
-                            row.RelativeItem().Column(c =>
-                            {
-                                c.Item().Text("ROK PLAĆANJA").FontSize(8).Bold().FontColor("#9ca3af");
-                                c.Item().Text(data.DueDate.HasValue
-                                    ? data.DueDate.Value.ToString("dd.MM.yyyy")
-                                    : "—").Bold();
-                            });
-                            row.RelativeItem().Column(c =>
-                            {
-                                c.Item().Text("VALUTA").FontSize(8).Bold().FontColor("#9ca3af");
-                                c.Item().Text(data.CurrencyDisplay).Bold();
-                            });
-                            if (!string.IsNullOrEmpty(data.ReferenceNumber))
+                            // HEADER
+                            col.Item().Row(row =>
                             {
                                 row.RelativeItem().Column(c =>
                                 {
-                                    c.Item().Text("POZIV NA BROJ").FontSize(8).Bold().FontColor("#9ca3af");
-                                    c.Item().Text(data.ReferenceNumber).Bold();
+                                    c.Item().Text(data.BusinessName)
+                                        .FontSize(18).Bold().FontColor("#4f46e5");
+                                    c.Item().Text($"PIB: {data.BusinessPIB} | MB: {data.BusinessMB}")
+                                        .FontSize(9).FontColor("#6b7280");
+                                    c.Item().Text($"{data.BusinessAddress}, {data.BusinessCity}")
+                                        .FontSize(9).FontColor("#6b7280");
+                                    c.Item().Text(data.BusinessEmail)
+                                        .FontSize(9).FontColor("#6b7280");
+                                    if (!string.IsNullOrEmpty(data.BusinessPhone))
+                                        c.Item().Text($"Tel: {data.BusinessPhone}")
+                                            .FontSize(9).FontColor("#6b7280");
                                 });
-                            }
-                        });
 
-                        // ITEMS TABLE
-                        col.Item().PaddingBottom(16).Table(table =>
-                        {
-                            table.ColumnsDefinition(columns =>
-                            {
-                                columns.ConstantColumn(24);  // #
-                                columns.RelativeColumn(3);   // Naziv
-                                columns.RelativeColumn(1);   // Tip
-                                columns.ConstantColumn(40);  // Kol
-                                columns.RelativeColumn(1);   // Cena
-                                columns.RelativeColumn(1);   // Ukupno
-                            });
-
-                            // Header
-                            table.Header(header =>
-                            {
-                                header.Cell().Background("#4f46e5").Padding(8)
-                                    .Text("#").FontColor("#fff").FontSize(9).Bold();
-                                header.Cell().Background("#4f46e5").Padding(8)
-                                    .Text("NAZIV").FontColor("#fff").FontSize(9).Bold();
-                                header.Cell().Background("#4f46e5").Padding(8)
-                                    .Text("TIP").FontColor("#fff").FontSize(9).Bold();
-                                header.Cell().Background("#4f46e5").Padding(8)
-                                    .Text("KOL.").FontColor("#fff").FontSize(9).Bold();
-                                header.Cell().Background("#4f46e5").Padding(8)
-                                    .Text("CENA").FontColor("#fff").FontSize(9).Bold();
-                                header.Cell().Background("#4f46e5").Padding(8)
-                                    .Text("UKUPNO").FontColor("#fff").FontSize(9).Bold();
-                            });
-
-                            // Rows
-                            for (int i = 0; i < data.Items.Count; i++)
-                            {
-                                var item = data.Items[i];
-                                var bg = i % 2 == 0 ? "#ffffff" : "#f9fafb";
-
-                                table.Cell().Background(bg).Padding(8).Text($"{i + 1}").FontSize(9);
-                                table.Cell().Background(bg).Padding(8).Column(c =>
+                                row.RelativeItem().AlignRight().Column(c =>
                                 {
-                                    c.Item().Text(item.Name).FontSize(9).Bold();
-                                    if (!string.IsNullOrEmpty(item.Description))
-                                        c.Item().Text(item.Description).FontSize(8).FontColor("#9ca3af");
+                                    c.Item().Text("FAKTURA").FontSize(26).Bold().FontColor("#4f46e5");
+                                    c.Item().Text(data.InvoiceNumber).FontSize(11).FontColor("#6b7280");
                                 });
-                                table.Cell().Background(bg).Padding(8)
-                                    .Text(item.ItemTypeDisplay).FontSize(9).FontColor("#6b7280");
-                                table.Cell().Background(bg).Padding(8)
-                                    .Text(item.Quantity.ToString()).FontSize(9);
-                                table.Cell().Background(bg).Padding(8)
-                                    .Text($"{item.UnitPrice:N2} {data.CurrencyDisplay}").FontSize(9);
-                                table.Cell().Background(bg).Padding(8)
-                                    .Text($"{item.TotalPrice:N2} {data.CurrencyDisplay}").FontSize(9).Bold();
-                            }
-                        });
-
-                        // TOTALS
-                        col.Item().AlignRight().Width(280).Column(c =>
-                        {
-                            c.Item().BorderBottom(1).BorderColor("#f3f4f6").PaddingVertical(4).Row(r =>
-                            {
-                                r.RelativeItem().Text($"Ukupno ({data.CurrencyDisplay})").FontColor("#6b7280");
-                                r.AutoItem().Text($"{data.TotalAmount:N2} {data.CurrencyDisplay}").Bold();
                             });
 
-                            if (data.Currency != Currency.RSD)
+                            col.Item().PaddingVertical(12).LineHorizontal(2).LineColor("#4f46e5");
+
+                            // PARTIES
+                            col.Item().PaddingBottom(20).Row(row =>
+                            {
+                                row.RelativeItem().Column(c =>
+                                {
+                                    c.Item().Text("IZDAVALAC").FontSize(8).Bold()
+                                        .FontColor("#9ca3af").LetterSpacing(1);
+                                    c.Item().Text(data.BusinessName).Bold().FontSize(12);
+                                    c.Item().Text($"{data.BusinessAddress}, {data.BusinessCity}")
+                                        .FontSize(9).FontColor("#6b7280");
+                                    c.Item().Text(data.BusinessEmail).FontSize(9).FontColor("#6b7280");
+                                });
+
+                                row.RelativeItem().AlignRight().Column(c =>
+                                {
+                                    c.Item().Text("PRIMALAC").FontSize(8).Bold()
+                                        .FontColor("#9ca3af").LetterSpacing(1);
+                                    c.Item().Text(data.ClientName).Bold().FontSize(12);
+                                    c.Item().Text($"{data.ClientAddress}, {data.ClientCity}")
+                                        .FontSize(9).FontColor("#6b7280");
+                                    if (!string.IsNullOrEmpty(data.ClientPIB))
+                                        c.Item().Text($"PIB: {data.ClientPIB}").FontSize(9).FontColor("#6b7280");
+                                    if (!string.IsNullOrEmpty(data.ClientMB))
+                                        c.Item().Text($"MB: {data.ClientMB}").FontSize(9).FontColor("#6b7280");
+                                    c.Item().Text(data.ClientEmail).FontSize(9).FontColor("#6b7280");
+                                });
+                            });
+
+                            // META
+                            col.Item().PaddingBottom(20).Background("#f9fafb").Padding(12).Row(row =>
+                            {
+                                row.RelativeItem().Column(c =>
+                                {
+                                    c.Item().Text("DATUM IZDAVANJA").FontSize(8).Bold().FontColor("#9ca3af");
+                                    c.Item().Text(data.IssueDate.ToString("dd.MM.yyyy")).Bold();
+                                });
+                                row.RelativeItem().Column(c =>
+                                {
+                                    c.Item().Text("ROK PLAĆANJA").FontSize(8).Bold().FontColor("#9ca3af");
+                                    c.Item().Text(data.DueDate.HasValue
+                                        ? data.DueDate.Value.ToString("dd.MM.yyyy")
+                                        : "—").Bold();
+                                });
+                                row.RelativeItem().Column(c =>
+                                {
+                                    c.Item().Text("VALUTA").FontSize(8).Bold().FontColor("#9ca3af");
+                                    c.Item().Text(data.CurrencyDisplay).Bold();
+                                });
+                                if (!string.IsNullOrEmpty(data.ReferenceNumber))
+                                {
+                                    row.RelativeItem().Column(c =>
+                                    {
+                                        c.Item().Text("POZIV NA BROJ").FontSize(8).Bold().FontColor("#9ca3af");
+                                        c.Item().Text(data.ReferenceNumber).Bold();
+                                    });
+                                }
+                            });
+
+                            // ITEMS TABLE
+                            col.Item().PaddingBottom(16).Table(table =>
+                            {
+                                table.ColumnsDefinition(columns =>
+                                {
+                                    columns.ConstantColumn(24);  // #
+                                    columns.RelativeColumn(3);   // Naziv
+                                    columns.RelativeColumn(1);   // Tip
+                                    columns.ConstantColumn(40);  // Kol
+                                    columns.RelativeColumn(1);   // Cena
+                                    columns.RelativeColumn(1);   // Ukupno
+                                });
+
+                                // Header
+                                table.Header(header =>
+                                {
+                                    header.Cell().Background("#4f46e5").Padding(8)
+                                        .Text("#").FontColor("#fff").FontSize(9).Bold();
+                                    header.Cell().Background("#4f46e5").Padding(8)
+                                        .Text("NAZIV").FontColor("#fff").FontSize(9).Bold();
+                                    header.Cell().Background("#4f46e5").Padding(8)
+                                        .Text("TIP").FontColor("#fff").FontSize(9).Bold();
+                                    header.Cell().Background("#4f46e5").Padding(8)
+                                        .Text("KOL.").FontColor("#fff").FontSize(9).Bold();
+                                    header.Cell().Background("#4f46e5").Padding(8)
+                                        .Text("CENA").FontColor("#fff").FontSize(9).Bold();
+                                    header.Cell().Background("#4f46e5").Padding(8)
+                                        .Text("UKUPNO").FontColor("#fff").FontSize(9).Bold();
+                                });
+
+                                // Rows
+                                for (int i = 0; i < data.Items.Count; i++)
+                                {
+                                    var item = data.Items[i];
+                                    var bg = i % 2 == 0 ? "#ffffff" : "#f9fafb";
+
+                                    table.Cell().Background(bg).Padding(8).Text($"{i + 1}").FontSize(9);
+                                    table.Cell().Background(bg).Padding(8).Column(c =>
+                                    {
+                                        c.Item().Text(item.Name).FontSize(9).Bold();
+                                        if (!string.IsNullOrEmpty(item.Description))
+                                            c.Item().Text(item.Description).FontSize(8).FontColor("#9ca3af");
+                                    });
+                                    table.Cell().Background(bg).Padding(8)
+                                        .Text(item.ItemTypeDisplay).FontSize(9).FontColor("#6b7280");
+                                    table.Cell().Background(bg).Padding(8)
+                                        .Text(item.Quantity.ToString()).FontSize(9);
+                                    table.Cell().Background(bg).Padding(8)
+                                        .Text($"{item.UnitPrice:N2} {data.CurrencyDisplay}").FontSize(9);
+                                    table.Cell().Background(bg).Padding(8)
+                                        .Text($"{item.TotalPrice:N2} {data.CurrencyDisplay}").FontSize(9).Bold();
+                                }
+                            });
+
+                            // TOTALS
+                            col.Item().AlignRight().Width(280).Column(c =>
                             {
                                 c.Item().BorderBottom(1).BorderColor("#f3f4f6").PaddingVertical(4).Row(r =>
                                 {
-                                    r.RelativeItem().Text($"Kurs ({data.CurrencyDisplay}/RSD)").FontColor("#6b7280");
-                                    r.AutoItem().Text($"{data.ExchangeRate:N4}").Bold();
+                                    r.RelativeItem().Text($"Ukupno ({data.CurrencyDisplay})").FontColor("#6b7280");
+                                    r.AutoItem().Text($"{data.TotalAmount:N2} {data.CurrencyDisplay}").Bold();
                                 });
-                                c.Item().BorderBottom(1).BorderColor("#f3f4f6").PaddingVertical(4).Row(r =>
-                                {
-                                    r.RelativeItem().Text("Ukupno (RSD)").FontColor("#6b7280");
-                                    r.AutoItem().Text($"{data.TotalAmountRSD:N2} RSD").Bold();
-                                });
-                            }
 
-                            c.Item().BorderTop(2).BorderColor("#4f46e5").PaddingTop(8).Row(r =>
-                            {
-                                r.RelativeItem().Text("UKUPNO ZA UPLATU")
-                                    .Bold().FontSize(13).FontColor("#4f46e5");
-                                r.AutoItem().Text($"{data.TotalAmount:N2} {data.CurrencyDisplay}")
-                                    .Bold().FontSize(13).FontColor("#4f46e5");
+                                if (data.Currency != Currency.RSD)
+                                {
+                                    c.Item().BorderBottom(1).BorderColor("#f3f4f6").PaddingVertical(4).Row(r =>
+                                    {
+                                        r.RelativeItem().Text($"Kurs ({data.CurrencyDisplay}/RSD)").FontColor("#6b7280");
+                                        r.AutoItem().Text($"{data.ExchangeRate:N4}").Bold();
+                                    });
+                                    c.Item().BorderBottom(1).BorderColor("#f3f4f6").PaddingVertical(4).Row(r =>
+                                    {
+                                        r.RelativeItem().Text("Ukupno (RSD)").FontColor("#6b7280");
+                                        r.AutoItem().Text($"{data.TotalAmountRSD:N2} RSD").Bold();
+                                    });
+                                }
+
+                                c.Item().BorderTop(2).BorderColor("#4f46e5").PaddingTop(8).Row(r =>
+                                {
+                                    r.RelativeItem().Text("UKUPNO ZA UPLATU")
+                                        .Bold().FontSize(13).FontColor("#4f46e5");
+                                    r.AutoItem().Text($"{data.TotalAmount:N2} {data.CurrencyDisplay}")
+                                        .Bold().FontSize(13).FontColor("#4f46e5");
+                                });
                             });
+
+                            // NOTES
+                            if (!string.IsNullOrEmpty(data.Notes))
+                            {
+                                col.Item().PaddingTop(16).Background("#fef9c3")
+                                    .BorderLeft(4).BorderColor("#f59e0b")
+                                    .Padding(12).Column(c =>
+                                    {
+                                        c.Item().Text("NAPOMENA").FontSize(8).Bold().FontColor("#92400e");
+                                        c.Item().Text(data.Notes).FontSize(10).FontColor("#78350f");
+                                    });
+                            }
                         });
 
-                        // NOTES
-                        if (!string.IsNullOrEmpty(data.Notes))
+                        // FOOTER
+                        page.Footer().AlignCenter().Column(c =>
                         {
-                            col.Item().PaddingTop(16).Background("#fef9c3")
-                                .BorderLeft(4).BorderColor("#f59e0b")
-                                .Padding(12).Column(c =>
-                                {
-                                    c.Item().Text("NAPOMENA").FontSize(8).Bold().FontColor("#92400e");
-                                    c.Item().Text(data.Notes).FontSize(10).FontColor("#78350f");
-                                });
-                        }
-                    });
-
-                    // FOOTER
-                    page.Footer().AlignCenter().Column(c =>
-                    {
-                        c.Item().LineHorizontal(1).LineColor("#e5e7eb");
-                        c.Item().PaddingTop(8).Text(
-                            $"{data.BusinessName} | PIB: {data.BusinessPIB} | {data.BusinessEmail}")
-                            .FontSize(8).FontColor("#9ca3af");
-                        c.Item().Text("Dokument generisan automatski — Paušalio")
-                            .FontSize(8).FontColor("#9ca3af");
+                            c.Item().LineHorizontal(1).LineColor("#e5e7eb");
+                            c.Item().PaddingTop(8).Text(
+                                $"{data.BusinessName} | PIB: {data.BusinessPIB} | {data.BusinessEmail}")
+                                .FontSize(8).FontColor("#9ca3af");
+                            c.Item().Text("Dokument generisan automatski — Paušalio")
+                                .FontSize(8).FontColor("#9ca3af");
+                        });
                     });
                 });
             });
-
-            return document.GeneratePdf();
         }
 
         public async Task SendInvoiceAsync(Guid invoiceId, SendInvoiceDto dto)

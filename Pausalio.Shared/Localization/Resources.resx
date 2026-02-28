@@ -1337,4 +1337,16 @@
     <value>Kompanija uspešno obrisana.</value>
     <comment>Poruka kada je kompanija uspešno obrisana.</comment>
   </data>
+  <data name="YearlyIncomeExceedsPausalLimit" xml:space="preserve">
+    <value>"Godišnji prihod prelazi limit za paušalno oporezivanje od {0:N0} RSD za {1}. godinu. Preostalo je {2:N0} RSD do limita. Nakon prekoračenja ovog limita gubite status paušalca.</value>
+    <comment>Poruka o limitu</comment>
+  </data>
+  <data name="YearlyIncomeExceedsSelfEmployedLimit" xml:space="preserve">
+    <value>Godišnji prihod prelazi limit za samostalno poslovanje od {0:C0} RSD za {1}. godinu. Morate angažovati računovođu.</value>
+    <comment>Poruka o limitu</comment>
+  </data>
+  <data name="AccountantRequiredWarning" xml:space="preserve">
+    <value>UPOZORENJE: Godišnji prihod je premašio 6.000.000 RSD. Prema zakonu morate angažovati računovođu.</value>
+    <comment>Poruka o limitu</comment>
+  </data>
 </root>

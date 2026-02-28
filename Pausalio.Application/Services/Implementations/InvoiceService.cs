@@ -84,6 +84,13 @@ namespace Pausalio.Application.Services.Implementations
         public async Task<InvoiceToReturnDto> CreateAsync(AddInvoiceDto dto)
         {
             var companyId = GetCurrentCompanyId();
+            var currentYear = DateTime.UtcNow.Year;
+
+            // Prvo izračunaj total nove fakture u RSD
+            var newInvoiceTotalRSD = await CalculateInvoiceTotalInRSDAsync(dto);
+
+            // Proveri limit pre nego što kreneš dalje
+            await CheckYearlyIncomeLimitAsync(companyId, newInvoiceTotalRSD, currentYear);
 
             var client = await _unitOfWork.ClientRepository
                 .FindFirstOrDefaultAsync(x => x.Id == dto.ClientId &&
@@ -162,6 +169,13 @@ namespace Pausalio.Application.Services.Implementations
         public async Task UpdateAsync(Guid id, UpdateInvoiceDto dto)
         {
             var companyId = GetCurrentCompanyId();
+            var currentYear = DateTime.UtcNow.Year;
+
+            // Prvo izračunaj total izmenjene fakture u RSD
+            var updatedInvoiceTotalRSD = await CalculateInvoiceTotalInRSDForUpdateAsync(id, dto);
+
+            // Proveri limit (isključujući trenutnu fakturu iz kalkulacije)
+            await CheckYearlyIncomeLimitAsync(companyId, updatedInvoiceTotalRSD, currentYear, id);
 
             var invoiceExists = await _unitOfWork.InvoiceRepository
                 .FindFirstOrDefaultAsync(x => x.Id == id &&
@@ -201,11 +215,13 @@ namespace Pausalio.Application.Services.Implementations
             {
                 var context = _unitOfWork.GetContext();
 
+                // Briši stare stavke
                 await context.Database.ExecuteSqlRawAsync(
                     "DELETE FROM InvoiceItems WHERE InvoiceId = {0}",
                     id
                 );
 
+                // Ažuriraj osnovne podatke fakture
                 await context.Database.ExecuteSqlRawAsync(@"
             UPDATE Invoices 
             SET ClientId = {0}, 
@@ -218,11 +234,11 @@ namespace Pausalio.Application.Services.Implementations
                 UpdatedAt = {7}
             WHERE Id = {8}",
                     dto.ClientId,
-                    dto.DueDate.HasValue ? (object)dto.DueDate.Value : DBNull.Value,
+                    dto.DueDate.HasValue ? (object)dto.DueDate.Value : null,
                     (int)dto.Currency,
                     (int)dto.InvoiceStatus,
                     (int)dto.PaymentStatus,
-                    dto.Notes ?? (object)DBNull.Value,
+                    string.IsNullOrEmpty(dto.Notes) ? null : dto.Notes,
                     exchangeRate,
                     DateTime.UtcNow,
                     id
@@ -230,6 +246,7 @@ namespace Pausalio.Application.Services.Implementations
 
                 decimal totalAmount = 0;
 
+                // Dodaj nove stavke
                 foreach (var itemDto in dto.Items)
                 {
                     var itemId = Guid.NewGuid();
@@ -242,7 +259,7 @@ namespace Pausalio.Application.Services.Implementations
                         itemId,
                         id,
                         itemDto.Name,
-                        itemDto.Description ?? (object)DBNull.Value,
+                        string.IsNullOrEmpty(itemDto.Description) ? null : itemDto.Description,
                         (int)itemDto.ItemType,
                         itemDto.Quantity,
                         itemDto.UnitPrice,
@@ -252,6 +269,7 @@ namespace Pausalio.Application.Services.Implementations
 
                 var totalAmountRsd = dto.Currency == Currency.RSD ? totalAmount : totalAmount * exchangeRate;
 
+                // Ažuriraj totalne iznose
                 await context.Database.ExecuteSqlRawAsync(@"
             UPDATE Invoices 
             SET TotalAmount = {0}, 
@@ -271,7 +289,6 @@ namespace Pausalio.Application.Services.Implementations
                 throw;
             }
         }
-
         public async Task DeleteAsync(Guid id)
         {
             var companyId = GetCurrentCompanyId();
@@ -361,6 +378,73 @@ namespace Pausalio.Application.Services.Implementations
                 throw new UnauthorizedAccessException(_localizationHelper.InvalidCompanyId);
 
             return companyId;
+        }
+
+        private async Task<decimal> CalculateInvoiceTotalInRSDAsync(AddInvoiceDto dto)
+        {
+            decimal totalInOriginalCurrency = dto.Items.Sum(x => x.Quantity * x.UnitPrice);
+
+            if (dto.Currency == Currency.RSD)
+            {
+                return totalInOriginalCurrency;
+            }
+
+            var exchangeRate = await _exchangeRateService.GetExchangeRateAsync(dto.Currency);
+            if (exchangeRate == null)
+                throw new InvalidOperationException($"Kurs nije dostupan za valutu {dto.Currency}");
+
+            return totalInOriginalCurrency * exchangeRate.Value;
+        }
+
+        private async Task<decimal> CalculateInvoiceTotalInRSDForUpdateAsync(Guid invoiceId, UpdateInvoiceDto dto)
+        {
+            decimal totalInOriginalCurrency = dto.Items.Sum(x => x.Quantity * x.UnitPrice);
+
+            if (dto.Currency == Currency.RSD)
+            {
+                return totalInOriginalCurrency;
+            }
+
+            var exchangeRate = await _exchangeRateService.GetExchangeRateAsync(dto.Currency);
+            if (exchangeRate == null)
+                throw new InvalidOperationException($"Kurs nije dostupan za valutu {dto.Currency}");
+
+            return totalInOriginalCurrency * exchangeRate.Value;
+        }
+
+        private async Task CheckYearlyIncomeLimitAsync(Guid companyId, decimal newInvoiceTotalRSD, int year, Guid? excludeInvoiceId = null)
+        {
+            // Uzmi sve fakture za tekuću godinu (osim otkazanih, obrisanih i trenutne ako se update-uje)
+            var yearlyInvoices = await _unitOfWork.InvoiceRepository
+                .FindAllAsync(x => x.BusinessProfileId == companyId &&
+                                  x.IssueDate.Year == year &&
+                                  !x.IsDeleted &&
+                                  x.InvoiceStatus != InvoiceStatus.Cancelled);
+
+            // Izračunaj ukupan prihod za godinu (postojeće fakture + nova)
+            decimal existingTotalRSD = yearlyInvoices
+                .Where(x => excludeInvoiceId == null || x.Id != excludeInvoiceId)
+                .Sum(x => x.TotalAmountRSD);
+
+            decimal totalYearlyIncomeRSD = existingTotalRSD + newInvoiceTotalRSD;
+
+            // Provera limita - strogo 8 miliona
+            if (totalYearlyIncomeRSD > (decimal)IncomeLimitType.PausalStatus)
+            {
+                decimal remainingUntilLimit = (decimal)IncomeLimitType.PausalStatus - existingTotalRSD;
+                throw new InvalidOperationException(
+                    string.Format(_localizationHelper.YearlyIncomeExceedsPausalLimit,
+                        (int)IncomeLimitType.PausalStatus,
+                        year,
+                        remainingUntilLimit.ToString("N0")));
+            }
+
+            // Opciono: Možemo logovati kada se pređe 6 miliona
+            if (totalYearlyIncomeRSD > (decimal)IncomeLimitType.SelfEmployed)
+            {
+                // Ovo možemo dodati u logger ili vratiti kao warning kroz neki mehanizam
+                // Za sada samo nastavljamo jer je dozvoljeno do 8 miliona
+            }
         }
 
         public async Task ArchiveInvoice(Guid id)

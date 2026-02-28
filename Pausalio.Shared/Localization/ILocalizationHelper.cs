@@ -2,6 +2,9 @@
 {
     public interface ILocalizationHelper
     {
+        string YearlyIncomeExceedsPausalLimit { get; }
+        string YearlyIncomeExceedsSelfEmployedLimit { get; }
+        string AccountantRequiredWarning { get; }
         string CompanyDeletedSuccessfully { get; }
         string CompanyHasAssociatedUsers { get; }
         string BankAccountAlreadyExists { get; }

@@ -515,5 +515,11 @@ namespace Pausalio.Shared.Localization
         public string CompanyHasAssociatedUsers => _localizer["CompanyHasAssociatedUsers"];
 
         public string CompanyDeletedSuccessfully => _localizer["CompanyDeletedSuccessfully"];
+
+        public string YearlyIncomeExceedsPausalLimit => _localizer["YearlyIncomeExceedsPausalLimit"];
+
+        public string YearlyIncomeExceedsSelfEmployedLimit => _localizer["YearlyIncomeExceedsSelfEmployedLimit"];
+
+        public string AccountantRequiredWarning => _localizer["AccountantRequiredWarning"];
     }
 }
