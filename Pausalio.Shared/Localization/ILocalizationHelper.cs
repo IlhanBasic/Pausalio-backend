@@ -2,6 +2,8 @@
 {
     public interface ILocalizationHelper
     {
+        string CompanyDeletedSuccessfully { get; }
+        string CompanyHasAssociatedUsers { get; }
         string BankAccountAlreadyExists { get; }
         string ExpenseAlreadyExists {  get; }
         string InvalidFileExtension { get; }

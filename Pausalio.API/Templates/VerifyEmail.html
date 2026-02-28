@@ -1,175 +1,73 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="sr">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{VerifyEmail}}</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(145deg, #f1f5f9 0%, #e6edf4 100%);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            line-height: 1.6;
-        }
-
-        .container {
-            max-width: 560px;
-            width: 100%;
-            background: #ffffff;
-            padding: 44px 40px;
-            border-radius: 28px;
-            box-shadow: 0 20px 35px -10px rgba(0, 20, 40, 0.08), 0 6px 12px rgba(0,0,0,0.02);
-            text-align: left;
-            border: 1px solid rgba(255,255,255,0.7);
-            transition: all 0.2s ease;
-        }
-
-        @media (max-width: 480px) {
-            body {
-                padding: 12px;
-            }
-
-            .container {
-                padding: 32px 24px;
-                border-radius: 24px;
-            }
-        }
-
-        h2 {
-            color: #0a2a44;
-            font-size: 26px;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            margin-bottom: 20px;
-            line-height: 1.2;
-            border-left: 5px solid #2266cc;
-            padding-left: 18px;
-        }
-
-        p {
-            color: #2d3e50;
-            font-size: 17px;
-            margin-bottom: 24px;
-            font-weight: 400;
-        }
-
-        .button {
-            display: inline-block;
-            padding: 16px 36px;
-            background: #2266cc;
-            color: white !important;
-            text-decoration: none;
-            border-radius: 60px;
-            font-weight: 600;
-            font-size: 17px;
-            transition: all 0.25s ease;
-            border: none;
-            box-shadow: 0 8px 18px rgba(34, 102, 204, 0.25);
-            letter-spacing: 0.4px;
-            margin: 16px 0 20px;
-        }
-
-            .button:hover {
-                background: #1a4c99;
-                transform: translateY(-3px);
-                box-shadow: 0 16px 26px rgba(34, 102, 204, 0.3);
-            }
-
-            .button:active {
-                transform: translateY(0);
-                box-shadow: 0 8px 16px rgba(34, 102, 204, 0.25);
-            }
-
-        .fallback-text {
-            color: #4a5f73;
-            font-size: 15px;
-            margin-top: 28px;
-            margin-bottom: 8px;
-            font-weight: 400;
-        }
-
-        .verification-link {
-            display: inline-block;
-            background: #f8fafc;
-            padding: 12px 20px;
-            border-radius: 40px;
-            font-size: 15px;
-            word-break: break-all;
-            border: 1px solid #e2e8f0;
-            margin-top: 6px;
-            margin-bottom: 10px;
-            color: #1e293b;
-            transition: background 0.2s;
-        }
-
-            .verification-link a {
-                color: #2266cc;
-                text-decoration: underline;
-                font-weight: 500;
-                word-break: break-all;
-            }
-
-                .verification-link a:hover {
-                    color: #0a3b7a;
-                    text-decoration: none;
-                }
-
-        .footer {
-            margin-top: 40px;
-            font-size: 13px;
-            color: #5e6f7d;
-            text-align: center;
-            border-top: 1px solid #e4eaef;
-            padding-top: 24px;
-            font-weight: 400;
-            letter-spacing: 0.3px;
-        }
-
-        .button:focus-visible {
-            outline: 3px solid #aac9ff;
-            outline-offset: 3px;
-        }
-
-        .greeting-highlight {
-            color: #0a2a44;
-            font-weight: 600;
-        }
-
-        hr {
-            border: none;
-            border-top: 1px solid #edf2f7;
-            margin: 28px 0 16px;
-        }
-    </style>
 </head>
-<body>
-    <div class="container" style="text-align: center;">
-        <h2>{{Greeting}}</h2>
+<body style="margin:0;padding:0;background:#f0f4ff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
 
-        <p style="font-size: 17px; color: #33475b;">{{Text}}</p>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f0f4ff;padding:40px 16px;">
+        <tr>
+            <td align="center">
 
-        <a href="{{VerificationLink}}" class="button">{{Button}}</a>
+                <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 8px 40px rgba(102,126,234,0.12);">
 
-        <div class="fallback-text">
-            {{Fallback}}
-        </div>
+                    <!-- Header -->
+                    <tr>
+                        <td style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);padding:36px 40px;text-align:center;">
+                            <div style="font-size:40px;margin-bottom:12px;">✉️</div>
+                            <h1 style="margin:0;color:#ffffff;font-size:24px;font-weight:700;letter-spacing:-0.3px;">{{VerifyEmail}}</h1>
+                        </td>
+                    </tr>
 
-        <hr style="opacity: 0.7;" />
+                    <!-- Body -->
+                    <tr>
+                        <td style="padding:40px 40px 32px;text-align:center;">
 
-        <div class="footer">
-            {{Footer}}
-        </div>
-    </div>
+                            <h2 style="margin:0 0 16px;color:#1e293b;font-size:20px;font-weight:700;">{{Greeting}}</h2>
+                            <p style="margin:0 0 32px;color:#4a5568;font-size:16px;line-height:1.7;">{{Text}}</p>
+
+                            <!-- CTA button -->
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                <tr>
+                                    <td align="center" style="padding:0 0 32px;">
+                                        <a href="{{VerificationLink}}"
+                                           style="display:inline-block;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#ffffff;text-decoration:none;font-size:16px;font-weight:600;padding:16px 48px;border-radius:50px;box-shadow:0 8px 24px rgba(102,126,234,0.35);letter-spacing:0.3px;">
+                                            {{Button}}
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Fallback link box -->
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                <tr>
+                                    <td style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:16px 20px;text-align:left;">
+                                        <p style="margin:0 0 8px;color:#64748b;font-size:13px;">{{Fallback}}</p>
+                                        <a href="{{VerificationLink}}"
+                                           style="color:#667eea;font-size:13px;word-break:break-all;text-decoration:underline;">
+                                            {{VerificationLink}}
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:24px 40px;text-align:center;">
+                            <p style="margin:0;font-size:13px;color:#94a3b8;line-height:1.6;">{{Footer}}</p>
+                        </td>
+                    </tr>
+
+                </table>
+
+            </td>
+        </tr>
+    </table>
+
 </body>
 </html>

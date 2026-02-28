@@ -1329,4 +1329,12 @@
     <value>Bankovni račun već postoji.</value>
     <comment>Poruka da taj bankovni račun već postoji.</comment>
   </data>
+  <data name="CompanyHasAssociatedUsers" xml:space="preserve">
+    <value>Kompanija ima povezane korisnike.</value>
+    <comment>Poruka kada kompanija ima povezane korisnike.</comment>
+  </data>
+  <data name="CompanyDeletedSuccessfully" xml:space="preserve">
+    <value>Kompanija uspešno obrisana.</value>
+    <comment>Poruka kada je kompanija uspešno obrisana.</comment>
+  </data>
 </root>

@@ -115,5 +115,32 @@ namespace Pausalio.Application.Services.Implementations
             _unitOfWork.BusinessProfileRepository.Update(business);
             await _unitOfWork.SaveChangesAsync();
         }
+
+        public async Task DeleteAsync(Guid id)
+        {
+            var business = await _unitOfWork.BusinessProfileRepository
+               .FindFirstOrDefaultAsync(x => x.Id == id);
+
+            if (business == null)
+                throw new KeyNotFoundException(_localizationHelper.BusinesProfileNotFound);
+
+            var userBusinessProfiles = await _unitOfWork.UserBusinessProfileRepository
+                .FindAllAsync(x => x.BusinessProfileId == id);
+
+            if (userBusinessProfiles.Any())
+                throw new InvalidOperationException(_localizationHelper.CompanyHasAssociatedUsers);
+
+            _unitOfWork.BusinessProfileRepository.Remove(business);
+            await _unitOfWork.SaveChangesAsync();
+
+        }
+
+        public async Task<IEnumerable<BusinessProfileToReturnDto>> GetAllWithEntitiesAsync()
+        {
+            var businesses = await _unitOfWork.BusinessProfileRepository
+                .GetAllCompaniesWithEntities();
+
+            return _mapper.Map<IEnumerable<BusinessProfileToReturnDto>>(businesses);
+        }
     }
 }

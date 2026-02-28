@@ -195,8 +195,11 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngularApp", policy =>
     {
-        policy.WithOrigins("http://localhost:4200")
-              .AllowAnyHeader()
+        policy.WithOrigins(
+                 "http://localhost:4200",
+                 "https://app-pausalio.netlify.app"
+               )
+               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
     });
@@ -216,11 +219,11 @@ app.UseAuthorization();
 app.UseMiddleware<BusinessContextMiddleware>();
 // -------------------- Swagger UI --------------------
 app.UseSwagger();
-app.UseSwaggerUI(c =>
-{
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Pausalio API V1");
-    c.RoutePrefix = string.Empty;
-});
+//app.UseSwaggerUI(c =>
+//{
+//    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Pausalio API V1");
+//    c.RoutePrefix = string.Empty;
+//});
 
 app.MapControllers();
 

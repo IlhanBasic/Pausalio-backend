@@ -78,7 +78,7 @@ namespace Pausalio.API.Controllers
                 return BadRequest(new { success = false, message = _localizationHelper.InviteTokenCreateFail });
 
             var registerLink = $"{_urlSettings.Value.FrontendUrl}/api/auth/register";
-            var emailBody = _emailTemplateService.GetInviteEmailTemplate(businessInvite.Token, registerLink);
+            var emailBody = _emailTemplateService.GetInviteEmailTemplate(businessInvite.Token, registerLink, targetUser != null);
 
             await _emailService.SendEmailAsync(dto.Email, _localizationHelper.InviteTokenPageTitle, emailBody);
 

@@ -18,6 +18,12 @@ namespace Pausalio.Infrastructure.Repositories.Implementations
             _context = context;
         }
 
+        public async Task<IEnumerable<BusinessProfile>> GetAllCompaniesWithEntities()
+        {
+            var businessProfiles = await _context.BusinessProfiles.Include(x => x.ActivityCode).ToListAsync();
+            return businessProfiles;
+        }
+
         public async Task<BusinessProfile?> GetCompanyByIdWithEntities(Guid id)
         {
             var businessProfile = await _context.BusinessProfiles.Include(x=>x.ActivityCode).FirstOrDefaultAsync(x => x.Id == id);

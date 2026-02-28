@@ -10,5 +10,6 @@ namespace Pausalio.Infrastructure.Repositories.Interfaces
     public interface IBusinessProfileRepository : IRepository<BusinessProfile>
     {
         Task<BusinessProfile?> GetCompanyByIdWithEntities(Guid id);
+        Task<IEnumerable<BusinessProfile>> GetAllCompaniesWithEntities();
     }
 }

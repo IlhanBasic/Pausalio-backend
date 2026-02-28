@@ -33,23 +33,22 @@ namespace Pausalio.Application.Services.Implementations
 
             return template;
         }
-        public string GetInviteEmailTemplate(string token, string registerLink)
+        public string GetInviteEmailTemplate(string token, string registerLink, bool userExists)
         {
             var assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var path = Path.Combine(assemblyFolder!, "Templates", "InviteTokenEmail.html");
-
             if (!File.Exists(path))
                 throw new FileNotFoundException($"Verification success template not found at path: {path}");
 
             var template = File.ReadAllText(path);
-
             template = template.Replace("{{PageTitle}}", _localizationHelper.InviteTokenPageTitle)
                                .Replace("{{Title}}", _localizationHelper.InviteTokenTitle)
                                .Replace("{{Token}}", token)
                                .Replace("{{RegisterLink}}", registerLink)
                                .Replace("{{ButtonText}}", _localizationHelper.Register)
                                .Replace("{{Message}}", _localizationHelper.InviteTokenPageMessage)
-                               .Replace("{{Footer}}", _localizationHelper.InviteTokenFooter);
+                               .Replace("{{Footer}}", _localizationHelper.InviteTokenFooter)
+                               .Replace("{{ButtonHiddenClass}}", userExists ? "hidden" : "");
 
             return template;
         }

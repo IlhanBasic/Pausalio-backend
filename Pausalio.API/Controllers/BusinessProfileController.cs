@@ -113,7 +113,7 @@ namespace Pausalio.API.Controllers
         {
             try
             {
-                var companies = await _businessProfileService.GetAllAsync();
+                var companies = await _businessProfileService.GetAllWithEntitiesAsync();
 
                 return Ok(new { success = true, data = companies, count = companies.Count() });
             }
@@ -189,6 +189,29 @@ namespace Pausalio.API.Controllers
             {
                 return BadRequest(new { success = false, message = ex.Message });
             }
+        }
+
+        /// <summary>
+        /// Admin endpoint - briše kompaniju
+        /// </summary>
+        [HttpDelete("admin/{id:guid}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteCompany(Guid id)
+        {
+            try
+            {
+                await _businessProfileService.DeleteAsync(id);
+                return Ok(new { success = true, message = _localizationHelper.CompanyDeletedSuccessfully });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { success = false, message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+
         }
     }
 }

@@ -511,5 +511,9 @@ namespace Pausalio.Shared.Localization
         public string FileMaxSizeIs25Mb => _localizer["FileMaxSizeIs25Mb"];
         public string ExpenseAlreadyExists => _localizer["ExpenseAlreadyExists"];
         public string BankAccountAlreadyExists => _localizer["BankAccountAlreadyExists"];
+
+        public string CompanyHasAssociatedUsers => _localizer["CompanyHasAssociatedUsers"];
+
+        public string CompanyDeletedSuccessfully => _localizer["CompanyDeletedSuccessfully"];
     }
 }
