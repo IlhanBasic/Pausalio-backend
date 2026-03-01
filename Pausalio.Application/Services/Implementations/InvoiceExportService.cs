@@ -294,15 +294,22 @@ namespace Pausalio.Application.Services.Implementations
                                 });
                             });
 
-                            // NOTES
+                            // NOTES — FIX: zamenjeno BorderLeft sa Row layout
+                            // BorderLeft + BorderColor koristi canvas_draw_complex_border koji puca na Azure
                             if (!string.IsNullOrEmpty(data.Notes))
                             {
                                 col.Item().PaddingTop(16).Background("#fef9c3")
-                                    .BorderLeft(4).BorderColor("#f59e0b")
-                                    .Padding(12).Column(c =>
+                                    .Padding(12).Row(row =>
                                     {
-                                        c.Item().Text("NAPOMENA").FontSize(8).Bold().FontColor("#92400e");
-                                        c.Item().Text(data.Notes).FontSize(10).FontColor("#78350f");
+                                        // Leva žuta traka kao poseban element umesto BorderLeft
+                                        row.ConstantItem(4).Background("#f59e0b");
+                                        row.RelativeItem().PaddingLeft(8).Column(c =>
+                                        {
+                                            c.Item().Text("NAPOMENA")
+                                                .FontSize(8).Bold().FontColor("#92400e");
+                                            c.Item().Text(data.Notes)
+                                                .FontSize(10).FontColor("#78350f");
+                                        });
                                     });
                             }
                         });
@@ -331,7 +338,6 @@ namespace Pausalio.Application.Services.Implementations
             var pdfBytes = await GeneratePdfAsync(invoiceId);
             var subject = $"Faktura {data.InvoiceNumber} — {data.BusinessName}";
 
-            // Email body
             var body = BuildEmailBody(data);
 
             foreach (var email in dto.Emails)

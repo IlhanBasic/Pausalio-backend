@@ -25,7 +25,7 @@ using System.Text.Json.Serialization;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpContextAccessor();
 QuestPDF.Settings.License = LicenseType.Community;
-QuestPDF.Settings.EnableCaching = false;
+QuestPDF.Settings.EnableCaching = true;
 QuestPDF.Settings.CheckIfAllTextGlyphsAreAvailable = false;
 // -------------------- Serilog --------------------
 Log.Logger = new LoggerConfiguration()

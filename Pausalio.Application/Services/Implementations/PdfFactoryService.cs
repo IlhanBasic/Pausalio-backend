@@ -12,22 +12,41 @@ namespace Pausalio.Application.Services.Implementations
     {
         private static readonly object _lockObject = new object();
 
-        public byte[] GeneratePdf(Func<Document> documentFactory) // Promenjeno IDocument -> Document
+        public byte[] GeneratePdf(Func<Document> documentFactory)
         {
             lock (_lockObject)
             {
                 try
                 {
                     var document = documentFactory();
-                    return document.GeneratePdf(); // Ovo sada radi
+                    return document.GeneratePdf();
                 }
                 catch (Exception ex)
                 {
-                    throw new InvalidOperationException("Greška pri generisanju PDF-a: " + ex.Message, ex);
+                    var fullMessage = BuildExceptionMessage(ex);
+                    throw new InvalidOperationException("Greška pri generisanju PDF-a: " + fullMessage, ex);
                 }
             }
         }
 
-       
+        private string BuildExceptionMessage(Exception ex)
+        {
+            var sb = new StringBuilder();
+            var current = ex;
+            int depth = 0;
+
+            while (current != null && depth < 5)
+            {
+                sb.AppendLine($"[Level {depth}]: {current.GetType().Name}: {current.Message}");
+                if (current.StackTrace != null)
+                    sb.AppendLine(current.StackTrace.Split('\n').FirstOrDefault());
+                current = current.InnerException;
+                depth++;
+            }
+
+            return sb.ToString();
+        }
+
+
     }
 }
