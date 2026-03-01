@@ -63,7 +63,7 @@ namespace Pausalio.Infrastructure.Persistence.Configurations
                 .IsRequired(false);
 
             builder.HasIndex(x => x.BusinessProfileId);
-            builder.HasIndex(x => x.Email).IsUnique();
+            builder.HasIndex(x => new { x.Email, x.BusinessProfileId }).IsUnique();
             builder.HasIndex(x => new { x.City, x.IsActive });
             builder.HasIndex(x => new { x.Name, x.BusinessProfileId });
 

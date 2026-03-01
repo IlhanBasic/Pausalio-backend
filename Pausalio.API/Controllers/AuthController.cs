@@ -109,7 +109,7 @@ namespace Pausalio.API.Controllers
                 if (business == null)
                 {
                     await transaction.RollbackAsync();
-                    return BadRequest(new { success = false, message = _localizationHelper.BusinesProfileNotFound });
+                    throw new Exception(_localizationHelper.BusinesProfileNotFound);
                 }
 
                 var userBusiness = await _userProfileService.AddUserToBusinessProfile(
@@ -120,8 +120,7 @@ namespace Pausalio.API.Controllers
 
                 if (userBusiness == null)
                 {
-                    await transaction.RollbackAsync();
-                    return BadRequest(new { success = false, message = _localizationHelper.FailedToAddUserToBusiness });
+                    throw new Exception(_localizationHelper.FailedToAddUserToBusiness);
                 }
 
                 await _userProfileService.DeleteBusinessInvite(invite.Id);
@@ -166,15 +165,16 @@ namespace Pausalio.API.Controllers
             try
             {
                 var newUser = await _userProfileService.CreateUserProfile(dto.User, UserRole.RegularUser);
-                
+                if (newUser == null)
+                    throw new Exception(_localizationHelper.RegistrationFailed);
                 var business = await _userProfileService.GetCompanyById(invite.BusinessProfileId);
                 if (business == null)
-                    return BadRequest(new { success = false, message = _localizationHelper.BusinesProfileNotFound});
+                    throw new Exception (_localizationHelper.BusinesProfileNotFound);
 
                 var userBusiness = await _userProfileService.AddUserToBusinessProfile(newUser!.Id, business.Id, UserBusinessRole.Assistant);
 
                 if (userBusiness == null)
-                    return BadRequest(new { success = false, message = _localizationHelper.RegistrationFailed});
+                    throw new Exception(_localizationHelper.RegistrationFailed);
                 await _userProfileService.DeleteBusinessInvite(invite.Id);
                 var verificationToken = Guid.NewGuid().ToString();
                 await _userProfileService.SetEmailVerificationToken(
@@ -215,23 +215,20 @@ namespace Pausalio.API.Controllers
                 var newUser = await _userProfileService.CreateUserProfile(dto.User, UserRole.RegularUser);
                 if (newUser == null)
                 {
-                    await transaction.RollbackAsync();
-                    return BadRequest(new { success = false, message = _localizationHelper.RegistrationFailed});
+                    throw new Exception(_localizationHelper.RegistrationFailed);
                 }
 
                 var business = await _userProfileService.CreateBusinessProfileOnly(dto.Business);
                 if (business == null)
                 {
-                    await transaction.RollbackAsync();
-                    return BadRequest(new { success = false, message = _localizationHelper.RegistrationFailed});
+                    throw new Exception(_localizationHelper.RegistrationFailed);
                 }
 
                 var userBusinessProfile = await _userProfileService.AddUserToBusinessProfile(newUser.Id, business.Id, UserBusinessRole.Owner);
 
                 if (userBusinessProfile == null)
                 {
-                    await transaction.RollbackAsync();
-                    return BadRequest(new { success = false, message =_localizationHelper.RegistrationFailed});
+                    throw new Exception(_localizationHelper.RegistrationFailed);
                 }
 
                 var verificationToken = Guid.NewGuid().ToString();
