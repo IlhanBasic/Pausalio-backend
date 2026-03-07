@@ -66,6 +66,7 @@ builder.Services.AddScoped<IUserProfileRepository, UserProfileRepository>();
 builder.Services.AddScoped<IBusinessInviteRepository, BusinessInviteRepository>();
 
 // -------------------- Configuration --------------------
+builder.Services.Configure<OpenRouterSettings>(builder.Configuration.GetSection("OpenRouterSettings"));
 builder.Services.Configure<ExchangeRateSettings>(builder.Configuration.GetSection("ExchangeRateSettings"));
 builder.Services.Configure<AzureBlobStorageSettings>(builder.Configuration.GetSection("AzureBlobStorageSettings"));
 builder.Services.Configure<UrlSettings>(builder.Configuration.GetSection("UrlSettings"));
@@ -139,6 +140,8 @@ builder.Services.AddScoped<IUploadFileService, UploadFileService>();
 builder.Services.AddScoped<IExchangeRateService, ExchangeRateService>();
 builder.Services.AddScoped<IInvoiceExportService, InvoiceExportService>();
 builder.Services.AddSingleton<IPdfFactoryService, PdfFactoryService>();
+builder.Services.AddHttpClient<IAIAssistantService, AIAssistantService>();
+builder.Services.AddScoped<IFinancialContextService, FinancialContextService>();
 // -------------------- FluentValidation --------------------
 builder.Services.AddValidatorsFromAssemblyContaining<AddBankAccountDtoValidator>();
 builder.Services.AddFluentValidationAutoValidation();
@@ -222,11 +225,11 @@ app.UseAuthorization();
 app.UseMiddleware<BusinessContextMiddleware>();
 // -------------------- Swagger UI --------------------
 app.UseSwagger();
-//app.UseSwaggerUI(c =>
-//{
-//    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Pausalio API V1");
-//    c.RoutePrefix = string.Empty;
-//});
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Pausalio API V1");
+    c.RoutePrefix = string.Empty;
+});
 
 app.MapControllers();
 
