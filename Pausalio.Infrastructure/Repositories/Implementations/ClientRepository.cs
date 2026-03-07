@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Pausalio.Domain.Entities;
+using Pausalio.Infrastructure.Extensions;
 using Pausalio.Infrastructure.Persistence;
 using Pausalio.Infrastructure.Repositories.Interfaces;
 using System;
@@ -21,7 +22,7 @@ namespace Pausalio.Infrastructure.Repositories.Implementations
 
         public async Task<IList<Client>> GetAllClientsWithEntities(Expression<Func<Client, bool>> predicate)
         {
-            var clients = await _context.Clients.Include(x=>x.Country).Where(predicate).ToListAsync();
+            var clients = await _context.Clients.AddIncludes().Where(predicate).ToListAsync();
             return clients;
         }
     }

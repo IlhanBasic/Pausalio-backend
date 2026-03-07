@@ -272,10 +272,10 @@ namespace Pausalio.API.Controllers
             return Ok(new { success = true });
         }
 
-        [HttpGet("resend-verification")]
-        public async Task<IActionResult> ResendVerificationEmail([FromQuery] string email)
+        [HttpPost("resend-verification")]
+        public async Task<IActionResult> ResendVerificationEmail(ResendVerificationDto resendVerificationDto)
         {
-            var userProfile = await _userProfileService.GetByEmailAsync(email);
+            var userProfile = await _userProfileService.GetByEmailAsync(resendVerificationDto.Email);
             if (userProfile == null)
                 return BadRequest(new { success = false, message = _localizationHelper.UserNotFound});
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Pausalio.Domain.Entities;
+using Pausalio.Infrastructure.Extensions;
 using Pausalio.Infrastructure.Persistence;
 using Pausalio.Infrastructure.Repositories.Interfaces;
 using System;
@@ -22,42 +23,27 @@ namespace Pausalio.Infrastructure.Repositories.Implementations
         public async Task<IList<Invoice>> FindInvoicesWithEntities(Expression<Func<Invoice, bool>> predicate)
         {
             return await _context.Invoices
-                .Include(x => x.Items)
-                .Include(x => x.BusinessProfile)
-                .Include(x => x.Client)
-                .Include(x => x.Payments)
-                .Where(predicate)
+                .AddIncludes()
                 .ToListAsync();
         }
 
         public async Task<Invoice?> FindInvoiceWithEntities(Expression<Func<Invoice, bool>> predicate)
         {
             return await _context.Invoices
-                .Include(x => x.Items)
-                .Include(x => x.BusinessProfile)
-                .Include(x => x.Client)
-                .Include(x => x.Payments)
+                .AddIncludes()
                 .FirstOrDefaultAsync(predicate);
         }
         public async Task<IList<Invoice>> FindInvoicesWithEntitiesAsync(Expression<Func<Invoice, bool>> predicate)
         {
             return await _context.Invoices
-                .Include(x => x.Client)
-                    .ThenInclude(c => c.Country)
-                .Include(x => x.Items)
-                .Include(x => x.Payments)
-                .Where(predicate)
+                .AddIncludes()
                 .ToListAsync();
         }
 
         public async Task<Invoice?> FindInvoiceWithDetailsAsync(Expression<Func<Invoice, bool>> predicate)
         {
             return await _context.Invoices
-                .Include(x => x.Client)
-                    .ThenInclude(c => c.Country)
-                .Include(x => x.Items)
-                .Include(x => x.Payments)
-                .Include(x => x.BusinessProfile)
+                .AddIncludes()
                 .FirstOrDefaultAsync(predicate);
         }
     }

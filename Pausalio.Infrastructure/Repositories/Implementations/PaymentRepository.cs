@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Pausalio.Domain.Entities;
+using Pausalio.Infrastructure.Extensions;
 using Pausalio.Infrastructure.Persistence;
 using Pausalio.Infrastructure.Repositories.Interfaces;
 using System;
@@ -21,27 +22,14 @@ namespace Pausalio.Infrastructure.Repositories.Implementations
         public async Task<IEnumerable<Payment>> FindPaymentsWithEntitiesAsync(Expression<Func<Payment, bool>> predicate)
         {
             return await _context.Payments
-                .Include(p => p.Invoice)
-                    .ThenInclude(i => i!.Client)
-                .Include(p => p.Invoice)
-                    .ThenInclude(i => i!.Items)
-                .Include(p => p.TaxObligation)
-                .Include(p => p.Expense)
-                .Include(p => p.BankAccount)
-                .Where(predicate)
+                .AddIncludes()
                 .ToListAsync();
         }
 
         public async Task<Payment?> FindPaymentWithEntitiesAsync(Expression<Func<Payment, bool>> predicate)
         {
             return await _context.Payments
-                .Include(p => p.Invoice)
-                    .ThenInclude(i => i!.Client)
-                .Include(p => p.Invoice)
-                    .ThenInclude(i => i!.Items)
-                .Include(p => p.TaxObligation)
-                .Include(p => p.Expense)
-                .Include(p => p.BankAccount)
+                .AddIncludes()
                 .FirstOrDefaultAsync(predicate);
         }
     }

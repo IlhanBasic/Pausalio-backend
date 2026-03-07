@@ -28,6 +28,7 @@ namespace Pausalio.Infrastructure.Repositories.Interfaces
         ITaxObligationRepository TaxObligationRepository { get; }
         IUserProfileRepository UserProfileRepository { get; }
         IBusinessInviteRepository BusinessInviteRepository { get; }
+        IChatMessageRepository ChatMessageRepository { get; }
         Task<int> SaveChangesAsync();
         Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
     }   

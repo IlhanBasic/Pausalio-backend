@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Pausalio.API.Hubs;
 using Pausalio.API.Middlewares;
 using Pausalio.Application.Mappings;
 using Pausalio.Application.Services.Implementations;
@@ -64,6 +65,8 @@ builder.Services.AddScoped<IReminderRepository, ReminderRepository>();
 builder.Services.AddScoped<ITaxObligationRepository, TaxObligationRepository>();
 builder.Services.AddScoped<IUserProfileRepository, UserProfileRepository>();
 builder.Services.AddScoped<IBusinessInviteRepository, BusinessInviteRepository>();
+builder.Services.AddScoped<IChatMessageRepository, ChatMessageRepository>();
+
 
 // -------------------- Configuration --------------------
 builder.Services.Configure<OpenRouterSettings>(builder.Configuration.GetSection("OpenRouterSettings"));
@@ -99,6 +102,21 @@ builder.Services.AddAuthentication(options =>
 
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(key)
+    };
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.HttpContext.Request.Path;
+
+            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+            {
+                context.Token = accessToken;
+            }
+
+            return Task.CompletedTask;
+        }
     };
 });
 
@@ -142,6 +160,7 @@ builder.Services.AddScoped<IInvoiceExportService, InvoiceExportService>();
 builder.Services.AddSingleton<IPdfFactoryService, PdfFactoryService>();
 builder.Services.AddHttpClient<IAIAssistantService, AIAssistantService>();
 builder.Services.AddScoped<IFinancialContextService, FinancialContextService>();
+builder.Services.AddScoped<IChatService, ChatService>();
 // -------------------- FluentValidation --------------------
 builder.Services.AddValidatorsFromAssemblyContaining<AddBankAccountDtoValidator>();
 builder.Services.AddFluentValidationAutoValidation();
@@ -211,6 +230,9 @@ builder.Services.AddCors(options =>
     });
 });
 
+// -------------------- SignalR --------------------
+builder.Services.AddSignalR();
+
 // -------------------- Build Application --------------------
 var app = builder.Build();
 
@@ -232,6 +254,7 @@ app.UseSwaggerUI(c =>
 });
 
 app.MapControllers();
+app.MapHub<ChatHub>("/hubs/chat");
 
 // -------------------- Run --------------------
 app.Run();

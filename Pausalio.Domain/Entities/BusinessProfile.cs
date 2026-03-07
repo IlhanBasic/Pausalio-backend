@@ -34,6 +34,7 @@ namespace Pausalio.Domain.Entities
         public ICollection<Reminder> Reminders { get; set; } = new List<Reminder>();
         public ICollection<Item> Items { get; set; } = new List<Item>();
         public ICollection<BusinessInvite> BusinessInvites { get; set; } = new List<BusinessInvite>();
+        public ICollection<ChatMessage> ChatMessages { get; set; } = new List<ChatMessage>();
 
     }
 }
