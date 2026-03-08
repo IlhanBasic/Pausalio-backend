@@ -247,11 +247,11 @@ app.UseAuthorization();
 app.UseMiddleware<BusinessContextMiddleware>();
 // -------------------- Swagger UI --------------------
 app.UseSwagger();
-app.UseSwaggerUI(c =>
-{
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Pausalio API V1");
-    c.RoutePrefix = string.Empty;
-});
+//app.UseSwaggerUI(c =>
+//{
+//    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Pausalio API V1");
+//    c.RoutePrefix = string.Empty;
+//});
 
 app.MapControllers();
 app.MapHub<ChatHub>("/hubs/chat");

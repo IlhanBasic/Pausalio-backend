@@ -27,7 +27,7 @@ namespace Pausalio.Functions
         }
 
         [Function("ReminderNotificationFunction")]
-        public async Task Run([TimerTrigger("0 */1 * * * *")] TimerInfo myTimer)
+        public async Task Run([TimerTrigger("0 0 9 * * *")] TimerInfo myTimer)
         {
             _logger.LogInformation($"Reminder job pokrenut: {DateTime.UtcNow}");
 

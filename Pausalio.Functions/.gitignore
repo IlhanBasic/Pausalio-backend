@@ -261,3 +261,7 @@ AzuriteConfig
 # Visual Studio Service Dependencies
 Properties/serviceDependencies.local.json
 Properties/serviceDependencies.local.json.user
+Properties/serviceDependencies.local.json
+Properties/serviceDependencies.local.json.user
+Properties/PublishProfiles/
+Properties/launchSettings.json
