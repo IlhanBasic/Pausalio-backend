@@ -23,8 +23,17 @@ namespace Pausalio.API.Controllers
         [Authorize]
         public async Task<IActionResult> SendMessage([FromBody] UserChatMessage message)
         {
-            var response = await _aiAssistentService.SendMessageAsync(message);
-            return Ok(response);
+            try
+            {
+                var response = await _aiAssistentService.SendMessageAsync(message);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                var errorMessage = _localizationHelper.AIAssistantResponseError;
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = errorMessage, Details = ex.Message });
+            }
+           
         }
     }
 }

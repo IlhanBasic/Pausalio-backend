@@ -521,5 +521,7 @@ namespace Pausalio.Shared.Localization
         public string YearlyIncomeExceedsSelfEmployedLimit => _localizer["YearlyIncomeExceedsSelfEmployedLimit"];
 
         public string AccountantRequiredWarning => _localizer["AccountantRequiredWarning"];
+
+        public string AIAssistantResponseError => _localizer["AIAssistantResponseError"];
     }
 }

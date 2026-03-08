@@ -2,6 +2,7 @@
 {
     public interface ILocalizationHelper
     {
+        string AIAssistantResponseError { get; }
         string YearlyIncomeExceedsPausalLimit { get; }
         string YearlyIncomeExceedsSelfEmployedLimit { get; }
         string AccountantRequiredWarning { get; }

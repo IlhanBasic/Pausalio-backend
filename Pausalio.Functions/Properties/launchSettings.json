@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "Pausalio.Functions": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7178",
+      "launchBrowser": false
+    }
+  }
+}

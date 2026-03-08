@@ -18,8 +18,12 @@ namespace Pausalio.Application.Services.Implementations
         public async Task SendEmailAsync(string to, string subject, string body)
         {
             using var client = CreateSmtpClient();
-            var mailMessage = new MailMessage(_smtpSettings.From, to, subject, body)
+            var mailMessage = new MailMessage
             {
+                From = new MailAddress(_smtpSettings.From, "Pausalio"),
+                To = { to },
+                Subject = subject,
+                Body = body,
                 IsBodyHtml = true
             };
             await client.SendMailAsync(mailMessage);
@@ -33,8 +37,12 @@ namespace Pausalio.Application.Services.Implementations
             string attachmentFileName)
         {
             using var client = CreateSmtpClient();
-            var mailMessage = new MailMessage(_smtpSettings.From, to, subject, body)
+            var mailMessage = new MailMessage
             {
+                From = new MailAddress(_smtpSettings.From, "Pausalio"),
+                To = { to },
+                Subject = subject,
+                Body = body,
                 IsBodyHtml = true
             };
 

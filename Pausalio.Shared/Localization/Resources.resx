@@ -1349,4 +1349,8 @@
     <value>UPOZORENJE: Godišnji prihod je premašio 6.000.000 RSD. Prema zakonu morate angažovati računovođu.</value>
     <comment>Poruka o limitu</comment>
   </data>
+  <data name="AIAssistantResponseError" xml:space="preserve">
+    <value>Greška servera. AI Asistent nije u funkciji.</value>
+    <comment>Poruka o grešci servera kada ai asistent nije u funkciji.</comment>
+  </data>
 </root>

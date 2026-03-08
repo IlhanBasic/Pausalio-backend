@@ -1,4 +1,5 @@
-﻿using Pausalio.Application.Services.Interfaces;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Pausalio.Application.Services.Interfaces;
 using Pausalio.Infrastructure.Repositories.Interfaces;
 using Pausalio.Shared.Enums;
 using System;
@@ -13,11 +14,16 @@ namespace Pausalio.Application.Services.Implementations
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IMemoryCache _cache;
 
-        public FinancialContextService(IUnitOfWork unitOfWork, ICurrentUserService currentUserService)
+        public FinancialContextService(
+            IUnitOfWork unitOfWork,
+            ICurrentUserService currentUserService,
+            IMemoryCache cache)
         {
             _unitOfWork = unitOfWork;
             _currentUserService = currentUserService;
+            _cache = cache;
         }
 
         public async Task<string> BuildContextAsync()
@@ -25,6 +31,11 @@ namespace Pausalio.Application.Services.Implementations
             var companyIdString = _currentUserService.GetCompany();
             if (!Guid.TryParse(companyIdString, out Guid companyId))
                 throw new UnauthorizedAccessException();
+
+            var cacheKey = $"financial_context_{companyId}";
+
+            if (_cache.TryGetValue(cacheKey, out string? cached) && cached != null)
+                return cached;
 
             var currentYear = DateTime.UtcNow.Year;
             var currentMonth = DateTime.UtcNow.Month;
@@ -73,7 +84,7 @@ namespace Pausalio.Application.Services.Implementations
             sb.AppendLine($"Ukupno naplaćeno: {totalPaidRSD:N0} RSD");
             sb.AppendLine($"Ukupno nenaplaćeno: {totalUnpaidRSD:N0} RSD");
             sb.AppendLine($"Prihod u {currentYear}. godini: {yearlyIncomeRSD:N0} RSD");
-            sb.AppendLine($"Limit paušalnog statusa: 8.000.000 RSD");
+            sb.AppendLine($"Paušalni limit: 8.000.000 RSD");
             sb.AppendLine($"Preostalo do limita: {(8_000_000 - yearlyIncomeRSD):N0} RSD");
             sb.AppendLine();
             sb.AppendLine("=== TROŠKOVI ===");
@@ -85,7 +96,11 @@ namespace Pausalio.Application.Services.Implementations
             sb.AppendLine($"Ukupno neplaćenih poreza: {pendingTaxes:N0} RSD");
             sb.AppendLine($"Zakašneli porezi: {overdueTaxes:N0} RSD");
 
-            return sb.ToString();
+            var result = sb.ToString();
+
+            _cache.Set(cacheKey, result, TimeSpan.FromMinutes(5));
+
+            return result;
         }
     }
 }
