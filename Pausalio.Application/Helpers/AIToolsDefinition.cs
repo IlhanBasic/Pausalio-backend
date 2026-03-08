@@ -236,6 +236,104 @@
                             required = new[] { "year" }
                         }
                     }
+                },
+                new {
+                    type = "function",
+                    function = new {
+                        name = "get_top_services",
+                        description = "Vraća najprodavanije usluge ili proizvode sortirane po ukupnom prihodu. Koristi kada korisnik pita koje usluge najviše zarađuje, šta najviše prodaje ili koje stavke su najpopularnije.",
+                        parameters = new {
+                            type = "object",
+                            properties = new {
+                                top = new {
+                                    type = "integer",
+                                    description = "Koliko usluga da vrati. Ako korisnik ne kaže broj, koristi 5."
+                                },
+                                itemType = new {
+                                    type = "string",
+                                    description = "Opcioni filter. Moguće vrednosti: Product, Service. Ako nije navedeno, vraća sve."
+                                },
+                                year = new {
+                                    type = "integer",
+                                    description = "Opciona godina. Ako nije navedena, uzima sve fakture."
+                                },
+                                clientId = new {
+                                    type = "string",
+                                    description = "Opcioni filter po klijentu (GUID). Koristi samo ako korisnik pita za određenog klijenta."
+                                }
+                            },
+                            required = new[] { "top" }
+                        }
+                    }
+                },
+
+                new {
+                    type = "function",
+                    function = new {
+                        name = "get_actual_cashflow",
+                        description = "Vraća stvarno naplaćen novac po mesecima na osnovu datuma plaćanja, ne datuma fakture. Koristi kada korisnik pita koliko je novca stvarno ušlo, o likvidnosti ili stvarnom cash flowu.",
+                        parameters = new {
+                            type = "object",
+                            properties = new {
+                                year = new {
+                                    type = "integer",
+                                    description = "Godina za koju se traži cash flow. Ako nije navedena koristi tekuću godinu."
+                                },
+                                month = new {
+                                    type = "integer",
+                                    description = "Opcioni mesec (1-12). Ako nije naveden, vraća sve mesece za godinu."
+                                }
+                            },
+                            required = new[] { "year" }
+                        }
+                    }
+                },
+
+                new {
+                    type = "function",
+                    function = new {
+                        name = "get_avg_payment_delay_by_client",
+                        description = "Vraća prosečno kašnjenje plaćanja po klijentu. Koristi kada korisnik pita koji klijenti kasne sa plaćanjem, ko je najpouzdaniji ili najsporiji platiša.",
+                        parameters = new {
+                            type = "object",
+                            properties = new {
+                                top = new {
+                                    type = "integer",
+                                    description = "Koliko klijenata da vrati. Ako nije navedeno, koristi 5."
+                                }
+                            },
+                            required = new string[] { }
+                        }
+                    }
+                },
+                new {
+                    type = "function",
+                    function = new {
+                        name = "get_tax_delay_analysis",
+                        description = "Vraća analizu kašnjenja plaćanja poreza po tipu — koliko puta je kasnjeno, prosečno dana kašnjenja. Koristi kada korisnik pita o disciplini plaćanja poreza ili koji porezi mu najčešće kasne.",
+                        parameters = new {
+                            type = "object",
+                            properties = new { },
+                            required = new string[] { }
+                        }
+                    }
+                },
+                new {
+                    type = "function",
+                    function = new {
+                        name = "get_client_service_breakdown",
+                        description = "Vraća detaljan pregled koje usluge određeni klijent kupuje, koliko često i ukupno potrošeno. Koristi kada korisnik pita šta određeni klijent kupuje ili kako izgleda saradnja sa njim.",
+                        parameters = new {
+                            type = "object",
+                            properties = new {
+                                clientName = new {
+                                    type = "string",
+                                    description = "Ime klijenta. Koristi partial match — ako korisnik kaže 'ABC', traži klijenta čije ime sadrži 'ABC'."
+                                }
+                            },
+                            required = new[] { "clientName" }
+                        }
+                    }
                 }
             };
         }

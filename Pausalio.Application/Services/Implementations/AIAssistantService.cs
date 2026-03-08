@@ -16,6 +16,7 @@ namespace Pausalio.Application.Services.Implementations
         private readonly IInvoiceService _invoiceService;
         private readonly IExpenseService _expenseService;
         private readonly ITaxObligationService _taxObligationService;
+        private readonly IPaymentService _paymentService;
         private readonly IOptions<OpenRouterSettings> _configuration;
         private readonly HttpClient _httpClient;
 
@@ -23,7 +24,8 @@ namespace Pausalio.Application.Services.Implementations
             IFinancialContextService financialContextService,
             IInvoiceService invoiceService,
             IExpenseService expenseService,
-            ITaxObligationService taxObligationService,
+            IPaymentService paymentService,
+        ITaxObligationService taxObligationService,
             IOptions<OpenRouterSettings> configuration,
             HttpClient httpClient)
         {
@@ -33,6 +35,7 @@ namespace Pausalio.Application.Services.Implementations
             _taxObligationService = taxObligationService;
             _configuration = configuration;
             _httpClient = httpClient;
+            _paymentService = paymentService;
         }
 
         public async Task<AIResponseDto> SendMessageAsync(UserChatMessage message)
@@ -113,7 +116,6 @@ namespace Pausalio.Application.Services.Implementations
 
             switch (functionName)
             {
-                // ===== KLIJENTI =====
                 case "get_top_clients":
                     {
                         var top = args.GetProperty("top").GetInt32();
@@ -143,7 +145,6 @@ namespace Pausalio.Application.Services.Implementations
                         return JsonSerializer.Serialize(topClients);
                     }
 
-                // ===== FAKTURE =====
                 case "get_invoices_by_status":
                     {
                         var statusStr = args.GetProperty("status").GetString()!;
@@ -234,7 +235,6 @@ namespace Pausalio.Application.Services.Implementations
                         return JsonSerializer.Serialize(summary);
                     }
 
-                // ===== TROŠKOVI =====
                 case "get_expenses_by_status":
                     {
                         var statusStr = args.GetProperty("status").GetString()!;
@@ -260,7 +260,6 @@ namespace Pausalio.Application.Services.Implementations
                         return JsonSerializer.Serialize(summary);
                     }
 
-                // ===== POREZI =====
                 case "get_tax_obligations_by_year":
                     {
                         var year = args.GetProperty("year").GetInt32();
@@ -330,7 +329,6 @@ namespace Pausalio.Application.Services.Implementations
                         return JsonSerializer.Serialize(summary);
                     }
 
-                // ===== PRIHODI =====
                 case "get_monthly_income":
                     {
                         var year = args.GetProperty("year").GetInt32();
@@ -369,6 +367,173 @@ namespace Pausalio.Application.Services.Implementations
                             UkupniPrihodiRSD = ukupniPrihodi,
                             UkupniTroskoviRSD = ukupniTroskovi,
                             NetoPrihodRSD = ukupniPrihodi - ukupniTroskovi
+                        };
+
+                        return JsonSerializer.Serialize(result);
+                    }
+                case "get_top_services":
+                    {
+                        var top = args.GetProperty("top").GetInt32();
+
+                        ItemType? itemTypeFilter = null;
+                        if (args.TryGetProperty("itemType", out var itemTypeProp))
+                            if (Enum.TryParse<ItemType>(itemTypeProp.GetString(), out var parsedItemType))
+                                itemTypeFilter = parsedItemType;
+
+                        int? year = null;
+                        if (args.TryGetProperty("year", out var yearProp))
+                            year = yearProp.GetInt32();
+
+                        string? clientId = null;
+                        if (args.TryGetProperty("clientId", out var clientIdProp))
+                            clientId = clientIdProp.GetString();
+
+                        var invoices = await _invoiceService.GetAllAsync();
+
+                        var result = invoices
+                            .Where(x => x.InvoiceStatus != InvoiceStatus.Cancelled)
+                            .Where(x => year == null || x.IssueDate.Year == year)
+                            .Where(x => clientId == null || x.Client.Id.ToString() == clientId)
+                            .SelectMany(x => x.Items)
+                            .Where(x => itemTypeFilter == null || x.ItemType == itemTypeFilter)
+                            .GroupBy(x => new { x.Name, x.ItemType })
+                            .Select(g => new
+                            {
+                                Naziv = g.Key.Name,
+                                Tip = g.Key.ItemType.ToString(),
+                                UkupanPrihodRSD = g.Sum(x => x.TotalPrice),
+                                BrojPojavljivanja = g.Count(),
+                                UkupnoKolicina = g.Sum(x => x.Quantity)
+                            })
+                            .OrderByDescending(x => x.UkupanPrihodRSD)
+                            .Take(top);
+
+                        return JsonSerializer.Serialize(result);
+                    }
+
+                case "get_actual_cashflow":
+                    {
+                        var year = args.GetProperty("year").GetInt32();
+
+                        int? month = null;
+                        if (args.TryGetProperty("month", out var monthProp))
+                            month = monthProp.GetInt32();
+
+                        var payments = await _paymentService.GetAllAsync();
+
+                        var result = payments
+                            .Where(x => x.PaymentType == PaymentType.InvoicePayment)
+                            .Where(x => x.PaymentDate.Year == year)
+                            .Where(x => month == null || x.PaymentDate.Month == month)
+                            .GroupBy(x => x.PaymentDate.Month)
+                            .Select(g => new
+                            {
+                                Mesec = g.Key,
+                                UkupnoNaplaćenoRSD = g.Sum(x => x.AmountRSD),
+                                BrojUplata = g.Count()
+                            })
+                            .OrderBy(x => x.Mesec);
+
+                        return JsonSerializer.Serialize(result);
+                    }
+
+                case "get_avg_payment_delay_by_client":
+                    {
+                        int? top = null;
+                        if (args.TryGetProperty("top", out var topProp))
+                            top = topProp.GetInt32();
+
+                        var payments = await _paymentService.GetAllAsync();
+
+                        var result = payments
+                            .Where(x => x.PaymentType == PaymentType.InvoicePayment
+                                && x.Invoice != null
+                                && x.Invoice.DueDate.HasValue)
+                            .GroupBy(x => x.Invoice!.Client.Name)
+                            .Select(g => new
+                            {
+                                Klijent = g.Key,
+                                ProsečnoKašnjenjeDana = (int)g
+                                    .Where(x => x.PaymentDate > x.Invoice!.DueDate!.Value)
+                                    .Select(x => (x.PaymentDate - x.Invoice!.DueDate!.Value).TotalDays)
+                                    .DefaultIfEmpty(0)
+                                    .Average(),
+                                NajdužeKašnjenjeDana = (int)g
+                                    .Where(x => x.PaymentDate > x.Invoice!.DueDate!.Value)
+                                    .Select(x => (x.PaymentDate - x.Invoice!.DueDate!.Value).TotalDays)
+                                    .DefaultIfEmpty(0)
+                                    .Max(),
+                                BrojFaktura = g.Count(),
+                                BrojKasnihPlacanja = g.Count(x => x.PaymentDate > x.Invoice!.DueDate!.Value)
+                            })
+                            .OrderByDescending(x => x.ProsečnoKašnjenjeDana)
+                            .Take(top ?? 5);
+
+                        return JsonSerializer.Serialize(result);
+                    }
+
+                case "get_tax_delay_analysis":
+                    {
+                        var obligations = await _taxObligationService.GetAllAsync();
+
+                        var result = obligations
+                            .Where(x => x.Status == TaxObligationStatus.Paid && x.PaidDate.HasValue)
+                            .GroupBy(x => x.Type)
+                            .Select(g => new
+                            {
+                                TipPoreza = g.Key.ToString(),
+                                BrojPlacanja = g.Count(),
+                                BrojKasnihPlacanja = g.Count(x => x.PaidDate!.Value > x.DueDate),
+                                ProsečnoKašnjenjeDana = (int)g
+                                    .Where(x => x.PaidDate!.Value > x.DueDate)
+                                    .Select(x => (x.PaidDate!.Value - x.DueDate).TotalDays)
+                                    .DefaultIfEmpty(0)
+                                    .Average(),
+                                NajdužeKašnjenjeDana = (int)g
+                                    .Where(x => x.PaidDate!.Value > x.DueDate)
+                                    .Select(x => (x.PaidDate!.Value - x.DueDate).TotalDays)
+                                    .DefaultIfEmpty(0)
+                                    .Max()
+                            })
+                            .OrderByDescending(x => x.ProsečnoKašnjenjeDana);
+
+                        return JsonSerializer.Serialize(result);
+                    }
+
+                case "get_client_service_breakdown":
+                    {
+                        var clientName = args.GetProperty("clientName").GetString()!;
+                        var invoices = await _invoiceService.GetAllAsync();
+
+                        var klijentInvoices = invoices
+                            .Where(x => x.Client.Name.Contains(clientName, StringComparison.OrdinalIgnoreCase)
+                                && x.InvoiceStatus != InvoiceStatus.Cancelled)
+                            .ToList();
+
+                        if (!klijentInvoices.Any())
+                            return $"Nije pronađen klijent sa imenom '{clientName}'.";
+
+                        var imeKlijenta = klijentInvoices.First().Client.Name;
+
+                        var uslugeBreakdown = klijentInvoices
+                            .SelectMany(x => x.Items)
+                            .GroupBy(x => new { x.Name, x.ItemType })
+                            .Select(g => new
+                            {
+                                Naziv = g.Key.Name,
+                                Tip = g.Key.ItemType.ToString(),
+                                UkupanPrihodRSD = g.Sum(x => x.TotalPrice),
+                                BrojPojavljivanja = g.Count(),
+                                UkupnoKolicina = g.Sum(x => x.Quantity)
+                            })
+                            .OrderByDescending(x => x.UkupanPrihodRSD);
+
+                        var result = new
+                        {
+                            Klijent = imeKlijenta,
+                            UkupnoFakturisanoRSD = klijentInvoices.Sum(x => x.TotalAmountRSD),
+                            BrojFaktura = klijentInvoices.Count,
+                            Usluge = uslugeBreakdown
                         };
 
                         return JsonSerializer.Serialize(result);
