@@ -1,8 +1,10 @@
-﻿using Microsoft.Azure.Functions.Worker;
+﻿using MailKit.Net.Smtp;
+using MailKit.Security;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System.Net.Mail;
+using MimeKit;
 using System.Reflection;
 
 namespace Pausalio.Functions
@@ -10,18 +12,15 @@ namespace Pausalio.Functions
     public class ReminderNotificationFunction
     {
         private readonly PausalioFunctionsDbContext _context;
-        private readonly SmtpClient _smtpClient;
         private readonly ILogger _logger;
         private readonly IConfiguration _config;
 
         public ReminderNotificationFunction(
             PausalioFunctionsDbContext context,
-            SmtpClient smtpClient,
             ILoggerFactory loggerFactory,
             IConfiguration config)
         {
             _context = context;
-            _smtpClient = smtpClient;
             _logger = loggerFactory.CreateLogger<ReminderNotificationFunction>();
             _config = config;
         }
@@ -32,7 +31,6 @@ namespace Pausalio.Functions
             _logger.LogInformation($"Reminder job pokrenut: {DateTime.UtcNow}");
 
             var today = DateTime.UtcNow.Date;
-            var fromEmail = _config["SmtpUser"]!;
 
             var reminders = await _context.Reminders
                 .Include(r => r.BusinessProfile)
@@ -87,18 +85,18 @@ namespace Pausalio.Functions
                 {
                     try
                     {
-                        var mail = new MailMessage
-                        {
-                            From = new MailAddress(fromEmail, "Pausalio"),
-                            Subject = $"📅 Pausalio — Podsetnici za {today:dd.MM.yyyy}",
-                            Body = body,
-                            IsBodyHtml = true,
-                            BodyEncoding = System.Text.Encoding.UTF8,
-                            SubjectEncoding = System.Text.Encoding.UTF8
-                        };
-                        mail.To.Add(email);
+                        var message = new MimeMessage();
+                        message.From.Add(new MailboxAddress("Pausalio", _config["SmtpUser"]!));
+                        message.To.Add(MailboxAddress.Parse(email));
+                        message.Subject = $"📅 Pausalio — Podsetnici za {today:dd.MM.yyyy}";
+                        message.Body = new TextPart(MimeKit.Text.TextFormat.Html) { Text = body };
 
-                        await _smtpClient.SendMailAsync(mail);
+                        using var client = new SmtpClient();
+                        await client.ConnectAsync(_config["SmtpHost"], int.Parse(_config["SmtpPort"]!), SecureSocketOptions.StartTls);
+                        await client.AuthenticateAsync(_config["SmtpUser"], _config["SmtpPass"]);
+                        await client.SendAsync(message);
+                        await client.DisconnectAsync(true);
+
                         _logger.LogInformation($"Mejl poslat na: {email}");
                     }
                     catch (Exception ex)

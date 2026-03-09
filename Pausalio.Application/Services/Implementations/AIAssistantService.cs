@@ -119,27 +119,24 @@ namespace Pausalio.Application.Services.Implementations
 
         private async Task<CachedToolData> LoadAllDataAsync()
         {
-            var invoicesTask = _invoiceService.GetAllAsync();
-            var expensesTask = _expenseService.GetAllAsync();
-            var taxObligationsTask = _taxObligationService.GetAllAsync();
-            var paymentsTask = _paymentService.GetAllAsync();
-            var invoiceSummaryTask = _invoiceService.GetSummaryAsync();
-            var expenseSummaryTask = _expenseService.GetSummaryAsync();
-
-            await Task.WhenAll(invoicesTask, expensesTask, taxObligationsTask, paymentsTask, invoiceSummaryTask, expenseSummaryTask);
+            var invoices = await _invoiceService.GetAllAsync();
+            var expenses = await _expenseService.GetAllAsync();
+            var taxObligations = await _taxObligationService.GetAllAsync();
+            var payments = await _paymentService.GetAllAsync();
+            var invoiceSummary = await _invoiceService.GetSummaryAsync();
+            var expenseSummary = await _expenseService.GetSummaryAsync();
 
             return new CachedToolData
             {
-                Invoices = await invoicesTask,
-                Expenses = await expensesTask,
-                TaxObligations = await taxObligationsTask,
-                Payments = await paymentsTask,
-                InvoiceSummary = await invoiceSummaryTask,
-                ExpenseSummary = await expenseSummaryTask
+                Invoices = invoices,
+                Expenses = expenses,
+                TaxObligations = taxObligations,
+                Payments = payments,
+                InvoiceSummary = invoiceSummary,
+                ExpenseSummary = expenseSummary
             };
         }
 
-        // ✅ Sada sync — nema DB poziva, radi samo nad već učitanim podacima
         private string ExecuteTool(string functionName, string argumentsJson, CachedToolData data)
         {
             var args = JsonDocument.Parse(argumentsJson).RootElement;

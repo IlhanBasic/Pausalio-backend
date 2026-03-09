@@ -1,8 +1,9 @@
-﻿using Microsoft.Extensions.Options;
+﻿using MailKit.Net.Smtp;
+using MailKit.Security;
+using Microsoft.Extensions.Options;
+using MimeKit;
 using Pausalio.Application.Services.Interfaces;
 using Pausalio.Shared.Configuration;
-using System.Net;
-using System.Net.Mail;
 
 namespace Pausalio.Application.Services.Implementations
 {
@@ -17,16 +18,8 @@ namespace Pausalio.Application.Services.Implementations
 
         public async Task SendEmailAsync(string to, string subject, string body)
         {
-            using var client = CreateSmtpClient();
-            var mailMessage = new MailMessage
-            {
-                From = new MailAddress(_smtpSettings.From, "Pausalio"),
-                To = { to },
-                Subject = subject,
-                Body = body,
-                IsBodyHtml = true
-            };
-            await client.SendMailAsync(mailMessage);
+            var message = BuildMessage(to, subject, body);
+            await SendAsync(message);
         }
 
         public async Task SendEmailWithAttachmentAsync(
@@ -36,30 +29,34 @@ namespace Pausalio.Application.Services.Implementations
             byte[] attachmentBytes,
             string attachmentFileName)
         {
-            using var client = CreateSmtpClient();
-            var mailMessage = new MailMessage
-            {
-                From = new MailAddress(_smtpSettings.From, "Pausalio"),
-                To = { to },
-                Subject = subject,
-                Body = body,
-                IsBodyHtml = true
-            };
+            var message = BuildMessage(to, subject, body);
 
-            var stream = new MemoryStream(attachmentBytes);
-            var attachment = new Attachment(stream, attachmentFileName, "application/pdf");
-            mailMessage.Attachments.Add(attachment);
+            var builder = new BodyBuilder { HtmlBody = body };
+            builder.Attachments.Add(attachmentFileName, attachmentBytes,
+                new MimeKit.ContentType("application", "pdf"));
+            message.Body = builder.ToMessageBody();
 
-            await client.SendMailAsync(mailMessage);
+            await SendAsync(message);
         }
 
-        private SmtpClient CreateSmtpClient()
+        private MimeMessage BuildMessage(string to, string subject, string body)
         {
-            return new SmtpClient(_smtpSettings.SmtpHost, _smtpSettings.SmtpPort)
-            {
-                Credentials = new NetworkCredential(_smtpSettings.SmtpUser, _smtpSettings.SmtpPass),
-                EnableSsl = true
-            };
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress("Pausalio", _smtpSettings.From));
+            message.To.Add(MailboxAddress.Parse(to));
+            message.Subject = subject;
+            message.Body = new TextPart(MimeKit.Text.TextFormat.Html) { Text = body };
+            return message;
+        }
+
+        private async Task SendAsync(MimeMessage message)
+        {
+            using var client = new SmtpClient();
+            await client.ConnectAsync(_smtpSettings.SmtpHost, _smtpSettings.SmtpPort,
+                SecureSocketOptions.StartTls);
+            await client.AuthenticateAsync(_smtpSettings.SmtpUser, _smtpSettings.SmtpPass);
+            await client.SendAsync(message);
+            await client.DisconnectAsync(true);
         }
     }
 }
