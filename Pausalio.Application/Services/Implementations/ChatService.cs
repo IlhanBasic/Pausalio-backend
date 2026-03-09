@@ -3,21 +3,18 @@ using Pausalio.Application.Services.Interfaces;
 using Pausalio.Domain.Entities;
 using Pausalio.Infrastructure.Repositories.Interfaces;
 using Pausalio.Shared.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Pausalio.Application.Services.Implementations
 {
     public class ChatService : IChatService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IEncryptionService _encryption;
 
-        public ChatService(IUnitOfWork unitOfWork)
+        public ChatService(IUnitOfWork unitOfWork, IEncryptionService encryptionService)
         {
             _unitOfWork = unitOfWork;
+            _encryption = encryptionService;
         }
 
         public async Task<ChatMessageDto> SendMessageAsync(
@@ -38,11 +35,12 @@ namespace Pausalio.Application.Services.Implementations
                 BusinessProfileId = businessId,
                 SenderId = senderId,
                 ReceiverId = receiverId,
-                Content = content.Trim(),
+                Content = _encryption.Encrypt(content.Trim()),
+                //Content = content.Trim(),
                 Status = MessageStatus.Sent,
                 SentAt = DateTime.UtcNow
             };
-
+       
             await _unitOfWork.ChatMessageRepository.AddAsync(message);
             await _unitOfWork.SaveChangesAsync();
 
@@ -160,7 +158,7 @@ namespace Pausalio.Application.Services.Implementations
             return messages.Count;
         }
 
-        private static ChatMessageDto MapToDto(ChatMessage message, UserProfile sender, UserProfile receiver)
+        private ChatMessageDto MapToDto(ChatMessage message, UserProfile sender, UserProfile receiver)
         {
             return new ChatMessageDto
             {
@@ -170,7 +168,8 @@ namespace Pausalio.Application.Services.Implementations
                 SenderAvatar = sender.ProfilePicture,
                 ReceiverId = message.ReceiverId,
                 ReceiverName = $"{receiver.FirstName} {receiver.LastName}",
-                Content = message.Content,
+                //Content = message.Content,
+                Content = _encryption.Decrypt(message.Content),
                 Status = (int)message.Status,
                 SentAt = message.SentAt,
                 ReadAt = message.ReadAt

@@ -161,6 +161,7 @@ builder.Services.AddSingleton<IPdfFactoryService, PdfFactoryService>();
 builder.Services.AddHttpClient<IAIAssistantService, AIAssistantService>();
 builder.Services.AddScoped<IFinancialContextService, FinancialContextService>();
 builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddScoped<IEncryptionService, XorEncryptionService>();
 // -------------------- FluentValidation --------------------
 builder.Services.AddValidatorsFromAssemblyContaining<AddBankAccountDtoValidator>();
 builder.Services.AddFluentValidationAutoValidation();
