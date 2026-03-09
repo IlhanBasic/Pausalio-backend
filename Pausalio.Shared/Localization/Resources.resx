@@ -1353,4 +1353,8 @@
     <value>Greška servera. AI Asistent nije u funkciji.</value>
     <comment>Poruka o grešci servera kada ai asistent nije u funkciji.</comment>
   </data>
+  <data name="InvalidGoogleToken" xml:space="preserve">
+    <value>Google Token nije validan.</value>
+    <comment>Poruka kada google token nije validan.</comment>
+  </data>
 </root>

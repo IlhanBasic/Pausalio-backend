@@ -2,6 +2,7 @@
 {
     public interface ILocalizationHelper
     {
+        string InvalidGoogleToken { get; }
         string AIAssistantResponseError { get; }
         string YearlyIncomeExceedsPausalLimit { get; }
         string YearlyIncomeExceedsSelfEmployedLimit { get; }

@@ -523,5 +523,7 @@ namespace Pausalio.Shared.Localization
         public string AccountantRequiredWarning => _localizer["AccountantRequiredWarning"];
 
         public string AIAssistantResponseError => _localizer["AIAssistantResponseError"];
+
+        public string InvalidGoogleToken => _localizer["InvalidGoogleToken"];
     }
 }

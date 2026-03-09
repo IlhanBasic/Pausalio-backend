@@ -77,6 +77,8 @@ builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("Email
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>()
     ?? throw new InvalidOperationException("JwtSettings nije konfigurisan.");
+var googleSettings = builder.Configuration.GetSection("Authentication:Google").Get<GoogleAuthSettings>()
+    ?? throw new InvalidOperationException("Google Auth nije konfigurisan.");
 var key = Encoding.UTF8.GetBytes(jwtSettings.Key);
 
 // -------------------- JWT Authentication --------------------
@@ -118,6 +120,12 @@ builder.Services.AddAuthentication(options =>
             return Task.CompletedTask;
         }
     };
+})
+.AddGoogle("Google", options =>
+{
+    options.ClientId = googleSettings.ClientId;
+    options.ClientSecret = googleSettings.ClientSecret;
+    options.SaveTokens = true;
 });
 
 // -------------------- AutoMapper --------------------

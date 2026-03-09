@@ -41,6 +41,21 @@ namespace Pausalio.API.Controllers
             _urlSettings = urlSettings;
         }
 
+        [HttpPost("google-login")]
+        public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequestDto request)
+        {
+            try
+            {
+                var user = await _userProfileService.GoogleAuthentication(request);
+                var token = _jwtService.GenerateToken(user);
+                return Ok(new { success = true, message = _localizationHelper.LoginSuccessfull, token = token });
+            }
+            catch (Exception ex)
+            {
+                return Unauthorized(new { error = "Unauthorized", message = ex.Message });
+            }
+        }
+
         [HttpPost("refresh-token")]
         [Authorize]
         public async Task<IActionResult> RefreshToken()

@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using Azure.Core;
 using BCrypt.Net;
+using Google.Apis.Auth;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Pausalio.Application.DTOs.BusinessInvite;
@@ -45,6 +47,33 @@ namespace Pausalio.Application.Services.Implementations
             if (!user.IsActive)
                 throw new Exception(_localizationHelper.UserInactive);
 
+
+            return _mapper.Map<UserProfileToReturnDto>(user);
+        }
+
+        public async Task<UserProfileToReturnDto> GoogleAuthentication(GoogleLoginRequestDto requestDto)
+        {
+            GoogleJsonWebSignature.Payload payload;
+
+            try
+            {
+                payload = await GoogleJsonWebSignature.ValidateAsync(requestDto.IdToken);
+            }
+            catch
+            {
+                throw new Exception(_localizationHelper.InvalidGoogleToken);
+            }
+
+            var user = await _unitOfWork.UserProfileRepository.GetByEmailWithEntitiesAsync(payload.Email);
+
+            if (user == null)
+                throw new Exception(_localizationHelper.UserNotFound);
+
+            if (!user.IsEmailVerified)
+                throw new Exception(_localizationHelper.EmailNotVerified);
+
+            if (!user.IsActive)
+                throw new Exception(_localizationHelper.UserInactive);
 
             return _mapper.Map<UserProfileToReturnDto>(user);
         }

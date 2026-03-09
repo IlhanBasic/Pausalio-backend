@@ -9,6 +9,7 @@ namespace Pausalio.Application.Services.Interfaces
 {
     public interface IUserProfileService
     {
+        Task<UserProfileToReturnDto> GoogleAuthentication(GoogleLoginRequestDto requestDto);
         Task<UserProfileToReturnDto?> LoginAsync(string email, string password);
         Task<UserProfileToReturnDto?> CreateUserProfile(AddUserProfileDto userProfile, UserRole role);
         Task<UserProfileToReturnDto?> GetByEmailAsync(string email);
