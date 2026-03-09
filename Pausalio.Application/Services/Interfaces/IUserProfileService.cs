@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
+using Pausalio.Application.DTOs.Authentication;
 using Pausalio.Application.DTOs.BusinessInvite;
 using Pausalio.Application.DTOs.BusinessProfile;
 using Pausalio.Application.DTOs.UserProfile;

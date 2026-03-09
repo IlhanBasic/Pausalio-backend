@@ -18,6 +18,9 @@ namespace Pausalio.API.Controllers
             _currentUserService = currentUserService;
         }
 
+        /// <summary>
+        /// Služi za dohvaćanje članova poslovnog računa s kojima korisnik može komunicirati putem chata. Vraća listu članova poslovnog računa, uključujući njihove osnovne informacije (npr. ime, email) i status (npr. online/offline). Ova metoda omogućava korisniku da vidi tko je dostupan za chat unutar poslovnog računa.
+        /// </summary>
         [HttpGet("members")]
         public async Task<IActionResult> GetBusinessMembers()
         {
@@ -27,6 +30,9 @@ namespace Pausalio.API.Controllers
             return Ok(members);
         }
 
+        /// <summary>
+        /// Služi za dohvaćanje povijesti poruka između trenutnog korisnika i drugog korisnika unutar istog poslovnog računa. Vraća paginiranu listu poruka, uključujući informacije o pošiljatelju, primatelju, sadržaju poruke i vremenu slanja. Ova metoda omogućava korisniku da vidi prethodne razgovore s određenim članom poslovnog računa.
+        /// </summary>
         [HttpGet("history/{otherUserId}")]
         public async Task<IActionResult> GetHistory(
             Guid otherUserId,
@@ -39,6 +45,9 @@ namespace Pausalio.API.Controllers
             return Ok(messages);
         }
 
+        /// <summary>
+        /// Služi za dohvaćanje broja nepročitanih poruka za trenutnog korisnika unutar poslovnog računa. Vraća broj nepročitanih poruka koje korisnik ima od drugih članova poslovnog računa. Ova metoda omogućava korisniku da vidi koliko novih poruka ima bez potrebe da otvara svaki razgovor pojedinačno.
+        /// </summary>
         [HttpGet("unread-count")]
         public async Task<IActionResult> GetUnreadCount()
         {

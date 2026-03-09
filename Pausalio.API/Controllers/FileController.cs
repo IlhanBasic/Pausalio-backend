@@ -33,6 +33,9 @@ namespace Pausalio.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Služi za upload fajlova. Podržava slike, PDF, Office dokumente i tekstualne fajlove. Vraća URL ka uploadovanom fajlu ili grešku ako upload nije uspeo.
+        /// </summary>
         [HttpPost("upload")]
         public async Task<IActionResult> UploadFile(IFormFile file)
         {

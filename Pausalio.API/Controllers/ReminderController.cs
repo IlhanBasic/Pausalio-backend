@@ -20,6 +20,9 @@ namespace Pausalio.API.Controllers
             _localizationHelper = localizationHelper;
         }
 
+        /// <summary>
+        /// Služi za dohvaćanje svih podsjetnika za trenutno prijavljenog korisnika. Vraća listu podsjetnika u obliku JSON objekta.
+        /// </summary>
         [HttpGet]
         [Authorize(Roles = "RegularUser")]
         public async Task<IActionResult> GetAll()
@@ -28,6 +31,9 @@ namespace Pausalio.API.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Služi za dohvaćanje pojedinačnog podsjetnika na temelju njegovog jedinstvenog identifikatora (ID). Ako podsjetnik s navedenim ID-om ne postoji, vraća se HTTP status 404 Not Found s odgovarajućom porukom. Ako podsjetnik postoji, vraća se njegov detaljni prikaz u obliku JSON objekta.
+        /// </summary>
         [HttpGet("{id:guid}")]
         [Authorize(Roles = "RegularUser")]
         public async Task<IActionResult> GetById(Guid id)
@@ -39,6 +45,9 @@ namespace Pausalio.API.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Služi za kreiranje novog podsjetnika. Prima podatke o podsjetniku u obliku JSON objekta (AddReminderDto) i pokušava ga spremiti u bazu podataka. Ako je operacija uspješna, vraća se HTTP status 200 OK s porukom o uspješnom kreiranju. Ako dođe do greške tijekom kreiranja (npr. zbog neispravnih podataka), vraća se HTTP status 404 Not Found s odgovarajućom porukom o grešci.
+        /// </summary>
         [HttpPost]
         [Authorize(Roles = "RegularUser")]
         public async Task<IActionResult> Create(AddReminderDto dto)
@@ -55,6 +64,9 @@ namespace Pausalio.API.Controllers
           
         }
 
+        /// <summary>
+        /// Služi za ažuriranje postojećeg podsjetnika. Prima jedinstveni identifikator (ID) podsjetnika koji se želi ažurirati i nove podatke o podsjetniku u obliku JSON objekta (UpdateReminderDto). Ako je operacija uspješna, vraća se HTTP status 200 OK s porukom o uspješnom ažuriranju. Ako dođe do greške tijekom ažuriranja (npr. ako podsjetnik s navedenim ID-om ne postoji), vraća se HTTP status 404 Not Found s odgovarajućom porukom o grešci.
+        /// </summary>
         [HttpPut("{id:guid}")]
         [Authorize(Roles = "RegularUser")]
         public async Task<IActionResult> Update(Guid id, UpdateReminderDto dto)
@@ -71,6 +83,9 @@ namespace Pausalio.API.Controllers
             
         }
 
+        /// <summary>
+        /// Služi za označavanje podsjetnika kao dovršenog. Prima jedinstveni identifikator (ID) podsjetnika koji se želi označiti kao dovršen. Ako je operacija uspješna, vraća se HTTP status 200 OK s porukom o uspješnom označavanju kao dovršenog. Ako dođe do greške tijekom označavanja (npr. ako podsjetnik s navedenim ID-om ne postoji), vraća se HTTP status 404 Not Found s odgovarajućom porukom o grešci.
+        /// </summary>
         [HttpPatch("{id:guid}/complete")]
         [Authorize(Roles = "RegularUser")]
         public async Task<IActionResult> MarkCompleted(Guid id)
@@ -87,6 +102,9 @@ namespace Pausalio.API.Controllers
            
         }
 
+        /// <summary>
+        /// Služi za brisanje podsjetnika. Prima jedinstveni identifikator (ID) podsjetnika koji se želi obrisati. Ako je operacija uspješna, vraća se HTTP status 200 OK s porukom o uspješnom brisanju. Ako dođe do greške tijekom brisanja (npr. ako podsjetnik s navedenim ID-om ne postoji), vraća se HTTP status 404 Not Found s odgovarajućom porukom o grešci.
+        /// </summary>
         [HttpDelete("{id:guid}")]
         [Authorize(Roles = "RegularUser")]
         public async Task<IActionResult> Delete(Guid id)

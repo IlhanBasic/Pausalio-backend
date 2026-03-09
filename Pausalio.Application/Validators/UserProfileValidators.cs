@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using FluentValidation;
 using Microsoft.Extensions.Localization;
+using Pausalio.Application.DTOs.Authentication;
 using Pausalio.Application.DTOs.UserProfile;
 using Pausalio.Shared.Localization;
 

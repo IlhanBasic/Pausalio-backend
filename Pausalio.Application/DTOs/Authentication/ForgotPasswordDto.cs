@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Pausalio.Application.DTOs.UserProfile
+namespace Pausalio.Application.DTOs.Authentication
 {
-    public class LoginDto
+    public class ForgotPasswordDto
     {
         public string Email { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
     }
 }

@@ -229,6 +229,9 @@ namespace Pausalio.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Služi za arhiviranje fakture. Arhivirana faktura se ne briše iz baze, ali se više ne prikazuje u standardnim listama faktura i ne može se menjati. Može se vratiti iz arhive ako je potrebno.
+        /// </summary>
         [HttpPatch("archive/{id:guid}")]
         [Authorize(Roles="Owner, Assistant")]
         public async Task<IActionResult> ArchiveInvoice(Guid id)
@@ -244,6 +247,9 @@ namespace Pausalio.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Služi za otkazivanje fakture. Otkazana faktura se ne briše iz baze, ali se više ne prikazuje u standardnim listama faktura i ne može se menjati. Može se vratiti iz otkazanih ako je potrebno.
+        /// </summary>
         [HttpPatch("cancel/{id:guid}")]
         [Authorize(Roles = "Owner, Assistant")]
         public async Task<IActionResult> CancelInvoice(Guid id)

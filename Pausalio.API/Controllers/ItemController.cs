@@ -20,6 +20,9 @@ namespace Pausalio.API.Controllers
             _localizationHelper = localizationHelper;
         }
 
+        /// <summary>
+        /// Služi za dobijanje svih itema. Vraća listu itema ili grešku ako dobijanje nije uspelo.
+        /// </summary>
         [HttpGet]
         [Authorize(Roles = "RegularUser")]
         public async Task<IActionResult> GetAll()
@@ -28,6 +31,9 @@ namespace Pausalio.API.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Služi za dobijanje itema po ID-u. Vraća item ako je pronađen ili grešku ako nije pronađen.
+        /// </summary>
         [HttpGet("{id:guid}")]
         [Authorize(Roles = "RegularUser")]
         public async Task<IActionResult> GetById(Guid id)
@@ -39,6 +45,9 @@ namespace Pausalio.API.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Služi za kreiranje novog itema. Prima AddItemDto objekat i vraća poruku o uspehu ili grešku ako kreiranje nije uspelo.
+        /// </summary>
         [HttpPost]
         [Authorize(Roles = "RegularUser")]
         public async Task<IActionResult> Create(AddItemDto dto)
@@ -54,6 +63,9 @@ namespace Pausalio.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Služi za ažuriranje postojećeg itema. Prima ID itema i UpdateItemDto objekat, vraća poruku o uspehu ili grešku ako ažuriranje nije uspelo.
+        /// </summary>
         [HttpPut("{id:guid}")]
         [Authorize(Roles = "RegularUser")]
         public async Task<IActionResult> Update(Guid id, UpdateItemDto dto)
@@ -69,6 +81,9 @@ namespace Pausalio.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Služi za brisanje itema. Prima ID itema i vraća poruku o uspehu ili grešku ako brisanje nije uspelo.
+        /// </summary>
         [HttpDelete("{id:guid}")]
         [Authorize(Roles = "RegularUser")]
         public async Task<IActionResult> Delete(Guid id)

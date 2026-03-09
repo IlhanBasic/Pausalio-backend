@@ -24,6 +24,9 @@ namespace Pausalio.API.Controllers
             _uploadFileService = uploadFileService;
         }
 
+        /// <summary>
+        /// Služi za dohvaćanje svih dokumenata. Ova metoda je ograničena na korisnike s ulogom "RegularUser". Vraća listu svih dokumenata u sustavu.
+        /// </summary>
         [HttpGet]
         [Authorize(Roles ="RegularUser")]
         public async Task<IActionResult> GetAll()
@@ -32,6 +35,9 @@ namespace Pausalio.API.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Služi za dohvaćanje pojedinačnog dokumenta po njegovom jedinstvenom identifikatoru (ID). Ova metoda je ograničena na korisnike s ulogom "RegularUser". Ako dokument s navedenim ID-om ne postoji, vraća se poruka o neuspjehu. Inače, vraća se traženi dokument.
+        /// </summary>
         [HttpGet("{id:guid}")]
         [Authorize(Roles = "RegularUser")]
         public async Task<IActionResult> GetById(Guid id)
@@ -44,6 +50,9 @@ namespace Pausalio.API.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Služi za kreiranje novog dokumenta. Ova metoda je ograničena na korisnike s ulogom "RegularUser". Prima podatke o dokumentu putem DTO objekta i pokušava kreirati novi dokument. Ako dođe do greške tijekom kreiranja, vraća se poruka o neuspjehu. Inače, vraća se poruka o uspješnom kreiranju dokumenta.
+        /// </summary>
         [HttpPost]
         [Authorize(Roles = "RegularUser")]
         public async Task<IActionResult> Create(AddDocumentDto dto)
@@ -60,6 +69,9 @@ namespace Pausalio.API.Controllers
            
         }
 
+        /// <summary>
+        /// Služi za ažuriranje postojećeg dokumenta. Ova metoda je ograničena na korisnike s ulogom "RegularUser". Prima ID dokumenta koji se želi ažurirati i nove podatke o dokumentu putem DTO objekta. Pokušava ažurirati dokument s navedenim ID-om. Ako dođe do greške tijekom ažuriranja, vraća se poruka o neuspjehu. Inače, vraća se poruka o uspješnom ažuriranju dokumenta.
+        /// </summary>
         [HttpPut("{id:guid}")]
         [Authorize(Roles = "RegularUser")]
         public async Task<IActionResult> Update(Guid id, UpdateDocumentDto dto)
@@ -76,6 +88,9 @@ namespace Pausalio.API.Controllers
             
         }
 
+        /// <summary>
+        /// Služi za brisanje postojećeg dokumenta. Ova metoda je ograničena na korisnike s ulogom "RegularUser". Prima ID dokumenta koji se želi obrisati. Pokušava obrisati dokument s navedenim ID-om. Ako dođe do greške tijekom brisanja, vraća se poruka o neuspjehu. Inače, vraća se poruka o uspješnom brisanju dokumenta.
+        /// </summary>
         [HttpDelete("{id:guid}")]
         [Authorize(Roles = "RegularUser")]
         public async Task<IActionResult> Delete(Guid id)

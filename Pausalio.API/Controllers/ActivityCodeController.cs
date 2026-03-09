@@ -85,6 +85,10 @@ namespace Pausalio.API.Controllers
             }
             
         }
+
+        /// <summary>
+        /// Služi za brisanje šifre delatnosti
+        /// </summary>
         [Authorize(Roles = "Admin")]
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> Delete(Guid id)

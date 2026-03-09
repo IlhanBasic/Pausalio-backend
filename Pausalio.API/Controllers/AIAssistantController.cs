@@ -19,6 +19,9 @@ namespace Pausalio.API.Controllers
             _aiAssistentService = aIAssistentService;
         }
 
+        /// <summary>
+        /// Služi za slanje poruka AI asistentu i dobijanje odgovora.
+        /// </summary>
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> SendMessage([FromBody] UserChatMessage message)

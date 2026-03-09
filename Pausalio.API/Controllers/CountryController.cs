@@ -24,6 +24,9 @@ namespace Pausalio.API.Controllers
             _localizationHelper = localizationHelper;
         }
 
+        /// <summary>
+        /// Služi za dohvaćanje svih država. Ova metoda je javno dostupna i ne zahtijeva autentifikaciju.
+        /// </summary>
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -31,6 +34,9 @@ namespace Pausalio.API.Controllers
             return Ok(countries);
         }
 
+        /// <summary>
+        /// Služi za dohvaćanje pojedinačne države po njenom ID-u. Ova metoda je javno dostupna i ne zahtijeva autentifikaciju.
+        /// </summary>
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetById(Guid id)
         {
@@ -41,6 +47,10 @@ namespace Pausalio.API.Controllers
 
             return Ok(country);
         }
+
+        /// <summary>
+        /// Služi za kreiranje nove države. Ova metoda je ograničena samo na korisnike s ulogom "Admin". Potrebno je poslati JSON objekt koji sadrži naziv i kod države.
+        /// </summary>
         [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] AddCountryDto dto)
@@ -55,6 +65,10 @@ namespace Pausalio.API.Controllers
                 return BadRequest(new { success = false, message = ex.Message });
             }
         }
+
+        /// <summary>
+        /// Služi za ažuriranje postojeće države. Ova metoda je ograničena samo na korisnike s ulogom "Admin". Potrebno je poslati JSON objekt koji sadrži novi naziv i kod države, a ID države se prosljeđuje kao URL parametar.
+        /// </summary>
         [Authorize(Roles = "Admin")]
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] UpdateCountyDto dto)
@@ -70,6 +84,10 @@ namespace Pausalio.API.Controllers
             }
            
         }
+
+        /// <summary>
+        /// Služi za brisanje postojeće države. Ova metoda je ograničena samo na korisnike s ulogom "Admin". ID države se prosljeđuje kao URL parametar.
+        /// </summary>
         [Authorize(Roles = "Admin")]
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> Delete(Guid id)

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Pausalio.Application.DTOs.Authentication;
 using Pausalio.Application.DTOs.BusinessInvite;
 using Pausalio.Application.DTOs.UserProfile;
 using Pausalio.Application.Helpers;
@@ -41,6 +42,9 @@ namespace Pausalio.API.Controllers
             _urlSettings = urlSettings;
         }
 
+        /// <summary>
+        /// Služi za autentifikaciju korisnika putem Google naloga. Prima GoogleLoginRequestDto koji sadrži token dobijen od Google-a, validira ga i ako je validan, kreira ili pronalazi korisnika u bazi, te vraća JWT token za autentifikaciju u aplikaciji.
+        /// </summary>
         [HttpPost("google-login")]
         public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequestDto request)
         {
@@ -56,6 +60,9 @@ namespace Pausalio.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Služi za osvežavanje JWT tokena. Korisnik koji je već autentifikovan može pozvati ovu rutu da dobije novi token sa produženim vremenom važenja. Ruta je zaštićena Authorize atributom, što znači da korisnik mora biti autentifikovan da bi mogao da je koristi. U metodi se uzima email trenutnog korisnika iz konteksta, pronalazi se korisnik u bazi i generiše se novi token koji se vraća u odgovoru.
+        /// </summary>
         [HttpPost("refresh-token")]
         [Authorize]
         public async Task<IActionResult> RefreshToken()
@@ -70,6 +77,9 @@ namespace Pausalio.API.Controllers
             return Ok(new { token = newToken });
         }
 
+        /// <summary>
+        /// Služi za autentifikaciju korisnika putem emaila i lozinke. Prima LoginDto koji sadrži email i lozinku, validira ih i ako su ispravni, pronalazi korisnika u bazi, generiše JWT token i postavlja ga u HttpOnly cookie. Ako su kredencijali neispravni, vraća Unauthorized odgovor.
+        /// </summary>
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
@@ -97,6 +107,10 @@ namespace Pausalio.API.Controllers
                 return Unauthorized(new { success = false, message = ex.Message});
             }
         }
+
+        /// <summary>
+        /// Služi za prihvatanje pozivnice za pridruživanje poslovnom profilu. Korisnik koji je pozvan da se pridruži poslovnom profilu kao asistent može koristiti ovu rutu da prihvati pozivnicu. Ruta je zaštićena Authorize atributom, što znači da korisnik mora biti autentifikovan da bi mogao da je koristi. U metodi se uzima email trenutnog korisnika iz konteksta, pronalazi se korisnik u bazi, zatim se proverava validnost pozivnice na osnovu emaila i tokena. Ako je sve validno, korisnik se dodaje kao asistent u poslovni profil, a pozivnica se briše iz baze. Transakcija se koristi kako bi se osiguralo da su sve operacije atomarne.
+        /// </summary>
         [HttpPost("accept-invite")]
         [Authorize(Roles = "RegularUser")]
         public async Task<IActionResult> AcceptInvite([FromBody] AcceptInviteDto dto)
@@ -157,6 +171,9 @@ namespace Pausalio.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Služi za registraciju novog admin korisnika. Prima AddUserProfileDto koji sadrži informacije o korisniku, validira da li već postoji korisnik sa istim emailom i ako ne postoji, kreira novog korisnika sa ulogom Admin. Ruta je zaštićena Authorize atributom sa rolom Admin, što znači da samo korisnici sa ulogom Admin mogu koristiti ovu rutu da kreiraju nove admin naloge.
+        /// </summary>
         [HttpPost("register-admin")]
         //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> RegisterAdmin([FromBody] AddUserProfileDto dto)
@@ -167,6 +184,10 @@ namespace Pausalio.API.Controllers
             var newUser = await _userProfileService.CreateUserProfile(dto, UserRole.Admin);
             return Ok(new { success = true, message = _localizationHelper.RegistrationSuccessful});
         }
+
+        /// <summary>
+        /// Služi za registraciju novog asistenta na osnovu pozivnice. Prima RegisterAssistantDto koji sadrži informacije o korisniku i token pozivnice, validira da li već postoji korisnik sa istim emailom, proverava validnost pozivnice i ako je sve validno, kreira novog korisnika sa ulogom RegularUser, dodaje ga kao asistenta u poslovni profil i briše pozivnicu iz baze. Nakon uspešne registracije, šalje se email sa linkom za verifikaciju email adrese.
+        /// </summary>
         [HttpPost("register-assistant")]
         public async Task<IActionResult> RegisterAssistant([FromBody] RegisterAssistantDto dto)
         {
@@ -213,6 +234,9 @@ namespace Pausalio.API.Controllers
             return Ok(new { success = true, message = _localizationHelper.RegistrationSuccessful});
         }
 
+        /// <summary>
+        /// Služi za registraciju novog vlasnika poslovnog profila. Prima RegisterOwnerDto koji sadrži informacije o korisniku i poslovnom profilu, validira da li već postoji korisnik sa istim emailom i da li već postoji poslovni profil sa istim PIB-om ili MB-om. Ako su validacije uspešne, kreira novog korisnika sa ulogom RegularUser, kreira novi poslovni profil, dodaje korisnika kao vlasnika u poslovni profil i šalje email sa linkom za verifik
+        /// </summary>
         [HttpPost("register-owner")]
         public async Task<IActionResult> RegisterOwner([FromBody] RegisterOwnerDto dto)
         {
@@ -268,6 +292,9 @@ namespace Pausalio.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Služi za verifikaciju email adrese korisnika. Prima token i email kao query parametre, validira da li su token i email validni, proverava da li token odgovara onome koji je sačuvan u bazi za datu email adresu i da li nije istekao. Ako je sve validno, označava email adresu kao verifikovanu u bazi. Ova ruta se obično poziva kada korisnik klikne na link za verifikaciju koji je poslat na njegovu email adresu nakon registracije.
+        /// </summary>
         [HttpGet("verify-email")]
         public async Task<IActionResult> VerifyEmail([FromQuery] string token, [FromQuery] string email)
         {
@@ -287,6 +314,9 @@ namespace Pausalio.API.Controllers
             return Ok(new { success = true });
         }
 
+        /// <summary>
+        /// Služi za ponovno slanje emaila za verifikaciju. Prima ResendVerificationDto koji sadrži email adresu korisnika, validira da li postoji korisnik sa datom email adresom i da li već nije verifikovan. Ako su validacije uspešne, generiše novi token za verifikaciju, čuva ga u bazi i šalje novi email sa linkom za verifikaciju na korisnikovu email adresu.
+        /// </summary>
         [HttpPost("resend-verification")]
         public async Task<IActionResult> ResendVerificationEmail(ResendVerificationDto resendVerificationDto)
         {
@@ -311,6 +341,9 @@ namespace Pausalio.API.Controllers
             return Ok(new { success = true, message = _localizationHelper.VerificationEmailResent });
         }
 
+        /// <summary>
+        /// Služi za odjavu korisnika. Ruta je zaštićena Authorize atributom, što znači da korisnik mora biti autentifikovan da bi mogao da je koristi. U metodi se postavlja cookie
+        /// </summary>
         [HttpPost("logout")]
         public IActionResult Logout()
         {
@@ -334,6 +367,9 @@ namespace Pausalio.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Služi za promenu lozinke korisnika. Ruta je zaštićena Authorize atributom, što znači da korisnik mora biti autentifikovan da bi mogao da je koristi. Prima ChangePasswordDto koji sadrži staru i novu lozinku, validira da li su polja popunjena, zatim poziva servis koji proverava da li stara lozinka odgovara onoj koja je sačuvana u bazi i ako je validacija uspešna, menja lozinku na novu. Ako dođe do bilo kakve greške tokom procesa, vraća se BadRequest sa odgovarajućom porukom.
+        /// </summary>
         [HttpPost("change-password")]
         [Authorize]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
@@ -367,6 +403,9 @@ namespace Pausalio.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Služi za iniciranje procesa zaboravljene lozinke. Prima ForgotPasswordDto koji sadrži email adresu korisnika, validira da li je polje popunjeno, zatim generiše PIN kod za resetovanje lozinke, čuva ga u bazi zajedno sa vremenom isteka i šalje email korisniku sa PIN kodom. Ako dođe do bilo kakve greške tokom procesa, vraća se BadRequest sa odgovarajućom porukom. Ova ruta se obično poziva kada korisnik klikne na link "Zaboravili ste lozinku?" na stranici za prijavu.
+        /// </summary>
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
         {
@@ -402,6 +441,9 @@ namespace Pausalio.API.Controllers
             });
         }
 
+        /// <summary>
+        /// Služi za resetovanje lozinke korisnika. Prima ResetPasswordDto koji sadrži email adresu, PIN kod i novu lozinku, validira da li su polja popunjena, zatim poziva servis koji proverava da li PIN kod odgovara onome koji je sačuvan u bazi za datu email adresu i da li nije istekao. Ako je validacija uspešna, menja lozinku na novu. Ako dođe do bilo kakve greške tokom procesa, vraća se BadRequest sa odgovarajućom porukom. Ova ruta se obično poziva kada korisnik unese PIN kod koji je dobio na email nakon iniciranja procesa zaboravljene lozinke.
+        /// </summary>
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
         {

@@ -1,5 +1,9 @@
 ﻿using Microsoft.Extensions.Options;
 using Pausalio.Application.DTOs.AIAssistant;
+using Pausalio.Application.DTOs.Expense;
+using Pausalio.Application.DTOs.Invoice;
+using Pausalio.Application.DTOs.Payment;
+using Pausalio.Application.DTOs.TaxObligation;
 using Pausalio.Application.Helpers;
 using Pausalio.Application.Helpers.Pausalio.Application.Helpers;
 using Pausalio.Application.Services.Interfaces;
@@ -25,7 +29,7 @@ namespace Pausalio.Application.Services.Implementations
             IInvoiceService invoiceService,
             IExpenseService expenseService,
             IPaymentService paymentService,
-        ITaxObligationService taxObligationService,
+            ITaxObligationService taxObligationService,
             IOptions<OpenRouterSettings> configuration,
             HttpClient httpClient)
         {
@@ -54,6 +58,9 @@ namespace Pausalio.Application.Services.Implementations
             messages.Add(new { role = "user", content = message.Message });
 
             var tools = AIToolsDefinition.GetTools();
+
+            // ✅ Eager load sve podatke jednom — nema višestrukih DB poziva u petlji
+            var cachedData = await LoadAllDataAsync();
 
             while (true)
             {
@@ -98,7 +105,7 @@ namespace Pausalio.Application.Services.Implementations
                     var functionName = toolCall.GetProperty("function").GetProperty("name").GetString()!;
                     var argumentsJson = toolCall.GetProperty("function").GetProperty("arguments").GetString()!;
 
-                    var toolResult = await ExecuteToolAsync(functionName, argumentsJson);
+                    var toolResult = ExecuteTool(functionName, argumentsJson, cachedData);
 
                     messages.Add(new
                     {
@@ -110,7 +117,30 @@ namespace Pausalio.Application.Services.Implementations
             }
         }
 
-        private async Task<string> ExecuteToolAsync(string functionName, string argumentsJson)
+        private async Task<CachedToolData> LoadAllDataAsync()
+        {
+            var invoicesTask = _invoiceService.GetAllAsync();
+            var expensesTask = _expenseService.GetAllAsync();
+            var taxObligationsTask = _taxObligationService.GetAllAsync();
+            var paymentsTask = _paymentService.GetAllAsync();
+            var invoiceSummaryTask = _invoiceService.GetSummaryAsync();
+            var expenseSummaryTask = _expenseService.GetSummaryAsync();
+
+            await Task.WhenAll(invoicesTask, expensesTask, taxObligationsTask, paymentsTask, invoiceSummaryTask, expenseSummaryTask);
+
+            return new CachedToolData
+            {
+                Invoices = await invoicesTask,
+                Expenses = await expensesTask,
+                TaxObligations = await taxObligationsTask,
+                Payments = await paymentsTask,
+                InvoiceSummary = await invoiceSummaryTask,
+                ExpenseSummary = await expenseSummaryTask
+            };
+        }
+
+        // ✅ Sada sync — nema DB poziva, radi samo nad već učitanim podacima
+        private string ExecuteTool(string functionName, string argumentsJson, CachedToolData data)
         {
             var args = JsonDocument.Parse(argumentsJson).RootElement;
 
@@ -122,14 +152,10 @@ namespace Pausalio.Application.Services.Implementations
 
                         ClientType? clientTypeFilter = null;
                         if (args.TryGetProperty("clientType", out var clientTypeProp))
-                        {
                             if (Enum.TryParse<ClientType>(clientTypeProp.GetString(), out var parsedType))
                                 clientTypeFilter = parsedType;
-                        }
 
-                        var invoices = await _invoiceService.GetAllAsync();
-
-                        var topClients = invoices
+                        var topClients = data.Invoices
                             .Where(x => clientTypeFilter == null || x.Client.ClientType == clientTypeFilter)
                             .GroupBy(x => new { x.Client.Id, x.Client.Name })
                             .Select(g => new
@@ -151,16 +177,16 @@ namespace Pausalio.Application.Services.Implementations
                         if (!Enum.TryParse<InvoiceStatus>(statusStr, out var status))
                             return "Nepoznat status fakture.";
 
-                        var invoices = await _invoiceService.GetByStatusAsync(status);
-
-                        var result = invoices.Select(x => new
-                        {
-                            x.InvoiceNumber,
-                            Klijent = x.Client.Name,
-                            x.TotalAmountRSD,
-                            x.PaymentStatus,
-                            x.IssueDate
-                        });
+                        var result = data.Invoices
+                            .Where(x => x.InvoiceStatus == status)
+                            .Select(x => new
+                            {
+                                x.InvoiceNumber,
+                                Klijent = x.Client.Name,
+                                x.TotalAmountRSD,
+                                x.PaymentStatus,
+                                x.IssueDate
+                            });
 
                         return JsonSerializer.Serialize(result);
                     }
@@ -171,17 +197,17 @@ namespace Pausalio.Application.Services.Implementations
                         if (!Enum.TryParse<PaymentStatus>(statusStr, out var paymentStatus))
                             return "Nepoznat status plaćanja.";
 
-                        var invoices = await _invoiceService.GetByPaymentStatusAsync(paymentStatus);
-
-                        var result = invoices.Select(x => new
-                        {
-                            x.InvoiceNumber,
-                            Klijent = x.Client.Name,
-                            x.TotalAmountRSD,
-                            x.InvoiceStatus,
-                            x.DueDate,
-                            x.IssueDate
-                        });
+                        var result = data.Invoices
+                            .Where(x => x.PaymentStatus == paymentStatus)
+                            .Select(x => new
+                            {
+                                x.InvoiceNumber,
+                                Klijent = x.Client.Name,
+                                x.TotalAmountRSD,
+                                x.InvoiceStatus,
+                                x.DueDate,
+                                x.IssueDate
+                            });
 
                         return JsonSerializer.Serialize(result);
                     }
@@ -189,9 +215,8 @@ namespace Pausalio.Application.Services.Implementations
                 case "get_invoices_by_year":
                     {
                         var year = args.GetProperty("year").GetInt32();
-                        var invoices = await _invoiceService.GetAllAsync();
 
-                        var result = invoices
+                        var result = data.Invoices
                             .Where(x => x.IssueDate.Year == year)
                             .Select(x => new
                             {
@@ -208,10 +233,9 @@ namespace Pausalio.Application.Services.Implementations
 
                 case "get_overdue_invoices":
                     {
-                        var invoices = await _invoiceService.GetAllAsync();
                         var now = DateTime.UtcNow;
 
-                        var result = invoices
+                        var result = data.Invoices
                             .Where(x => x.PaymentStatus == PaymentStatus.Unpaid
                                         && x.DueDate.HasValue
                                         && x.DueDate < now
@@ -230,10 +254,7 @@ namespace Pausalio.Application.Services.Implementations
                     }
 
                 case "get_invoice_summary":
-                    {
-                        var summary = await _invoiceService.GetSummaryAsync();
-                        return JsonSerializer.Serialize(summary);
-                    }
+                    return JsonSerializer.Serialize(data.InvoiceSummary);
 
                 case "get_expenses_by_status":
                     {
@@ -241,39 +262,37 @@ namespace Pausalio.Application.Services.Implementations
                         if (!Enum.TryParse<ExpenseStatus>(statusStr, out var status))
                             return "Nepoznat status troška.";
 
-                        var expenses = await _expenseService.GetByStatusAsync(status);
-
-                        var result = expenses.Select(x => new
-                        {
-                            x.Name,
-                            x.Amount,
-                            x.Status,
-                            x.ReferenceNumber
-                        });
+                        var result = data.Expenses
+                            .Where(x => x.Status == status)
+                            .Select(x => new
+                            {
+                                x.Name,
+                                x.Amount,
+                                x.Status,
+                                x.ReferenceNumber
+                            });
 
                         return JsonSerializer.Serialize(result);
                     }
 
                 case "get_expense_summary":
-                    {
-                        var summary = await _expenseService.GetSummaryAsync();
-                        return JsonSerializer.Serialize(summary);
-                    }
+                    return JsonSerializer.Serialize(data.ExpenseSummary);
 
                 case "get_tax_obligations_by_year":
                     {
                         var year = args.GetProperty("year").GetInt32();
-                        var obligations = await _taxObligationService.GetByYearAsync(year);
 
-                        var result = obligations.Select(x => new
-                        {
-                            x.Year,
-                            x.Month,
-                            x.Type,
-                            x.TotalAmount,
-                            x.Status,
-                            x.DueDate
-                        });
+                        var result = data.TaxObligations
+                            .Where(x => x.Year == year)
+                            .Select(x => new
+                            {
+                                x.Year,
+                                x.Month,
+                                x.Type,
+                                x.TotalAmount,
+                                x.Status,
+                                x.DueDate
+                            });
 
                         return JsonSerializer.Serialize(result);
                     }
@@ -284,27 +303,26 @@ namespace Pausalio.Application.Services.Implementations
                         if (!Enum.TryParse<TaxObligationStatus>(statusStr, out var status))
                             return "Nepoznat status poreske obaveze.";
 
-                        var obligations = await _taxObligationService.GetByStatusAsync(status);
-
-                        var result = obligations.Select(x => new
-                        {
-                            x.Year,
-                            x.Month,
-                            x.Type,
-                            x.TotalAmount,
-                            x.DueDate
-                        });
+                        var result = data.TaxObligations
+                            .Where(x => x.Status == status)
+                            .Select(x => new
+                            {
+                                x.Year,
+                                x.Month,
+                                x.Type,
+                                x.TotalAmount,
+                                x.DueDate
+                            });
 
                         return JsonSerializer.Serialize(result);
                     }
 
                 case "get_overdue_taxes":
                     {
-                        var obligations = await _taxObligationService.GetByStatusAsync(TaxObligationStatus.Pending);
                         var now = DateTime.UtcNow;
 
-                        var result = obligations
-                            .Where(x => x.DueDate < now)
+                        var result = data.TaxObligations
+                            .Where(x => x.Status == TaxObligationStatus.Pending && x.DueDate < now)
                             .Select(x => new
                             {
                                 x.Year,
@@ -325,16 +343,27 @@ namespace Pausalio.Application.Services.Implementations
                         if (args.TryGetProperty("year", out var yearProp))
                             year = yearProp.GetInt32();
 
-                        var summary = await _taxObligationService.GetSummaryAsync(year);
+                        // Filter in-memory ako je year prosleđen, jer summary može biti per-year
+                        var obligations = year.HasValue
+                            ? data.TaxObligations.Where(x => x.Year == year.Value).ToList()
+                            : data.TaxObligations;
+
+                        var summary = new
+                        {
+                            UkupnoObaveza = obligations.Sum(x => x.TotalAmount),
+                            BrojObaveza = obligations.Count(),
+                            Placeno = obligations.Where(x => x.Status == TaxObligationStatus.Paid).Sum(x => x.TotalAmount),
+                            NePlaceno = obligations.Where(x => x.Status == TaxObligationStatus.Pending).Sum(x => x.TotalAmount)
+                        };
+
                         return JsonSerializer.Serialize(summary);
                     }
 
                 case "get_monthly_income":
                     {
                         var year = args.GetProperty("year").GetInt32();
-                        var invoices = await _invoiceService.GetAllAsync();
 
-                        var result = invoices
+                        var result = data.Invoices
                             .Where(x => x.IssueDate.Year == year && x.InvoiceStatus != InvoiceStatus.Cancelled)
                             .GroupBy(x => x.IssueDate.Month)
                             .Select(g => new
@@ -351,15 +380,12 @@ namespace Pausalio.Application.Services.Implementations
                 case "get_income_vs_expenses":
                     {
                         var year = args.GetProperty("year").GetInt32();
-                        var invoices = await _invoiceService.GetAllAsync();
-                        var expenses = await _expenseService.GetAllAsync();
 
-                        var ukupniPrihodi = invoices
+                        var ukupniPrihodi = data.Invoices
                             .Where(x => x.IssueDate.Year == year && x.InvoiceStatus != InvoiceStatus.Cancelled)
                             .Sum(x => x.TotalAmountRSD);
 
-                        var ukupniTroskovi = expenses
-                            .Sum(x => x.Amount);
+                        var ukupniTroskovi = data.Expenses.Sum(x => x.Amount);
 
                         var result = new
                         {
@@ -371,6 +397,7 @@ namespace Pausalio.Application.Services.Implementations
 
                         return JsonSerializer.Serialize(result);
                     }
+
                 case "get_top_services":
                     {
                         var top = args.GetProperty("top").GetInt32();
@@ -388,9 +415,7 @@ namespace Pausalio.Application.Services.Implementations
                         if (args.TryGetProperty("clientId", out var clientIdProp))
                             clientId = clientIdProp.GetString();
 
-                        var invoices = await _invoiceService.GetAllAsync();
-
-                        var result = invoices
+                        var result = data.Invoices
                             .Where(x => x.InvoiceStatus != InvoiceStatus.Cancelled)
                             .Where(x => year == null || x.IssueDate.Year == year)
                             .Where(x => clientId == null || x.Client.Id.ToString() == clientId)
@@ -419,9 +444,7 @@ namespace Pausalio.Application.Services.Implementations
                         if (args.TryGetProperty("month", out var monthProp))
                             month = monthProp.GetInt32();
 
-                        var payments = await _paymentService.GetAllAsync();
-
-                        var result = payments
+                        var result = data.Payments
                             .Where(x => x.PaymentType == PaymentType.InvoicePayment)
                             .Where(x => x.PaymentDate.Year == year)
                             .Where(x => month == null || x.PaymentDate.Month == month)
@@ -443,9 +466,7 @@ namespace Pausalio.Application.Services.Implementations
                         if (args.TryGetProperty("top", out var topProp))
                             top = topProp.GetInt32();
 
-                        var payments = await _paymentService.GetAllAsync();
-
-                        var result = payments
+                        var result = data.Payments
                             .Where(x => x.PaymentType == PaymentType.InvoicePayment
                                 && x.Invoice != null
                                 && x.Invoice.DueDate.HasValue)
@@ -474,9 +495,7 @@ namespace Pausalio.Application.Services.Implementations
 
                 case "get_tax_delay_analysis":
                     {
-                        var obligations = await _taxObligationService.GetAllAsync();
-
-                        var result = obligations
+                        var result = data.TaxObligations
                             .Where(x => x.Status == TaxObligationStatus.Paid && x.PaidDate.HasValue)
                             .GroupBy(x => x.Type)
                             .Select(g => new
@@ -503,9 +522,8 @@ namespace Pausalio.Application.Services.Implementations
                 case "get_client_service_breakdown":
                     {
                         var clientName = args.GetProperty("clientName").GetString()!;
-                        var invoices = await _invoiceService.GetAllAsync();
 
-                        var klijentInvoices = invoices
+                        var klijentInvoices = data.Invoices
                             .Where(x => x.Client.Name.Contains(clientName, StringComparison.OrdinalIgnoreCase)
                                 && x.InvoiceStatus != InvoiceStatus.Cancelled)
                             .ToList();
@@ -543,5 +561,15 @@ namespace Pausalio.Application.Services.Implementations
                     return "Alat nije pronađen.";
             }
         }
+    }
+
+    public class CachedToolData
+    {
+        public required IEnumerable<InvoiceToReturnDto> Invoices { get; init; }
+        public required IEnumerable<ExpenseToReturnDto> Expenses { get; init; }
+        public required IEnumerable<TaxObligationToReturnDto> TaxObligations { get; init; }
+        public required IEnumerable<PaymentToReturnDto> Payments { get; init; }
+        public required object InvoiceSummary { get; init; }
+        public required object ExpenseSummary { get; init; }
     }
 }

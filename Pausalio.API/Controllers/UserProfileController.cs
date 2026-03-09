@@ -23,6 +23,9 @@ namespace Pausalio.API.Controllers
             _currentUserService = currentUserService;
         }
 
+        /// <summary>
+        /// Služi za ažuriranje profila korisnika. Korisnik može ažurirati samo svoj profil, dok administratori mogu ažurirati profile svih korisnika.
+        /// </summary>
         [HttpPut("{id:guid}")]
         [Authorize]
         public async Task<IActionResult> UpdateProfile(Guid id, [FromBody] UpdateUserProfileDto dto)
@@ -37,6 +40,10 @@ namespace Pausalio.API.Controllers
                 return BadRequest(new { success = false, message = ex.Message });
             }
         }
+
+        /// <summary>
+        /// Služi za dohvaćanje profila trenutno prijavljenog korisnika. Korisnik može dohvatiti samo svoj profil, dok administratori mogu dohvatiti profile svih korisnika.
+        /// </summary>
         [HttpGet("me")]
         [Authorize]
         public async Task<IActionResult> GetUserProfile()
@@ -74,6 +81,9 @@ namespace Pausalio.API.Controllers
             return Ok(new ProfileToReturnDto { UserProfile = user });
         }
 
+        /// <summary>
+        /// Služi za dohvaćanje svih korisnika. Samo administratori imaju pristup ovom endpointu, dok redoviti korisnici nemaju dozvolu za dohvaćanje popisa svih korisnika.
+        /// </summary>
         [HttpGet]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllUsers()
@@ -82,6 +92,9 @@ namespace Pausalio.API.Controllers
             return Ok(users);
         }
 
+        /// <summary>
+        /// Služi za brisanje korisnika na temelju njegovog jedinstvenog identifikatora (ID). Samo administratori imaju pristup ovom endpointu, dok redoviti korisnici nemaju dozvolu za brisanje korisnika. Ako korisnik s navedenim ID-om ne postoji, vraća se HTTP status 404 Not Found s odgovarajućom porukom. Ako je operacija brisanja uspješna, vraća se HTTP status 200 OK s porukom o uspješnom brisanju korisnika.
+        /// </summary>
         [HttpDelete("{id:guid}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUser(Guid id)
@@ -97,6 +110,9 @@ namespace Pausalio.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Služi za aktivaciju korisnika na temelju njegovog jedinstvenog identifikatora (ID). Samo administratori imaju pristup ovom endpointu, dok redoviti korisnici nemaju dozvolu za aktivaciju korisnika. Ako korisnik s navedenim ID-om ne postoji, vraća se HTTP status 404 Not Found s odgovarajućom porukom. Ako je operacija aktivacije uspješna, vraća se HTTP status 200 OK s porukom o uspješnoj aktivaciji korisnika.
+        /// </summary>
         [HttpPatch("{id:guid}/activate")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ActivateUser(Guid id)
@@ -112,6 +128,9 @@ namespace Pausalio.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Služi za deaktivaciju korisnika na temelju njegovog jedinstvenog identifikatora (ID). Samo administratori imaju pristup ovom endpointu, dok redoviti korisnici nemaju dozvolu za deaktivaciju korisnika. Ako korisnik s navedenim ID-om ne postoji, vraća se HTTP status 404 Not Found s odgovarajućom porukom. Ako je operacija deaktivacije uspješna, vraća se HTTP status 200 OK s porukom o uspješnoj deaktivaciji korisnika.
+        /// </summary>
         [HttpPatch("{id:guid}/deactivate")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeactivateUser(Guid id)

@@ -82,30 +82,31 @@ namespace Pausalio.Application.Services.Implementations
         }
 
         public async Task<IEnumerable<BusinessMemberDto>> GetBusinessMembersAsync(
-            Guid businessId, Guid excludeUserId)
+    Guid businessId, Guid excludeUserId)
         {
             var members = await _unitOfWork.UserBusinessProfileRepository
                 .FindAllAsync(x => x.BusinessProfileId == businessId && x.UserId != excludeUserId);
 
-            var result = new List<BusinessMemberDto>();
-            foreach (var member in members)
-            {
-                var user = await _unitOfWork.UserProfileRepository
-                    .FindFirstOrDefaultAsync(x => x.Id == member.UserId);
+            var memberIds = members.Select(x => x.UserId).ToList();
 
-                if (user != null)
+            var users = await _unitOfWork.UserProfileRepository
+                .FindAllAsync(x => memberIds.Contains(x.Id));
+
+            var userMap = users.ToDictionary(x => x.Id);
+
+            return members
+                .Where(x => userMap.ContainsKey(x.UserId))
+                .Select(member =>
                 {
-                    result.Add(new BusinessMemberDto
+                    var user = userMap[member.UserId];
+                    return new BusinessMemberDto
                     {
                         UserId = user.Id,
                         FullName = $"{user.FirstName} {user.LastName}",
                         ProfilePicture = user.ProfilePicture,
                         Role = member.Role.ToString()
-                    });
-                }
-            }
-
-            return result;
+                    };
+                });
         }
 
         public async Task MarkAsDeliveredAsync(Guid receiverId, Guid senderId, Guid businessId)

@@ -33,6 +33,10 @@ namespace Pausalio.API.Controllers
             _businessInviteService = businessInviteService;
             _userProfileService = userProfileService;
         }
+
+        /// <summary>
+        /// Služi za slanje pozivnice korisniku da se pridruži poslovnom računu. Samo vlasnici poslovnog računa mogu slati pozivnice. Pozivnica se šalje putem emaila i sadrži jedinstveni token koji korisnik koristi za registraciju ili pridruživanje poslovnom računu. Ako korisnik već postoji, provjerava se njegova uloga i status u poslovnom računu kako bi se spriječilo slanje pozivnice neodgovarajućim korisnicima (npr. adminima, vlasnicima drugih računa ili korisnicima koji su već asistenti u istom poslovnom računu). Ako je sve validno, pozivnica se kreira i šalje emailom.
+        /// </summary>
         [Authorize(Roles = "Owner")]
         [HttpPost]
         public async Task<IActionResult> SendInvite([FromBody] AddBusinessInviteDto dto)
@@ -90,6 +94,9 @@ namespace Pausalio.API.Controllers
             });
         }
 
+        /// <summary>
+        /// Služi za uklanjanje poslane pozivnice. Samo vlasnici poslovnog računa mogu ukloniti pozivnice. Vlasnik može ukloniti pozivnicu ako je poslana, ali korisnik se još nije pridružio poslovnom računu. Nakon uklanjanja pozivnice, token postaje nevažeći i korisnik više ne može koristiti tu pozivnicu za registraciju ili pridruživanje poslovnom računu.
+        /// </summary>
         [HttpDelete("{id:guid}")]
         [Authorize(Roles = "Owner")]
         public async Task<IActionResult> RemoveInvite (Guid id)
