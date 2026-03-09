@@ -181,13 +181,12 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     var supportedCultures = new[]
     {
         new CultureInfo("sr-Latn"),
+        new CultureInfo("sr-Cyrl"),
     };
-
     options.DefaultRequestCulture = new RequestCulture("sr-Latn");
     options.SupportedCultures = supportedCultures;
     options.SupportedUICultures = supportedCultures;
 });
-
 builder.Services.AddScoped<ILocalizationHelper, LocalizationHelper>();
 builder.Services.AddMemoryCache();
 builder.Services.AddHttpClient();
