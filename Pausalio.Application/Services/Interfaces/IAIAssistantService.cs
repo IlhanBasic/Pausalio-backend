@@ -10,5 +10,8 @@ namespace Pausalio.Application.Services.Interfaces
     public interface IAIAssistantService
     {
         Task<AIResponseDto> SendMessageAsync(UserChatMessage message);
+        Task<List<AiConversationDto>> GetConversationsAsync();
+        Task<List<AiMessageDto>> GetConversationMessagesAsync(Guid conversationId);
+        Task DeleteConversationAsync(Guid conversationId);
     }
 }

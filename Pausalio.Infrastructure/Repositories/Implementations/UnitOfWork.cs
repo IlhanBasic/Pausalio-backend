@@ -27,6 +27,9 @@ namespace Pausalio.Infrastructure.Repositories.Implementations
         public IUserProfileRepository UserProfileRepository { get; }
         public IBusinessInviteRepository BusinessInviteRepository { get; }
         public IChatMessageRepository ChatMessageRepository { get; }
+        public IAiConversationRepository AiConversationRepository { get; }
+        public IAiMessageRepository AiMessageRepository { get; }
+        public IAiToolCallRepository AiToolCallRepository { get; }
 
         public UnitOfWork(
             PausalioDbContext context,
@@ -47,7 +50,10 @@ namespace Pausalio.Infrastructure.Repositories.Implementations
             ITaxObligationRepository taxObligationRepository,
             IUserProfileRepository userProfileRepository,
             IBusinessInviteRepository businessInviteRepository,
-            IChatMessageRepository chatMessageRepository
+            IChatMessageRepository chatMessageRepository,
+            IAiConversationRepository aiConversationRepository,
+            IAiMessageRepository aiMessageRepository,
+            IAiToolCallRepository aiToolCallRepository
         )
         {
             _context = context;
@@ -70,6 +76,9 @@ namespace Pausalio.Infrastructure.Repositories.Implementations
             UserProfileRepository = userProfileRepository;
             BusinessInviteRepository = businessInviteRepository;
             ChatMessageRepository = chatMessageRepository;
+            AiConversationRepository = aiConversationRepository;
+            AiMessageRepository = aiMessageRepository;
+            AiToolCallRepository = aiToolCallRepository;
         }
 
         public async Task<int> SaveChangesAsync()

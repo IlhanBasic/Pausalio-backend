@@ -38,6 +38,10 @@ namespace Pausalio.Infrastructure.Extensions
                     return (IQueryable<T>)userProfiles
                         .Include(u => u.UserBusinessProfiles)
                             .ThenInclude(u => u.BusinessProfile);
+                case IQueryable<AiConversation> aiConversations:
+                    return (IQueryable<T>)aiConversations
+                        .Include(c => c.Messages)
+                            .ThenInclude(m => m.ToolCalls);
             }
             return source;
         }

@@ -66,8 +66,9 @@ builder.Services.AddScoped<ITaxObligationRepository, TaxObligationRepository>();
 builder.Services.AddScoped<IUserProfileRepository, UserProfileRepository>();
 builder.Services.AddScoped<IBusinessInviteRepository, BusinessInviteRepository>();
 builder.Services.AddScoped<IChatMessageRepository, ChatMessageRepository>();
-
-
+builder.Services.AddScoped<IAiToolCallRepository, AiToolCallRepository>();
+builder.Services.AddScoped<IAiConversationRepository, AIConversationRepository>();
+builder.Services.AddScoped<IAiMessageRepository, AiMessageRepository>();
 // -------------------- Configuration --------------------
 builder.Services.Configure<OpenRouterSettings>(builder.Configuration.GetSection("OpenRouterSettings"));
 builder.Services.Configure<ExchangeRateSettings>(builder.Configuration.GetSection("ExchangeRateSettings"));
