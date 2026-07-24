@@ -21,5 +21,13 @@ namespace Pausalio.Application.DTOs.AIAssistant
     public class AIResponseDto
     {
         public string Message { get; set; } = null!;
+        public AIUsageDto? Usage { get; set; }
+    }
+
+    public class AIUsageDto
+    {
+        public int PromptTokens { get; set; }
+        public int CompletionTokens { get; set; }
+        public int TotalTokens { get; set; }
     }
 }

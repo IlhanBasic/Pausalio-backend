@@ -166,7 +166,7 @@ builder.Services.AddScoped<IUploadFileService, UploadFileService>();
 builder.Services.AddScoped<IExchangeRateService, ExchangeRateService>();
 builder.Services.AddScoped<IInvoiceExportService, InvoiceExportService>();
 builder.Services.AddSingleton<IPdfFactoryService, PdfFactoryService>();
-builder.Services.AddHttpClient<IAIAssistantService, AIAssistantService>();
+builder.Services.AddScoped<IAIAssistantService, AIAssistantService>();
 builder.Services.AddScoped<IFinancialContextService, FinancialContextService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IEncryptionService, XorEncryptionService>();
@@ -255,6 +255,7 @@ app.UseAuthorization();
 app.UseMiddleware<BusinessContextMiddleware>();
 // -------------------- Swagger UI --------------------
 app.UseSwagger();
+// app.UseDeveloperExceptionPage();
 //app.UseSwaggerUI(c =>
 //{
 //    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Pausalio API V1");

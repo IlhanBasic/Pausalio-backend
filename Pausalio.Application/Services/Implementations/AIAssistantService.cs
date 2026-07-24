@@ -1,28 +1,33 @@
-﻿using Microsoft.Extensions.Options;
-using Pausalio.Application.DTOs.AIAssistant;
-using Pausalio.Application.DTOs.Expense;
-using Pausalio.Application.DTOs.Invoice;
-using Pausalio.Application.DTOs.Payment;
-using Pausalio.Application.DTOs.TaxObligation;
-using Pausalio.Application.Helpers;
-using Pausalio.Application.Helpers.Pausalio.Application.Helpers;
-using Pausalio.Application.Services.Interfaces;
-using Pausalio.Shared.Configuration;
-using Pausalio.Shared.Enums;
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Pausalio.Application.DTOs.AIAssistant;
+using Pausalio.Application.Helpers;
+using Pausalio.Application.Helpers.Pausalio.Application.Helpers;
+using Pausalio.Application.Services.Implementations.AIAssistant;
+using Pausalio.Application.Services.Interfaces;
+using Pausalio.Infrastructure.Repositories.Interfaces;
+using Pausalio.Shared.Configuration;
 
 namespace Pausalio.Application.Services.Implementations
 {
     public class AIAssistantService : IAIAssistantService
     {
+        private const int MaxToolCallRounds = 6;
+
         private readonly IFinancialContextService _financialContextService;
-        private readonly IInvoiceService _invoiceService;
-        private readonly IExpenseService _expenseService;
-        private readonly ITaxObligationService _taxObligationService;
-        private readonly IPaymentService _paymentService;
+        private readonly AIAssistantDataLoader _dataLoader;
+        private readonly AIAssistantToolExecutor _toolExecutor;
+        private readonly OpenRouterResponseParser _responseParser;
         private readonly IOptions<OpenRouterSettings> _configuration;
         private readonly HttpClient _httpClient;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly ICurrentUserService _currentUserService;
+        private readonly ILogger<AIAssistantService> _logger;
 
         public AIAssistantService(
             IFinancialContextService financialContextService,
@@ -31,15 +36,21 @@ namespace Pausalio.Application.Services.Implementations
             IPaymentService paymentService,
             ITaxObligationService taxObligationService,
             IOptions<OpenRouterSettings> configuration,
-            HttpClient httpClient)
+            HttpClient httpClient,
+            IUnitOfWork unitOfWork,
+            ICurrentUserService currentUserService,
+            ILogger<AIAssistantService> logger,
+            ILoggerFactory loggerFactory)
         {
             _financialContextService = financialContextService;
-            _invoiceService = invoiceService;
-            _expenseService = expenseService;
-            _taxObligationService = taxObligationService;
             _configuration = configuration;
             _httpClient = httpClient;
-            _paymentService = paymentService;
+            _unitOfWork = unitOfWork;
+            _currentUserService = currentUserService;
+            _logger = logger;
+            _dataLoader = new AIAssistantDataLoader(invoiceService, expenseService, taxObligationService, paymentService);
+            _toolExecutor = new AIAssistantToolExecutor(loggerFactory.CreateLogger<AIAssistantToolExecutor>());
+            _responseParser = new OpenRouterResponseParser();
         }
 
         public async Task<AIResponseDto> SendMessageAsync(UserChatMessage message)
@@ -56,17 +67,27 @@ namespace Pausalio.Application.Services.Implementations
                 messages.Add(new { role = item.Role, content = item.Content });
 
             messages.Add(new { role = "user", content = message.Message });
-
             var tools = AIToolsDefinition.GetTools();
+            var cachedData = await _dataLoader.LoadAllDataAsync();
 
-            // ✅ Eager load sve podatke jednom — nema višestrukih DB poziva u petlji
-            var cachedData = await LoadAllDataAsync();
+            var userIdString = _currentUserService.GetUserId();
+            if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out var userId))
+                throw new UnauthorizedAccessException("Unable to determine current user.");
+
+            var userProfile = await _unitOfWork.UserProfileRepository.GetByIdAsync(userId);
+            if (userProfile == null)
+                throw new UnauthorizedAccessException("User profile not found.");
+
+            if (string.IsNullOrWhiteSpace(userProfile.OpenRouterApiKey) || string.IsNullOrWhiteSpace(userProfile.OpenRouterModelName))
+                throw new InvalidOperationException("OpenRouter API key or model name not configured for your account.");
+
+            var toolCallRound = 0;
 
             while (true)
             {
                 var requestBody = new
                 {
-                    model = _configuration.Value.Model,
+                    model = userProfile.OpenRouterModelName,
                     messages,
                     tools,
                     tool_choice = "auto",
@@ -74,38 +95,83 @@ namespace Pausalio.Application.Services.Implementations
                     temperature = 0.7
                 };
 
-                _httpClient.DefaultRequestHeaders.Clear();
-                _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_configuration.Value.ApiKey}");
-
                 var json = JsonSerializer.Serialize(requestBody);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var response = await _httpClient.PostAsync(_configuration.Value.ApiUrl, content);
+                using var request = new HttpRequestMessage(HttpMethod.Post, _configuration.Value.ApiUrl)
+                {
+                    Content = content
+                };
+
+                request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", userProfile.OpenRouterApiKey);
+
+                var response = await _httpClient.SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
                 var responseString = await response.Content.ReadAsStringAsync();
-                var responseJson = JsonDocument.Parse(responseString);
-                var choice = responseJson.RootElement.GetProperty("choices")[0];
-                var finishReason = choice.GetProperty("finish_reason").GetString();
-                var aiMessage = choice.GetProperty("message");
+                var parsedResponse = _responseParser.Parse(responseString);
 
-                if (finishReason != "tool_calls")
+                if (parsedResponse.FinishReason != "tool_calls")
                 {
-                    var text = aiMessage.GetProperty("content").GetString()
-                        ?? "Nije moguće dobiti odgovor.";
-                    return new AIResponseDto { Message = text };
+                    return new AIResponseDto
+                    {
+                        Message = parsedResponse.AssistantMessage ?? "Nije moguće dobiti odgovor.",
+                        Usage = parsedResponse.Usage
+                    };
                 }
 
-                messages.Add(JsonSerializer.Deserialize<object>(aiMessage.GetRawText())!);
-
-                var toolCalls = aiMessage.GetProperty("tool_calls");
-                foreach (var toolCall in toolCalls.EnumerateArray())
+                if (parsedResponse.AssistantMessageObject != null)
                 {
-                    var toolCallId = toolCall.GetProperty("id").GetString()!;
-                    var functionName = toolCall.GetProperty("function").GetProperty("name").GetString()!;
-                    var argumentsJson = toolCall.GetProperty("function").GetProperty("arguments").GetString()!;
+                    messages.Add(parsedResponse.AssistantMessageObject);
+                }
 
-                    var toolResult = ExecuteTool(functionName, argumentsJson, cachedData);
+                if (!parsedResponse.ToolCallRawMessages.Any())
+                {
+                    return new AIResponseDto
+                    {
+                        Message = parsedResponse.AssistantMessage ?? "Nije moguće dobiti odgovor.",
+                        Usage = parsedResponse.Usage
+                    };
+                }
+
+                toolCallRound++;
+                if (toolCallRound > MaxToolCallRounds)
+                {
+                    _logger.LogWarning("AI assistant reached maximum tool call rounds ({MaxToolCallRounds})", MaxToolCallRounds);
+                    return new AIResponseDto
+                    {
+                        Message = "Maksimalan broj poziva alata je dostignut. Molimo pokušajte ponovo s preciznijim upitom.",
+                        Usage = parsedResponse.Usage
+                    };
+                }
+
+                foreach (var rawToolCall in parsedResponse.ToolCallRawMessages)
+                {
+                    string toolResult;
+                    var toolCallId = "unknown";
+
+                    try
+                    {
+                        using var toolDoc = JsonDocument.Parse(rawToolCall);
+                        var toolCall = toolDoc.RootElement;
+                        toolCallId = toolCall.TryGetProperty("id", out var idProp)
+                            ? idProp.GetString() ?? "unknown"
+                            : "unknown";
+
+                        var functionElement = toolCall.GetProperty("function");
+                        var functionName = functionElement.GetProperty("name").GetString()!;
+                        var argumentsElement = functionElement.GetProperty("arguments");
+                        var argumentsJson = argumentsElement.ValueKind == JsonValueKind.String
+                            ? argumentsElement.GetString()!
+                            : argumentsElement.GetRawText();
+
+                        toolResult = _toolExecutor.ExecuteTool(functionName, argumentsJson, cachedData);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning(ex, "Failed to parse or execute tool call {ToolCallId}", toolCallId);
+                        toolResult = $"Invalid tool call or arguments: {ex.Message}";
+                    }
 
                     messages.Add(new
                     {
@@ -114,459 +180,9 @@ namespace Pausalio.Application.Services.Implementations
                         content = toolResult
                     });
                 }
+
+                continue;
             }
         }
-
-        private async Task<CachedToolData> LoadAllDataAsync()
-        {
-            var invoices = await _invoiceService.GetAllAsync();
-            var expenses = await _expenseService.GetAllAsync();
-            var taxObligations = await _taxObligationService.GetAllAsync();
-            var payments = await _paymentService.GetAllAsync();
-            var invoiceSummary = await _invoiceService.GetSummaryAsync();
-            var expenseSummary = await _expenseService.GetSummaryAsync();
-
-            return new CachedToolData
-            {
-                Invoices = invoices,
-                Expenses = expenses,
-                TaxObligations = taxObligations,
-                Payments = payments,
-                InvoiceSummary = invoiceSummary,
-                ExpenseSummary = expenseSummary
-            };
-        }
-
-        private string ExecuteTool(string functionName, string argumentsJson, CachedToolData data)
-        {
-            var args = JsonDocument.Parse(argumentsJson).RootElement;
-
-            switch (functionName)
-            {
-                case "get_top_clients":
-                    {
-                        var top = args.GetProperty("top").GetInt32();
-
-                        ClientType? clientTypeFilter = null;
-                        if (args.TryGetProperty("clientType", out var clientTypeProp))
-                            if (Enum.TryParse<ClientType>(clientTypeProp.GetString(), out var parsedType))
-                                clientTypeFilter = parsedType;
-
-                        var topClients = data.Invoices
-                            .Where(x => clientTypeFilter == null || x.Client.ClientType == clientTypeFilter)
-                            .GroupBy(x => new { x.Client.Id, x.Client.Name })
-                            .Select(g => new
-                            {
-                                Klijent = g.Key.Name,
-                                UkupnoFakturisano = g.Sum(x => x.TotalAmountRSD),
-                                BrojFaktura = g.Count()
-                            })
-                            .OrderByDescending(x => x.UkupnoFakturisano)
-                            .Take(top)
-                            .ToList();
-
-                        return JsonSerializer.Serialize(topClients);
-                    }
-
-                case "get_invoices_by_status":
-                    {
-                        var statusStr = args.GetProperty("status").GetString()!;
-                        if (!Enum.TryParse<InvoiceStatus>(statusStr, out var status))
-                            return "Nepoznat status fakture.";
-
-                        var result = data.Invoices
-                            .Where(x => x.InvoiceStatus == status)
-                            .Select(x => new
-                            {
-                                x.InvoiceNumber,
-                                Klijent = x.Client.Name,
-                                x.TotalAmountRSD,
-                                x.PaymentStatus,
-                                x.IssueDate
-                            });
-
-                        return JsonSerializer.Serialize(result);
-                    }
-
-                case "get_invoices_by_payment_status":
-                    {
-                        var statusStr = args.GetProperty("paymentStatus").GetString()!;
-                        if (!Enum.TryParse<PaymentStatus>(statusStr, out var paymentStatus))
-                            return "Nepoznat status plaćanja.";
-
-                        var result = data.Invoices
-                            .Where(x => x.PaymentStatus == paymentStatus)
-                            .Select(x => new
-                            {
-                                x.InvoiceNumber,
-                                Klijent = x.Client.Name,
-                                x.TotalAmountRSD,
-                                x.InvoiceStatus,
-                                x.DueDate,
-                                x.IssueDate
-                            });
-
-                        return JsonSerializer.Serialize(result);
-                    }
-
-                case "get_invoices_by_year":
-                    {
-                        var year = args.GetProperty("year").GetInt32();
-
-                        var result = data.Invoices
-                            .Where(x => x.IssueDate.Year == year)
-                            .Select(x => new
-                            {
-                                x.InvoiceNumber,
-                                Klijent = x.Client.Name,
-                                x.TotalAmountRSD,
-                                x.PaymentStatus,
-                                x.InvoiceStatus,
-                                x.IssueDate
-                            });
-
-                        return JsonSerializer.Serialize(result);
-                    }
-
-                case "get_overdue_invoices":
-                    {
-                        var now = DateTime.UtcNow;
-
-                        var result = data.Invoices
-                            .Where(x => x.PaymentStatus == PaymentStatus.Unpaid
-                                        && x.DueDate.HasValue
-                                        && x.DueDate < now
-                                        && x.InvoiceStatus != InvoiceStatus.Cancelled)
-                            .Select(x => new
-                            {
-                                x.InvoiceNumber,
-                                Klijent = x.Client.Name,
-                                x.TotalAmountRSD,
-                                x.DueDate,
-                                DanaKasnjenja = (int)(now - x.DueDate!.Value).TotalDays
-                            })
-                            .OrderByDescending(x => x.DanaKasnjenja);
-
-                        return JsonSerializer.Serialize(result);
-                    }
-
-                case "get_invoice_summary":
-                    return JsonSerializer.Serialize(data.InvoiceSummary);
-
-                case "get_expenses_by_status":
-                    {
-                        var statusStr = args.GetProperty("status").GetString()!;
-                        if (!Enum.TryParse<ExpenseStatus>(statusStr, out var status))
-                            return "Nepoznat status troška.";
-
-                        var result = data.Expenses
-                            .Where(x => x.Status == status)
-                            .Select(x => new
-                            {
-                                x.Name,
-                                x.Amount,
-                                x.Status,
-                                x.ReferenceNumber
-                            });
-
-                        return JsonSerializer.Serialize(result);
-                    }
-
-                case "get_expense_summary":
-                    return JsonSerializer.Serialize(data.ExpenseSummary);
-
-                case "get_tax_obligations_by_year":
-                    {
-                        var year = args.GetProperty("year").GetInt32();
-
-                        var result = data.TaxObligations
-                            .Where(x => x.Year == year)
-                            .Select(x => new
-                            {
-                                x.Year,
-                                x.Month,
-                                x.Type,
-                                x.TotalAmount,
-                                x.Status,
-                                x.DueDate
-                            });
-
-                        return JsonSerializer.Serialize(result);
-                    }
-
-                case "get_tax_obligations_by_status":
-                    {
-                        var statusStr = args.GetProperty("status").GetString()!;
-                        if (!Enum.TryParse<TaxObligationStatus>(statusStr, out var status))
-                            return "Nepoznat status poreske obaveze.";
-
-                        var result = data.TaxObligations
-                            .Where(x => x.Status == status)
-                            .Select(x => new
-                            {
-                                x.Year,
-                                x.Month,
-                                x.Type,
-                                x.TotalAmount,
-                                x.DueDate
-                            });
-
-                        return JsonSerializer.Serialize(result);
-                    }
-
-                case "get_overdue_taxes":
-                    {
-                        var now = DateTime.UtcNow;
-
-                        var result = data.TaxObligations
-                            .Where(x => x.Status == TaxObligationStatus.Pending && x.DueDate < now)
-                            .Select(x => new
-                            {
-                                x.Year,
-                                x.Month,
-                                x.Type,
-                                x.TotalAmount,
-                                x.DueDate,
-                                DanaKasnjenja = (int)(now - x.DueDate).TotalDays
-                            })
-                            .OrderByDescending(x => x.DanaKasnjenja);
-
-                        return JsonSerializer.Serialize(result);
-                    }
-
-                case "get_tax_summary":
-                    {
-                        int? year = null;
-                        if (args.TryGetProperty("year", out var yearProp))
-                            year = yearProp.GetInt32();
-
-                        // Filter in-memory ako je year prosleđen, jer summary može biti per-year
-                        var obligations = year.HasValue
-                            ? data.TaxObligations.Where(x => x.Year == year.Value).ToList()
-                            : data.TaxObligations;
-
-                        var summary = new
-                        {
-                            UkupnoObaveza = obligations.Sum(x => x.TotalAmount),
-                            BrojObaveza = obligations.Count(),
-                            Placeno = obligations.Where(x => x.Status == TaxObligationStatus.Paid).Sum(x => x.TotalAmount),
-                            NePlaceno = obligations.Where(x => x.Status == TaxObligationStatus.Pending).Sum(x => x.TotalAmount)
-                        };
-
-                        return JsonSerializer.Serialize(summary);
-                    }
-
-                case "get_monthly_income":
-                    {
-                        var year = args.GetProperty("year").GetInt32();
-
-                        var result = data.Invoices
-                            .Where(x => x.IssueDate.Year == year && x.InvoiceStatus != InvoiceStatus.Cancelled)
-                            .GroupBy(x => x.IssueDate.Month)
-                            .Select(g => new
-                            {
-                                Mesec = g.Key,
-                                UkupnoRSD = g.Sum(x => x.TotalAmountRSD),
-                                BrojFaktura = g.Count()
-                            })
-                            .OrderBy(x => x.Mesec);
-
-                        return JsonSerializer.Serialize(result);
-                    }
-
-                case "get_income_vs_expenses":
-                    {
-                        var year = args.GetProperty("year").GetInt32();
-
-                        var ukupniPrihodi = data.Invoices
-                            .Where(x => x.IssueDate.Year == year && x.InvoiceStatus != InvoiceStatus.Cancelled)
-                            .Sum(x => x.TotalAmountRSD);
-
-                        var ukupniTroskovi = data.Expenses.Sum(x => x.Amount);
-
-                        var result = new
-                        {
-                            Godina = year,
-                            UkupniPrihodiRSD = ukupniPrihodi,
-                            UkupniTroskoviRSD = ukupniTroskovi,
-                            NetoPrihodRSD = ukupniPrihodi - ukupniTroskovi
-                        };
-
-                        return JsonSerializer.Serialize(result);
-                    }
-
-                case "get_top_services":
-                    {
-                        var top = args.GetProperty("top").GetInt32();
-
-                        ItemType? itemTypeFilter = null;
-                        if (args.TryGetProperty("itemType", out var itemTypeProp))
-                            if (Enum.TryParse<ItemType>(itemTypeProp.GetString(), out var parsedItemType))
-                                itemTypeFilter = parsedItemType;
-
-                        int? year = null;
-                        if (args.TryGetProperty("year", out var yearProp))
-                            year = yearProp.GetInt32();
-
-                        string? clientId = null;
-                        if (args.TryGetProperty("clientId", out var clientIdProp))
-                            clientId = clientIdProp.GetString();
-
-                        var result = data.Invoices
-                            .Where(x => x.InvoiceStatus != InvoiceStatus.Cancelled)
-                            .Where(x => year == null || x.IssueDate.Year == year)
-                            .Where(x => clientId == null || x.Client.Id.ToString() == clientId)
-                            .SelectMany(x => x.Items)
-                            .Where(x => itemTypeFilter == null || x.ItemType == itemTypeFilter)
-                            .GroupBy(x => new { x.Name, x.ItemType })
-                            .Select(g => new
-                            {
-                                Naziv = g.Key.Name,
-                                Tip = g.Key.ItemType.ToString(),
-                                UkupanPrihodRSD = g.Sum(x => x.TotalPrice),
-                                BrojPojavljivanja = g.Count(),
-                                UkupnoKolicina = g.Sum(x => x.Quantity)
-                            })
-                            .OrderByDescending(x => x.UkupanPrihodRSD)
-                            .Take(top);
-
-                        return JsonSerializer.Serialize(result);
-                    }
-
-                case "get_actual_cashflow":
-                    {
-                        var year = args.GetProperty("year").GetInt32();
-
-                        int? month = null;
-                        if (args.TryGetProperty("month", out var monthProp))
-                            month = monthProp.GetInt32();
-
-                        var result = data.Payments
-                            .Where(x => x.PaymentType == PaymentType.InvoicePayment)
-                            .Where(x => x.PaymentDate.Year == year)
-                            .Where(x => month == null || x.PaymentDate.Month == month)
-                            .GroupBy(x => x.PaymentDate.Month)
-                            .Select(g => new
-                            {
-                                Mesec = g.Key,
-                                UkupnoNaplaćenoRSD = g.Sum(x => x.AmountRSD),
-                                BrojUplata = g.Count()
-                            })
-                            .OrderBy(x => x.Mesec);
-
-                        return JsonSerializer.Serialize(result);
-                    }
-
-                case "get_avg_payment_delay_by_client":
-                    {
-                        int? top = null;
-                        if (args.TryGetProperty("top", out var topProp))
-                            top = topProp.GetInt32();
-
-                        var result = data.Payments
-                            .Where(x => x.PaymentType == PaymentType.InvoicePayment
-                                && x.Invoice != null
-                                && x.Invoice.DueDate.HasValue)
-                            .GroupBy(x => x.Invoice!.Client.Name)
-                            .Select(g => new
-                            {
-                                Klijent = g.Key,
-                                ProsečnoKašnjenjeDana = (int)g
-                                    .Where(x => x.PaymentDate > x.Invoice!.DueDate!.Value)
-                                    .Select(x => (x.PaymentDate - x.Invoice!.DueDate!.Value).TotalDays)
-                                    .DefaultIfEmpty(0)
-                                    .Average(),
-                                NajdužeKašnjenjeDana = (int)g
-                                    .Where(x => x.PaymentDate > x.Invoice!.DueDate!.Value)
-                                    .Select(x => (x.PaymentDate - x.Invoice!.DueDate!.Value).TotalDays)
-                                    .DefaultIfEmpty(0)
-                                    .Max(),
-                                BrojFaktura = g.Count(),
-                                BrojKasnihPlacanja = g.Count(x => x.PaymentDate > x.Invoice!.DueDate!.Value)
-                            })
-                            .OrderByDescending(x => x.ProsečnoKašnjenjeDana)
-                            .Take(top ?? 5);
-
-                        return JsonSerializer.Serialize(result);
-                    }
-
-                case "get_tax_delay_analysis":
-                    {
-                        var result = data.TaxObligations
-                            .Where(x => x.Status == TaxObligationStatus.Paid && x.PaidDate.HasValue)
-                            .GroupBy(x => x.Type)
-                            .Select(g => new
-                            {
-                                TipPoreza = g.Key.ToString(),
-                                BrojPlacanja = g.Count(),
-                                BrojKasnihPlacanja = g.Count(x => x.PaidDate!.Value > x.DueDate),
-                                ProsečnoKašnjenjeDana = (int)g
-                                    .Where(x => x.PaidDate!.Value > x.DueDate)
-                                    .Select(x => (x.PaidDate!.Value - x.DueDate).TotalDays)
-                                    .DefaultIfEmpty(0)
-                                    .Average(),
-                                NajdužeKašnjenjeDana = (int)g
-                                    .Where(x => x.PaidDate!.Value > x.DueDate)
-                                    .Select(x => (x.PaidDate!.Value - x.DueDate).TotalDays)
-                                    .DefaultIfEmpty(0)
-                                    .Max()
-                            })
-                            .OrderByDescending(x => x.ProsečnoKašnjenjeDana);
-
-                        return JsonSerializer.Serialize(result);
-                    }
-
-                case "get_client_service_breakdown":
-                    {
-                        var clientName = args.GetProperty("clientName").GetString()!;
-
-                        var klijentInvoices = data.Invoices
-                            .Where(x => x.Client.Name.Contains(clientName, StringComparison.OrdinalIgnoreCase)
-                                && x.InvoiceStatus != InvoiceStatus.Cancelled)
-                            .ToList();
-
-                        if (!klijentInvoices.Any())
-                            return $"Nije pronađen klijent sa imenom '{clientName}'.";
-
-                        var imeKlijenta = klijentInvoices.First().Client.Name;
-
-                        var uslugeBreakdown = klijentInvoices
-                            .SelectMany(x => x.Items)
-                            .GroupBy(x => new { x.Name, x.ItemType })
-                            .Select(g => new
-                            {
-                                Naziv = g.Key.Name,
-                                Tip = g.Key.ItemType.ToString(),
-                                UkupanPrihodRSD = g.Sum(x => x.TotalPrice),
-                                BrojPojavljivanja = g.Count(),
-                                UkupnoKolicina = g.Sum(x => x.Quantity)
-                            })
-                            .OrderByDescending(x => x.UkupanPrihodRSD);
-
-                        var result = new
-                        {
-                            Klijent = imeKlijenta,
-                            UkupnoFakturisanoRSD = klijentInvoices.Sum(x => x.TotalAmountRSD),
-                            BrojFaktura = klijentInvoices.Count,
-                            Usluge = uslugeBreakdown
-                        };
-
-                        return JsonSerializer.Serialize(result);
-                    }
-
-                default:
-                    return "Alat nije pronađen.";
-            }
-        }
-    }
-
-    public class CachedToolData
-    {
-        public required IEnumerable<InvoiceToReturnDto> Invoices { get; init; }
-        public required IEnumerable<ExpenseToReturnDto> Expenses { get; init; }
-        public required IEnumerable<TaxObligationToReturnDto> TaxObligations { get; init; }
-        public required IEnumerable<PaymentToReturnDto> Payments { get; init; }
-        public required object InvoiceSummary { get; init; }
-        public required object ExpenseSummary { get; init; }
     }
 }
