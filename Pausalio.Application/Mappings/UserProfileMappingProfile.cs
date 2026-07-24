@@ -1,11 +1,6 @@
 ﻿using AutoMapper;
 using Pausalio.Application.DTOs.UserProfile;
 using Pausalio.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Pausalio.Application.Mappings
 {
@@ -18,6 +13,7 @@ namespace Pausalio.Application.Mappings
                     dest => dest.PasswordHash,
                     opt => opt.MapFrom(src => src.Password)
                 );
+
             CreateMap<UpdateUserProfileDto, UserProfile>()
                 .ForMember(dest => dest.PasswordHash, opt => opt.Ignore())
                 .ForMember(dest => dest.IsActive, opt => opt.Ignore())
@@ -29,7 +25,16 @@ namespace Pausalio.Application.Mappings
                 .ForMember(dest => dest.PasswordResetTokenExpiration, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.UserBusinessProfiles, opt => opt.Ignore());
-            CreateMap<UserProfile, UserProfileToReturnDto>();
+
+            CreateMap<UserProfile, UserProfileToReturnDto>()
+                .ForMember(
+                    dest => dest.IsOpenRouterAPIKeySet,
+                    opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.OpenRouterApiKey))
+                )
+                .ForMember(
+                    dest => dest.IsOpenRouterModelSet,
+                    opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.OpenRouterModelName))
+                );
         }
     }
 }

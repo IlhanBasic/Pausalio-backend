@@ -14,5 +14,7 @@ namespace Pausalio.Application.DTOs.UserProfile
         public string? Phone { get; set; }
         public string City { get; set; } = string.Empty;
         public string? Address { get; set; }
+        public string? OpenRouterApiKey { get; set; }
+        public string? OpenRouterModelName { get; set; } 
     }
 }

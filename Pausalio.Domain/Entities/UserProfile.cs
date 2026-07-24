@@ -28,6 +28,8 @@ namespace Pausalio.Domain.Entities
         public DateTime? EmailVerificationTokenExpiration { get; set; }
         public string? PasswordResetToken { get; set; }
         public DateTime? PasswordResetTokenExpiration { get; set; }
+        public string OpenRouterApiKey { get; set; } = String.Empty;
+        public string OpenRouterModelName { get; set; } = String.Empty;
 
     }
 }

@@ -28,5 +28,7 @@ namespace Pausalio.Application.DTOs.UserProfile
         public DateTime? EmailVerificationTokenExpiration { get; set; }
         public string? PasswordResetToken { get; set; }
         public DateTime? PasswordResetTokenExpiration { get; set; }
+        public bool IsOpenRouterAPIKeySet { get; set; }
+        public bool IsOpenRouterModelSet { get; set; }
     }
 }
