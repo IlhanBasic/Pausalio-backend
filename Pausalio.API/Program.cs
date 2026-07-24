@@ -170,7 +170,7 @@ builder.Services.AddSingleton<IPdfFactoryService, PdfFactoryService>();
 builder.Services.AddScoped<IAIAssistantService, AIAssistantService>();
 builder.Services.AddScoped<IFinancialContextService, FinancialContextService>();
 builder.Services.AddScoped<IChatService, ChatService>();
-builder.Services.AddScoped<IEncryptionService, XorEncryptionService>();
+builder.Services.AddScoped<IEncryptionService, AesEncryptionService>();
 // -------------------- FluentValidation --------------------
 builder.Services.AddValidatorsFromAssemblyContaining<AddBankAccountDtoValidator>();
 builder.Services.AddFluentValidationAutoValidation();

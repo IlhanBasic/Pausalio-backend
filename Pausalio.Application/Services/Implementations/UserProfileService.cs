@@ -23,13 +23,15 @@ namespace Pausalio.Application.Services.Implementations
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILocalizationHelper _localizationHelper;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IEncryptionService _encryptionService;
 
-        public UserProfileService(ILocalizationHelper localizationHelper, IMapper mapper, IUnitOfWork unitOfWork, ICurrentUserService currentUserService)
+        public UserProfileService(ILocalizationHelper localizationHelper, IMapper mapper, IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IEncryptionService encryptionService)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
             _localizationHelper = localizationHelper;
             _currentUserService = currentUserService;
+            _encryptionService = encryptionService;
         }
 
         public async Task<UserProfileToReturnDto?> LoginAsync(string email, string password)
@@ -369,6 +371,11 @@ namespace Pausalio.Application.Services.Implementations
                 throw new Exception(_localizationHelper.UserNotFound);
 
             _mapper.Map(dto, user);
+            if (!string.IsNullOrWhiteSpace(dto.OpenRouterApiKey))
+            {
+                user.OpenRouterApiKey =
+                    _encryptionService.Encrypt(dto.OpenRouterApiKey);
+            }
             _unitOfWork.UserProfileRepository.Update(user!);
             await _unitOfWork.SaveChangesAsync();
 

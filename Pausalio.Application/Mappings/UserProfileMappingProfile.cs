@@ -16,6 +16,7 @@ namespace Pausalio.Application.Mappings
 
             CreateMap<UpdateUserProfileDto, UserProfile>()
                 .ForMember(dest => dest.PasswordHash, opt => opt.Ignore())
+                .ForMember(dest => dest.OpenRouterApiKey, opt => opt.Ignore())
                 .ForMember(dest => dest.IsActive, opt => opt.Ignore())
                 .ForMember(dest => dest.Role, opt => opt.Ignore())
                 .ForMember(dest => dest.IsEmailVerified, opt => opt.Ignore())

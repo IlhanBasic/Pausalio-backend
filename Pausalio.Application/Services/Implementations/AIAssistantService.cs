@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Pausalio.Application.DTOs.AIAssistant;
 using Pausalio.Application.Helpers;
@@ -16,6 +8,15 @@ using Pausalio.Application.Services.Interfaces;
 using Pausalio.Domain.Entities;
 using Pausalio.Infrastructure.Repositories.Interfaces;
 using Pausalio.Shared.Configuration;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace Pausalio.Application.Services.Implementations
 {
@@ -32,12 +33,14 @@ namespace Pausalio.Application.Services.Implementations
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUserService _currentUserService;
         private readonly ILogger<AIAssistantService> _logger;
+        private readonly IEncryptionService _encryption;
 
         public AIAssistantService(
             IFinancialContextService financialContextService,
             IInvoiceService invoiceService,
             IExpenseService expenseService,
             IPaymentService paymentService,
+            IEncryptionService encryptionService,
             ITaxObligationService taxObligationService,
             IOptions<OpenRouterSettings> configuration,
             HttpClient httpClient,
@@ -49,6 +52,7 @@ namespace Pausalio.Application.Services.Implementations
             _financialContextService = financialContextService;
             _configuration = configuration;
             _httpClient = httpClient;
+            _encryption = encryptionService;
             _unitOfWork = unitOfWork;
             _currentUserService = currentUserService;
             _logger = logger;
@@ -115,7 +119,7 @@ namespace Pausalio.Application.Services.Implementations
                 Id = Guid.NewGuid(),
                 ConversationId = conversation.Id,
                 Role = "user",
-                Content = message.Message,
+                Content = _encryption.Encrypt(message.Message),
                 CreatedAt = DateTime.UtcNow
             };
             await _unitOfWork.AiMessageRepository.AddAsync(userAiMessage);
@@ -164,7 +168,10 @@ namespace Pausalio.Application.Services.Implementations
                     Content = content
                 };
 
-                request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", userProfile.OpenRouterApiKey);
+                request.Headers.Authorization =
+                new AuthenticationHeaderValue(
+                    "Bearer",
+                    _encryption.Decrypt(userProfile.OpenRouterApiKey));
 
                 var response = await _httpClient.SendAsync(request);
                 response.EnsureSuccessStatusCode();
@@ -295,7 +302,7 @@ namespace Pausalio.Application.Services.Implementations
                 Id = Guid.NewGuid(),
                 ConversationId = conversationId,
                 Role = "assistant",
-                Content = content,
+                Content = _encryption.Encrypt(content),
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -345,7 +352,7 @@ namespace Pausalio.Application.Services.Implementations
                 {
                     Id = m.Id,
                     Role = m.Role,
-                    Content = m.Content,
+                    Content = _encryption.Decrypt(m.Content),
                     CreatedAt = m.CreatedAt
                 })
                 .ToList();
