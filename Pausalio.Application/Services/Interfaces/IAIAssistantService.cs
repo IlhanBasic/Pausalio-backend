@@ -10,6 +10,7 @@ namespace Pausalio.Application.Services.Interfaces
     public interface IAIAssistantService
     {
         Task<AIResponseDto> SendMessageAsync(UserChatMessage message);
+        Task StreamMessageAsync(UserChatMessage message, Func<AiStreamChunkDto, Task> onChunk, CancellationToken cancellationToken = default);
         Task<List<AiConversationDto>> GetConversationsAsync();
         Task<List<AiMessageDto>> GetConversationMessagesAsync(Guid conversationId);
         Task DeleteConversationAsync(Guid conversationId);

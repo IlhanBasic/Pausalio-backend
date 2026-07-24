@@ -265,6 +265,7 @@ app.UseSwagger();
 
 app.MapControllers();
 app.MapHub<ChatHub>("/hubs/chat");
+app.MapHub<AIAssistantHub>("/hubs/ai");
 
 // -------------------- Run --------------------
 app.Run();
