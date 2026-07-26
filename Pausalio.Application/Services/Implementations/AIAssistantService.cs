@@ -35,6 +35,9 @@ namespace Pausalio.Application.Services.Implementations
         private readonly ICurrentUserService _currentUserService;
         private readonly ILogger<AIAssistantService> _logger;
         private readonly IEncryptionService _encryption;
+        private readonly OpenRouterClientService _openRouterClient;
+        private readonly OpenRouterStreamParser _streamParser;
+        private readonly ToolCallProcessor _toolCallProcessor;
 
         public AIAssistantService(
             IFinancialContextService financialContextService,
@@ -43,6 +46,10 @@ namespace Pausalio.Application.Services.Implementations
             IPaymentService paymentService,
             IEncryptionService encryptionService,
             ITaxObligationService taxObligationService,
+            IReminderService reminderService,
+            IClientService clientService,
+            IBankAccountService bankAccountService,
+            IBusinessProfileService businessProfileService,
             IOptions<OpenRouterSettings> configuration,
             HttpClient httpClient,
             IUnitOfWork unitOfWork,
@@ -57,9 +64,21 @@ namespace Pausalio.Application.Services.Implementations
             _unitOfWork = unitOfWork;
             _currentUserService = currentUserService;
             _logger = logger;
-            _dataLoader = new AIAssistantDataLoader(invoiceService, expenseService, taxObligationService, paymentService);
+            _dataLoader = new AIAssistantDataLoader(
+                invoiceService, 
+                expenseService, 
+                taxObligationService, 
+                paymentService,
+                reminderService,
+                clientService,
+                bankAccountService,
+                businessProfileService,
+                currentUserService);
             _toolExecutor = new AIAssistantToolExecutor(loggerFactory.CreateLogger<AIAssistantToolExecutor>());
             _responseParser = new OpenRouterResponseParser();
+            _openRouterClient = new OpenRouterClientService(httpClient, configuration, encryptionService);
+            _streamParser = new OpenRouterStreamParser();
+            _toolCallProcessor = new ToolCallProcessor(unitOfWork, _toolExecutor, logger);
         }
 
         public async Task<AIResponseDto> SendMessageAsync(UserChatMessage message)
@@ -96,12 +115,14 @@ namespace Pausalio.Application.Services.Implementations
                     ? message.Message.Substring(0, 37) + "..."
                     : message.Message;
 
+                var rawTitle = string.IsNullOrWhiteSpace(generatedTitle) ? "Novi razgovor" : generatedTitle;
+
                 conversation = new AiConversation
                 {
                     Id = Guid.NewGuid(),
                     UserId = userId,
                     BusinessProfileId = userBusinessProfile.BusinessProfileId,
-                    Title = string.IsNullOrWhiteSpace(generatedTitle) ? "Novi razgovor" : generatedTitle,
+                    Title = _encryption.Encrypt(rawTitle),
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow,
                     IsDeleted = false
@@ -146,35 +167,17 @@ namespace Pausalio.Application.Services.Implementations
             messages.Add(new { role = "user", content = message.Message });
 
             var tools = AIToolsDefinition.GetTools();
-            var cachedData = await _dataLoader.LoadAllDataAsync();
+            CachedToolData? cachedData = null;
             var toolCallRound = 0;
 
             while (true)
             {
-                var requestBody = new
-                {
-                    model = userProfile.OpenRouterModelName,
+                var response = await _openRouterClient.SendRequestAsync(
+                    userProfile.OpenRouterApiKey,
+                    userProfile.OpenRouterModelName,
                     messages,
                     tools,
-                    tool_choice = "auto",
-                    max_tokens = 1000,
-                    temperature = 0.7
-                };
-
-                var json = JsonSerializer.Serialize(requestBody);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                using var request = new HttpRequestMessage(HttpMethod.Post, _configuration.Value.ApiUrl)
-                {
-                    Content = content
-                };
-
-                request.Headers.Authorization =
-                new AuthenticationHeaderValue(
-                    "Bearer",
-                    _encryption.Decrypt(userProfile.OpenRouterApiKey));
-
-                var response = await _httpClient.SendAsync(request);
+                    stream: false);
                 response.EnsureSuccessStatusCode();
 
                 var responseString = await response.Content.ReadAsStringAsync();
@@ -230,64 +233,18 @@ namespace Pausalio.Application.Services.Implementations
 
                 foreach (var rawToolCall in parsedResponse.ToolCallRawMessages)
                 {
-                    string toolResult;
-                    var toolCallId = "unknown";
-                    var functionName = "unknown";
-                    var argumentsJson = "{}";
-                    var isSuccess = true;
-                    string? errorMessage = null;
-
-                    var stopwatch = Stopwatch.StartNew();
-
-                    try
+                    if (cachedData == null)
                     {
-                        using var toolDoc = JsonDocument.Parse(rawToolCall);
-                        var toolCall = toolDoc.RootElement;
-                        toolCallId = toolCall.TryGetProperty("id", out var idProp)
-                            ? idProp.GetString() ?? "unknown"
-                            : "unknown";
-
-                        var functionElement = toolCall.GetProperty("function");
-                        functionName = functionElement.GetProperty("name").GetString()!;
-                        var argumentsElement = functionElement.GetProperty("arguments");
-                        argumentsJson = argumentsElement.ValueKind == JsonValueKind.String
-                            ? argumentsElement.GetString()!
-                            : argumentsElement.GetRawText();
-
-                        toolResult = _toolExecutor.ExecuteTool(functionName, argumentsJson, cachedData);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogWarning(ex, "Failed to parse or execute tool call {ToolCallId}", toolCallId);
-                        toolResult = $"Invalid tool call or arguments: {ex.Message}";
-                        isSuccess = false;
-                        errorMessage = ex.Message;
+                        cachedData = await _dataLoader.LoadAllDataAsync();
                     }
 
-                    stopwatch.Stop();
+                    var toolResult = await _toolCallProcessor.ProcessToolCallAsync(
+                        rawToolCall,
+                        userAiMessage.Id,
+                        toolCallRound,
+                        cachedData);
 
-                    var aiToolCall = new AiToolCall
-                    {
-                        Id = Guid.NewGuid(),
-                        MessageId = userAiMessage.Id,
-                        ToolName = functionName,
-                        Arguments = argumentsJson,
-                        Result = toolResult,
-                        Success = isSuccess,
-                        ErrorMessage = errorMessage,
-                        RoundNumber = toolCallRound,
-                        DurationMs = (int)stopwatch.ElapsedMilliseconds,
-                        CreatedAt = DateTime.UtcNow
-                    };
-
-                    await _unitOfWork.AiToolCallRepository.AddAsync(aiToolCall);
-
-                    messages.Add(new
-                    {
-                        role = "tool",
-                        tool_call_id = toolCallId,
-                        content = toolResult
-                    });
+                    messages.Add(toolResult.ToolMessage);
                 }
 
                 await _unitOfWork.SaveChangesAsync();
@@ -330,12 +287,14 @@ namespace Pausalio.Application.Services.Implementations
                     ? message.Message.Substring(0, 37) + "..."
                     : message.Message;
 
+                var rawTitle = string.IsNullOrWhiteSpace(generatedTitle) ? "Novi razgovor" : generatedTitle;
+
                 conversation = new AiConversation
                 {
                     Id = Guid.NewGuid(),
                     UserId = userId,
                     BusinessProfileId = userBusinessProfile.BusinessProfileId,
-                    Title = string.IsNullOrWhiteSpace(generatedTitle) ? "Novi razgovor" : generatedTitle,
+                    Title = _encryption.Encrypt(rawTitle),
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow,
                     IsDeleted = false
@@ -378,9 +337,8 @@ namespace Pausalio.Application.Services.Implementations
 
             messages.Add(new { role = "user", content = message.Message });
             var tools = AIToolsDefinition.GetTools();
-            var cachedData = await _dataLoader.LoadAllDataAsync();
+            CachedToolData? cachedData = null;
             var toolCallRound = 0;
-            var assistantBuffer = new StringBuilder();
 
             while (true)
             {
@@ -389,34 +347,19 @@ namespace Pausalio.Application.Services.Implementations
                     throw new OperationCanceledException(cancellationToken);
                 }
 
-                var requestBody = new
-                {
-                    model = userProfile.OpenRouterModelName,
+                var assistantBuffer = new StringBuilder();
+
+                using var response = await _openRouterClient.SendRequestAsync(
+                    userProfile.OpenRouterApiKey,
+                    userProfile.OpenRouterModelName,
                     messages,
                     tools,
-                    tool_choice = "auto",
-                    max_tokens = 1000,
-                    temperature = 0.7,
-                    stream = true
-                };
-
-                var json = JsonSerializer.Serialize(requestBody);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                using var request = new HttpRequestMessage(HttpMethod.Post, _configuration.Value.ApiUrl)
-                {
-                    Content = content
-                };
-
-                request.Headers.Authorization = new AuthenticationHeaderValue(
-                    "Bearer",
-                    _encryption.Decrypt(userProfile.OpenRouterApiKey));
-
-                using var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+                    stream: true,
+                    cancellationToken);
                 response.EnsureSuccessStatusCode();
 
                 using var responseStream = await response.Content.ReadAsStreamAsync(cancellationToken);
-                var parsedResponse = await ParseOpenRouterStreamAsync(responseStream, assistantBuffer, conversation.Id, onChunk, cancellationToken);
+                var parsedResponse = await _streamParser.ParseStreamAsync(responseStream, assistantBuffer, conversation.Id, onChunk, cancellationToken);
 
                 if (parsedResponse.FinishReason != "tool_calls")
                 {
@@ -482,185 +425,30 @@ namespace Pausalio.Application.Services.Implementations
 
                 foreach (var rawToolCall in parsedResponse.ToolCallRawMessages)
                 {
-                    string toolResult;
-                    var toolCallId = "unknown";
-                    var functionName = "unknown";
-                    var argumentsJson = "{}";
-                    var isSuccess = true;
-                    string? errorMessage = null;
-
-                    var stopwatch = Stopwatch.StartNew();
-
-                    try
+                    if (cachedData == null)
                     {
-                        using var toolDoc = JsonDocument.Parse(rawToolCall);
-                        var toolCall = toolDoc.RootElement;
-                        toolCallId = toolCall.TryGetProperty("id", out var idProp)
-                            ? idProp.GetString() ?? "unknown"
-                            : "unknown";
-
-                        var functionElement = toolCall.GetProperty("function");
-                        functionName = functionElement.GetProperty("name").GetString()!;
-                        var argumentsElement = functionElement.GetProperty("arguments");
-                        argumentsJson = argumentsElement.ValueKind == JsonValueKind.String
-                            ? argumentsElement.GetString()!
-                            : argumentsElement.GetRawText();
-
-                        toolResult = _toolExecutor.ExecuteTool(functionName, argumentsJson, cachedData);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogWarning(ex, "Failed to parse or execute tool call {ToolCallId}", toolCallId);
-                        toolResult = $"Invalid tool call or arguments: {ex.Message}";
-                        isSuccess = false;
-                        errorMessage = ex.Message;
+                        cachedData = await _dataLoader.LoadAllDataAsync();
                     }
 
-                    stopwatch.Stop();
+                    var toolResult = await _toolCallProcessor.ProcessToolCallAsync(
+                        rawToolCall,
+                        userAiMessage.Id,
+                        toolCallRound,
+                        cachedData);
 
-                    var aiToolCall = new AiToolCall
-                    {
-                        Id = Guid.NewGuid(),
-                        MessageId = userAiMessage.Id,
-                        ToolName = functionName,
-                        Arguments = argumentsJson,
-                        Result = toolResult,
-                        Success = isSuccess,
-                        ErrorMessage = errorMessage,
-                        RoundNumber = toolCallRound,
-                        DurationMs = (int)stopwatch.ElapsedMilliseconds,
-                        CreatedAt = DateTime.UtcNow
-                    };
-
-                    await _unitOfWork.AiToolCallRepository.AddAsync(aiToolCall);
                     await onChunk(new AiStreamChunkDto
                     {
                         ConversationId = conversation.Id,
                         Type = "tool_result",
-                        Content = toolResult,
+                        Content = toolResult.ToolResult,
                         IsFinal = false
                     });
 
-                    messages.Add(new
-                    {
-                        role = "tool",
-                        tool_call_id = toolCallId,
-                        content = toolResult
-                    });
+                    messages.Add(toolResult.ToolMessage);
                 }
 
                 await _unitOfWork.SaveChangesAsync();
             }
-        }
-
-        private async Task<OpenRouterResponse> ParseOpenRouterStreamAsync(
-            Stream stream,
-            StringBuilder assistantBuffer,
-            Guid conversationId,
-            Func<AiStreamChunkDto, Task> onChunk,
-            CancellationToken cancellationToken)
-        {
-            var finishReason = string.Empty;
-            AIUsageDto? usage = null;
-            using var reader = new StreamReader(stream, Encoding.UTF8);
-
-            while (!reader.EndOfStream && !cancellationToken.IsCancellationRequested)
-            {
-                var line = await reader.ReadLineAsync(cancellationToken);
-                if (line == null)
-                    break;
-
-                line = line.Trim();
-                if (string.IsNullOrEmpty(line) || line.StartsWith(":"))
-                    continue;
-
-                if (line.StartsWith("data:"))
-                    line = line.Substring("data:".Length).Trim();
-
-                if (string.IsNullOrEmpty(line))
-                    continue;
-
-                if (line == "[DONE]")
-                    break;
-
-                try
-                {
-                    using var document = JsonDocument.Parse(line);
-                    var root = document.RootElement;
-
-                    if (root.TryGetProperty("choices", out var choices) && choices.GetArrayLength() > 0)
-                    {
-                        var choice = choices[0];
-
-                        if (choice.TryGetProperty("delta", out var delta)
-                            && delta.TryGetProperty("content", out var contentElement)
-                            && contentElement.ValueKind == JsonValueKind.String)
-                        {
-                            var content = contentElement.GetString();
-                            if (!string.IsNullOrEmpty(content))
-                            {
-                                assistantBuffer.Append(content);
-                                await onChunk(new AiStreamChunkDto
-                                {
-                                    ConversationId = conversationId,
-                                    Type = "content",
-                                    Content = content,
-                                    IsFinal = false
-                                });
-                            }
-                        }
-
-                        if (choice.TryGetProperty("finish_reason", out var finishReasonElement)
-                            && finishReasonElement.ValueKind == JsonValueKind.String)
-                        {
-                            finishReason = finishReasonElement.GetString() ?? finishReason;
-                        }
-                    }
-
-                    if (usage == null && root.TryGetProperty("usage", out var usageElement))
-                    {
-                        usage = ParseUsageFromJsonElement(usageElement);
-                    }
-                }
-                catch (JsonException)
-                {
-                    // Ignore invalid JSON lines such as non-JSON events or keep-alive markers.
-                }
-            }
-
-            return new OpenRouterResponse
-            {
-                FinishReason = string.IsNullOrEmpty(finishReason) ? "unknown" : finishReason,
-                AssistantMessage = assistantBuffer.ToString(),
-                MessageRaw = assistantBuffer.ToString(),
-                AssistantMessageObject = null,
-                ToolCallRawMessages = Array.Empty<string>(),
-                Usage = usage
-            };
-        }
-
-        private static AIUsageDto? ParseUsageFromJsonElement(JsonElement usageElement)
-        {
-            if (usageElement.ValueKind != JsonValueKind.Object)
-                return null;
-
-            var promptTokens = usageElement.TryGetProperty("prompt_tokens", out var promptElement) && promptElement.TryGetInt32(out var promptValue)
-                ? promptValue
-                : 0;
-            var completionTokens = usageElement.TryGetProperty("completion_tokens", out var completionElement) && completionElement.TryGetInt32(out var completionValue)
-                ? completionValue
-                : 0;
-            var totalTokens = usageElement.TryGetProperty("total_tokens", out var totalElement) && totalElement.TryGetInt32(out var totalValue)
-                ? totalValue
-                : 0;
-
-            return new AIUsageDto
-            {
-                ConversationId = Guid.Empty,
-                PromptTokens = promptTokens,
-                CompletionTokens = completionTokens,
-                TotalTokens = totalTokens
-            };
         }
 
         private async Task SaveAssistantMessageAsync(Guid conversationId, string content)
@@ -690,12 +478,26 @@ namespace Pausalio.Application.Services.Implementations
 
             return conversations
                 .OrderByDescending(c => c.UpdatedAt ?? c.CreatedAt)
-                .Select(c => new AiConversationDto
+                .Select(c =>
                 {
-                    Id = c.Id,
-                    Title = c.Title ?? "Novi razgovor",
-                    CreatedAt = c.CreatedAt,
-                    UpdatedAt = c.UpdatedAt
+                    string decryptedTitle;
+                    try
+                    {
+                        decryptedTitle = !string.IsNullOrEmpty(c.Title) ? _encryption.Decrypt(c.Title) : "Novi razgovor";
+                    }
+                    catch
+                    {
+                        // Fallback ukoliko postoji stari neenkriptovan naslov u bazi
+                        decryptedTitle = c.Title ?? "Novi razgovor";
+                    }
+
+                    return new AiConversationDto
+                    {
+                        Id = c.Id,
+                        Title = decryptedTitle,
+                        CreatedAt = c.CreatedAt,
+                        UpdatedAt = c.UpdatedAt
+                    };
                 })
                 .ToList();
         }
@@ -716,12 +518,25 @@ namespace Pausalio.Application.Services.Implementations
                 .Where(m => m.Role == "user" || m.Role == "assistant")
                 .Where(m => !string.IsNullOrEmpty(m.Content))
                 .OrderBy(m => m.CreatedAt)
-                .Select(m => new AiMessageDto
+                .Select(m =>
                 {
-                    Id = m.Id,
-                    Role = m.Role,
-                    Content = _encryption.Decrypt(m.Content),
-                    CreatedAt = m.CreatedAt
+                    string decryptedContent;
+                    try
+                    {
+                        decryptedContent = _encryption.Decrypt(m.Content ?? "");
+                    }
+                    catch
+                    {
+                        decryptedContent = m.Content ?? "";
+                    }
+
+                    return new AiMessageDto
+                    {
+                        Id = m.Id,
+                        Role = m.Role,
+                        Content = decryptedContent,
+                        CreatedAt = m.CreatedAt
+                    };
                 })
                 .ToList();
         }

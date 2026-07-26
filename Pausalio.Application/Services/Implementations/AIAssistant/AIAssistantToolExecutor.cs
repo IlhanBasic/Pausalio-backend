@@ -3,6 +3,10 @@ using Pausalio.Application.DTOs.Expense;
 using Pausalio.Application.DTOs.Invoice;
 using Pausalio.Application.DTOs.Payment;
 using Pausalio.Application.DTOs.TaxObligation;
+using Pausalio.Application.DTOs.Reminder;
+using Pausalio.Application.DTOs.Client;
+using Pausalio.Application.DTOs.BusinessProfile;
+using Pausalio.Application.DTOs.BankAccount;
 using Pausalio.Shared.Enums;
 using System.Text.Json;
 
@@ -64,6 +68,18 @@ namespace Pausalio.Application.Services.Implementations.AIAssistant
                         return ExecuteGetTaxDelayAnalysis(data);
                     case "get_client_service_breakdown":
                         return ExecuteGetClientServiceBreakdown(args, data);
+                    case "get_client_list":
+                        return ExecuteGetClientList(data);
+                    case "get_invoice_by_number":
+                        return ExecuteGetInvoiceByNumber(args, data);
+                    case "get_upcoming_reminders":
+                        return ExecuteGetUpcomingReminders(data);
+                    case "get_expenses_by_year":
+                        return ExecuteGetExpensesByYear(args, data);
+                    case "get_business_profile_info":
+                        return ExecuteGetBusinessProfileInfo(data);
+                    case "get_bank_accounts":
+                        return ExecuteGetBankAccounts(data);
                     default:
                         return "Alat nije pronađen.";
                 }
@@ -503,6 +519,109 @@ namespace Pausalio.Application.Services.Implementations.AIAssistant
             };
 
             return JsonSerializer.Serialize(result);
+        }
+
+        private string ExecuteGetClientList(CachedToolData data)
+        {
+            var clientsList = data.Clients
+                .Select(x => new
+                {
+                    Klijent = x.Name,
+                    x.PIB,
+                    x.IsActive
+                })
+                .ToList();
+
+            return JsonSerializer.Serialize(clientsList);
+        }
+
+        private string ExecuteGetInvoiceByNumber(JsonElement args, CachedToolData data)
+        {
+            var invoiceNumber = GetRequiredString(args, "invoiceNumber");
+            var item = data.Invoices
+                .FirstOrDefault(x => string.Equals(x.InvoiceNumber, invoiceNumber, StringComparison.OrdinalIgnoreCase));
+
+            if (item == null)
+                return $"Faktura sa brojem '{invoiceNumber}' nije pronađena.";
+
+            return JsonSerializer.Serialize(item);
+        }
+
+        private string ExecuteGetUpcomingReminders(CachedToolData data)
+        {
+            var upcomingReminders = data.Reminders
+                .Where(x => !x.IsCompleted)
+                .OrderBy(x => x.DueDate)
+                .Select(x => new
+                {
+                    x.Id,
+                    x.Title,
+                    x.Description,
+                    ReminderType = x.ReminderType.ToString(),
+                    x.DueDate,
+                    x.CreatedAt
+                })
+                .ToList();
+
+            return JsonSerializer.Serialize(upcomingReminders);
+        }
+
+        private string ExecuteGetExpensesByYear(JsonElement args, CachedToolData data)
+        {
+            var year = GetRequiredInt(args, "year");
+
+            var result = data.Expenses
+                .Where(x => x.CreatedAt.Year == year)
+                .Select(x => new
+                {
+                    x.Name,
+                    x.Amount,
+                    x.Status,
+                    x.ReferenceNumber,
+                    x.CreatedAt
+                });
+
+            return JsonSerializer.Serialize(result);
+        }
+
+        private string ExecuteGetBusinessProfileInfo(CachedToolData data)
+        {
+            if (data.BusinessProfile == null)
+                return "Profil firme nije pronađen.";
+
+            var info = new
+            {
+                Naziv = data.BusinessProfile.BusinessName,
+                data.BusinessProfile.PIB,
+                data.BusinessProfile.MB,
+                data.BusinessProfile.Address,
+                data.BusinessProfile.City,
+                data.BusinessProfile.Email,
+                data.BusinessProfile.Phone,
+                data.BusinessProfile.Website,
+                SifraDelatnosti = data.BusinessProfile.ActivityCode
+            };
+
+            return JsonSerializer.Serialize(info);
+        }
+
+        private string ExecuteGetBankAccounts(CachedToolData data)
+        {
+            var accounts = data.BankAccounts
+                .Select((x, index) => new
+                {
+                    x.Id,
+                    x.BankName,
+                    x.AccountNumber,
+                    Currency = x.Currency.ToString(),
+                    x.IBAN,
+                    x.SWIFT,
+                    x.IsActive,
+                    IsDefault = index == 0
+                })
+                .ToList();
+
+            return JsonSerializer.Serialize(accounts);
         }
 
         private static TEnum? ParseEnum<TEnum>(JsonElement args, string propertyName)

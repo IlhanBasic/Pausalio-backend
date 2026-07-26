@@ -334,6 +334,88 @@
                             required = new[] { "clientName" }
                         }
                     }
+                },
+                new {
+                    type = "function",
+                    function = new {
+                        name = "get_client_list",
+                        description = "Vraća osnovni pregled svih klijenata (ime/klijent, PIB, da li je aktivan). Koristi kada korisnik traži spisak svih klijenata ili pita koje sve klijente ima.",
+                        parameters = new {
+                            type = "object",
+                            properties = new { },
+                            required = new string[] { }
+                        }
+                    }
+                },
+                new {
+                    type = "function",
+                    function = new {
+                        name = "get_invoice_by_number",
+                        description = "Vraća detaljne informacije o jednoj fakturi na osnovu broja fakture (uključujući stavke fakture). Koristi kada korisnik pita šta piše na konkretnoj fakturi, traži detalje ili stavke konkretne fakture.",
+                        parameters = new {
+                            type = "object",
+                            properties = new {
+                                invoiceNumber = new {
+                                    type = "string",
+                                    description = "Broj fakture za pretragu."
+                                }
+                            },
+                            required = new[] { "invoiceNumber" }
+                        }
+                    }
+                },
+                new {
+                    type = "function",
+                    function = new {
+                        name = "get_upcoming_reminders",
+                        description = "Vraća predstojeće podsetnike i zadatke korisnika. Koristi kada korisnik pita šta je sledeće na listi zadataka ili traži svoje podsetnike.",
+                        parameters = new {
+                            type = "object",
+                            properties = new { },
+                            required = new string[] { }
+                        }
+                    }
+                },
+                new {
+                    type = "function",
+                    function = new {
+                        name = "get_expenses_by_year",
+                        description = "Vraća sve troškove za određenu godinu. Koristi za filtriranje i analizu troškova po godinama.",
+                        parameters = new {
+                            type = "object",
+                            properties = new {
+                                year = new {
+                                    type = "integer",
+                                    description = "Godina za koju se traže troškovi."
+                                }
+                            },
+                            required = new[] { "year" }
+                        }
+                    }
+                },
+                new {
+                    type = "function",
+                    function = new {
+                        name = "get_business_profile_info",
+                        description = "Vraća statičke detalje o profilu firme (PIB, MB, adresa, šifra delatnosti i njen opis). Koristi kada korisnik pita za PIB, MB, adresu ili šifru svoje delatnosti.",
+                        parameters = new {
+                            type = "object",
+                            properties = new { },
+                            required = new string[] { }
+                        }
+                    }
+                },
+                new {
+                    type = "function",
+                    function = new {
+                        name = "get_bank_accounts",
+                        description = "Vraća listu bankovnih računa sa informacijom koji je podrazumevani (default) račun za plaćanje.",
+                        parameters = new {
+                            type = "object",
+                            properties = new { },
+                            required = new string[] { }
+                        }
+                    }
                 }
             };
         }
