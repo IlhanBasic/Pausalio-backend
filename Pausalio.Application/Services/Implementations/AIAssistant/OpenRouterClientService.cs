@@ -33,7 +33,9 @@ namespace Pausalio.Application.Services.Implementations.AIAssistant
             IEnumerable<object> messages,
             IEnumerable<object> tools,
             bool stream,
-            CancellationToken cancellationToken = default)
+            CancellationToken cancellationToken = default,
+            double temperature = 0.2
+            )
         {
             var requestBody = new
             {
@@ -42,7 +44,7 @@ namespace Pausalio.Application.Services.Implementations.AIAssistant
                 tools = tools,
                 tool_choice = "auto",
                 max_tokens = 1000,
-                temperature = 0.7,
+                temperature = temperature,
                 stream = stream
             };
 

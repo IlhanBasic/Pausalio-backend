@@ -11,6 +11,7 @@ namespace Pausalio.Application.DTOs.AIAssistant
         public Guid? ConversationId { get; set; }
         public string Message { get; set; } = null!;
         public List<ChatHistoryItem> History { get; set; } = new();
+        public double? Temperature { get; set; }
     }
 
     public class ChatHistoryItem

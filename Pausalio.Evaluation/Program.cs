@@ -128,6 +128,7 @@ namespace Pausalio.Evaluation
                     // Harness Classes
                     services.AddScoped<HarnessRunner>();
                     services.AddScoped<JudgeClient>();
+                    services.AddScoped<TemperatureEvaluator>();
                 })
                 .Build();
 
@@ -136,6 +137,18 @@ namespace Pausalio.Evaluation
             var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
             var dbContext = serviceProvider.GetRequiredService<PausalioDbContext>();
             var settings = serviceProvider.GetRequiredService<IOptions<EvaluationSettings>>().Value;
+            static List<EvalResult> LoadJsonl(string file)
+            {
+                var list = new List<EvalResult>();
+                if (!File.Exists(file)) return list;
+                foreach (var line in File.ReadLines(file))
+                {
+                    if (string.IsNullOrWhiteSpace(line)) continue;
+                    var r = JsonSerializer.Deserialize<EvalResult>(line);
+                    if (r != null) list.Add(r);
+                }
+                return list;
+            }
 
             try
             {
@@ -151,12 +164,43 @@ namespace Pausalio.Evaluation
                         logger.LogInformation("Starting evaluation run (L1 & L2)...");
                         var runner = serviceProvider.GetRequiredService<HarnessRunner>();
                         var questions = DatasetLoader.Load("eval-dataset.json");
+                        
                         logger.LogInformation("Loaded {Count} questions.", questions.Count);
                         var results = await runner.RunAsync(questions);
                         logger.LogInformation("Run completed. Exporting initial reports...");
                         ReportExporter.Export(results, settings);
                         break;
+                    case "temperature":
+                        logger.LogInformation("Starting temperature evaluation...");
 
+                        var temperatureEvaluator = serviceProvider
+                            .GetRequiredService<TemperatureEvaluator>();
+
+                        var temperatureDatasetPath = Path.Combine(
+                            AppContext.BaseDirectory,
+                            "eval-dataset.json");
+
+                        var temperatureQuestions = DatasetLoader.Load(temperatureDatasetPath);
+
+                        logger.LogInformation(
+                            "Loaded {Count} questions for temperature evaluation.",
+                            temperatureQuestions.Count);
+
+                        await temperatureEvaluator.RunAsync(temperatureQuestions);
+
+                        logger.LogInformation("Temperature evaluation completed.");
+                        break;
+                    case "compare-temperature":
+                        logger.LogInformation("Building temperature comparison report (tool-calling only)...");
+                        var combined = new List<EvalResult>();
+                        combined.AddRange(LoadJsonl("results.jsonl")); // temp 0.2 baseline
+                        foreach (var t in new[] { 0.0, 0.7, 1.0 })
+                            combined.AddRange(LoadJsonl($"temperature_{t.ToString().Replace(".", "_")}.jsonl"));
+
+                        logger.LogInformation("Loaded {Count} results across all temperature files.", combined.Count);
+                        ReportExporter.ExportTemperatureComparison(combined);
+                        logger.LogInformation("Exported results-temperature-comparison.csv/json.");
+                        break;
                     case "judge":
                         logger.LogInformation("Starting LLM-as-a-judge scoring...");
                         var judge = serviceProvider.GetRequiredService<JudgeClient>();
@@ -235,7 +279,7 @@ namespace Pausalio.Evaluation
 
                     default:
                         Console.WriteLine($"Unknown subcommand: {command}");
-                        Console.WriteLine("Available subcommands: seed, run, judge, report, all");
+                        Console.WriteLine("Available subcommands: seed, run, temperature,compare-temperature, judge, report, all");
                         break;
                 }
             }

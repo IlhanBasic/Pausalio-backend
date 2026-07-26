@@ -1,0 +1,5 @@
+﻿Temperature,TotalQuestions,ToolMatchRate,AvgParameterAccuracy,AvgDurationMs,TotalPromptTokens,TotalCompletionTokens
+0,100,0.8200,0.7050,4917.00,561362,28642
+0.2,100,0.8100,0.7050,3663.11,563125,28493
+0.7,100,0.8100,0.7100,4662.88,562184,28080
+1,100,0.8100,0.7050,4748.13,561353,29190

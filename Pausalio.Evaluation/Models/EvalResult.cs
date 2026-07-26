@@ -44,5 +44,6 @@ namespace Pausalio.Evaluation.Models
         public int JudgeClarity { get; set; } // 0-3
         public bool Ignored { get; set; }
         public string ErrorMessage { get; set; } = string.Empty;
+        public double Temperature { get; set; }
     }
 }

@@ -1,35 +1,24 @@
 {
-  "EvaluationDate": "2026-07-26 12:32:53",
+  "EvaluationDate": "2026-07-26 15:06:50",
   "GenerationModel": "openai/gpt-4o-mini",
   "JudgeModel": "meta-llama/llama-3.3-70b-instruct",
   "TotalQuestions": 100,
   "SuccessfulRuns": 100,
   "FailedRuns": 0,
-  "Level1OverallToolMatchRate": 0.8,
-  "Level2AverageParameterAccuracy": 0.695,
+  "Level1OverallToolMatchRate": 0.81,
+  "Level2AverageParameterAccuracy": 0.705,
   "Level3AverageJudgeScores": {
-    "Accuracy": 4.42,
-    "Completeness": 1.69,
-    "Clarity": 2.78
+    "Accuracy": 4.34,
+    "Completeness": 1.65,
+    "Clarity": 2.77
   },
-  "TotalPromptTokens": 557292,
-  "TotalCompletionTokens": 28267,
-  "TotalTokens": 585559,
-  "AverageDurationMs": 3318.94,
-  "EstimatedCostUsd": 0.10055400,
+  "TotalPromptTokens": 563125,
+  "TotalCompletionTokens": 28493,
+  "TotalTokens": 591618,
+  "AverageDurationMs": 3663.11,
+  "EstimatedCostUsd": 0.10156455,
   "Notes": "IMPORTANT: Per-tool \u0027Accuracy\u0027 (TP\u002BTN)/(TP\u002BTN\u002BFP\u002BFN) is misleadingly high due to heavy class imbalance (most tools are irrelevant to most questions, inflating True Negatives). Use Level1OverallToolMatchRate for overall tool selection quality, and per-tool Precision/Recall/F1 for individual tool performance. Do NOT cite per-tool Accuracy as a standalone quality metric.",
   "ToolMetrics": [
-    {
-      "ToolName": "get_top_clients",
-      "TruePositives": 5,
-      "FalsePositives": 0,
-      "FalseNegatives": 0,
-      "TrueNegatives": 95,
-      "Precision": 1,
-      "Recall": 1,
-      "F1Score": 1,
-      "Accuracy": 1
-    },
     {
       "ToolName": "get_client_list",
       "TruePositives": 5,
@@ -119,11 +108,11 @@
       "Accuracy": 1
     },
     {
-      "ToolName": "get_top_services",
-      "TruePositives": 5,
+      "ToolName": "get_actual_cashflow",
+      "TruePositives": 4,
       "FalsePositives": 0,
       "FalseNegatives": 0,
-      "TrueNegatives": 95,
+      "TrueNegatives": 96,
       "Precision": 1,
       "Recall": 1,
       "F1Score": 1,
@@ -163,6 +152,28 @@
       "Accuracy": 1
     },
     {
+      "ToolName": "get_top_clients",
+      "TruePositives": 5,
+      "FalsePositives": 1,
+      "FalseNegatives": 0,
+      "TrueNegatives": 94,
+      "Precision": 0.8333333333333334,
+      "Recall": 1,
+      "F1Score": 0.9090909090909091,
+      "Accuracy": 0.99
+    },
+    {
+      "ToolName": "get_top_services",
+      "TruePositives": 5,
+      "FalsePositives": 1,
+      "FalseNegatives": 0,
+      "TrueNegatives": 94,
+      "Precision": 0.8333333333333334,
+      "Recall": 1,
+      "F1Score": 0.9090909090909091,
+      "Accuracy": 0.99
+    },
+    {
       "ToolName": "get_tax_obligations_by_year",
       "TruePositives": 6,
       "FalsePositives": 2,
@@ -172,17 +183,6 @@
       "Recall": 1,
       "F1Score": 0.8571428571428571,
       "Accuracy": 0.98
-    },
-    {
-      "ToolName": "get_actual_cashflow",
-      "TruePositives": 3,
-      "FalsePositives": 0,
-      "FalseNegatives": 1,
-      "TrueNegatives": 96,
-      "Precision": 1,
-      "Recall": 0.75,
-      "F1Score": 0.8571428571428571,
-      "Accuracy": 0.99
     },
     {
       "ToolName": "get_overdue_taxes",
@@ -196,6 +196,17 @@
       "Accuracy": 0.99
     },
     {
+      "ToolName": "get_invoices_by_year",
+      "TruePositives": 3,
+      "FalsePositives": 2,
+      "FalseNegatives": 0,
+      "TrueNegatives": 95,
+      "Precision": 0.6,
+      "Recall": 1,
+      "F1Score": 0.7499999999999999,
+      "Accuracy": 0.98
+    },
+    {
       "ToolName": "get_client_service_breakdown",
       "TruePositives": 4,
       "FalsePositives": 3,
@@ -207,29 +218,18 @@
       "Accuracy": 0.97
     },
     {
-      "ToolName": "get_invoices_by_year",
-      "TruePositives": 3,
-      "FalsePositives": 3,
-      "FalseNegatives": 0,
-      "TrueNegatives": 94,
-      "Precision": 0.5,
-      "Recall": 1,
+      "ToolName": "get_tax_summary",
+      "TruePositives": 2,
+      "FalsePositives": 0,
+      "FalseNegatives": 2,
+      "TrueNegatives": 96,
+      "Precision": 1,
+      "Recall": 0.5,
       "F1Score": 0.6666666666666666,
-      "Accuracy": 0.97
+      "Accuracy": 0.98
     },
     {
       "ToolName": "get_tax_obligations_by_status",
-      "TruePositives": 2,
-      "FalsePositives": 1,
-      "FalseNegatives": 2,
-      "TrueNegatives": 95,
-      "Precision": 0.6666666666666666,
-      "Recall": 0.5,
-      "F1Score": 0.5714285714285715,
-      "Accuracy": 0.97
-    },
-    {
-      "ToolName": "get_tax_summary",
       "TruePositives": 2,
       "FalsePositives": 1,
       "FalseNegatives": 2,
@@ -275,13 +275,13 @@
     {
       "ToolName": "get_expenses_by_year",
       "TruePositives": 1,
-      "FalsePositives": 4,
+      "FalsePositives": 5,
       "FalseNegatives": 1,
-      "TrueNegatives": 94,
-      "Precision": 0.2,
+      "TrueNegatives": 93,
+      "Precision": 0.16666666666666666,
       "Recall": 0.5,
-      "F1Score": 0.28571428571428575,
-      "Accuracy": 0.95
+      "F1Score": 0.25,
+      "Accuracy": 0.94
     },
     {
       "ToolName": "get_invoice_summary",

@@ -180,7 +180,9 @@ namespace Pausalio.Application.Services.Implementations
                     userProfile.OpenRouterModelName,
                     messages,
                     tools,
-                    stream: false);
+                    stream: false,
+                    cancellationToken: CancellationToken.None,
+                    temperature: message.Temperature ?? 0.2);
                 response.EnsureSuccessStatusCode();
 
                 var responseString = await response.Content.ReadAsStringAsync();
@@ -369,7 +371,8 @@ namespace Pausalio.Application.Services.Implementations
                     messages,
                     tools,
                     stream: true,
-                    cancellationToken);
+                    cancellationToken: CancellationToken.None,
+                    temperature: message.Temperature ?? 0.2);
                 response.EnsureSuccessStatusCode();
 
                 using var responseStream = await response.Content.ReadAsStreamAsync(cancellationToken);

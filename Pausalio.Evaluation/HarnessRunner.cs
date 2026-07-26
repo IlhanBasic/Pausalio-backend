@@ -67,7 +67,8 @@ namespace Pausalio.Evaluation
                     Category = q.Category,
                     Question = q.Question,
                     ExpectedTools = q.ExpectedTools,
-                    ExpectedParameters = q.ExpectedParameters
+                    ExpectedParameters = q.ExpectedParameters,
+                    Temperature = _settings.Temperature
                 };
 
                 try
@@ -89,7 +90,8 @@ namespace Pausalio.Evaluation
                             {
                                 ConversationId = Guid.Empty,  // always new conversation per attempt
                                 Message = q.Question,
-                                History = new List<ChatHistoryItem>()
+                                History = new List<ChatHistoryItem>(),
+                                Temperature = _settings.Temperature
                             };
 
                             responseDto = await _aiAssistantService.SendMessageAsync(chatMessage);

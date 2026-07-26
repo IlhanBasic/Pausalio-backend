@@ -25,5 +25,8 @@
     <None Update="eval-dataset.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+     <None Update="temperature-dataset.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

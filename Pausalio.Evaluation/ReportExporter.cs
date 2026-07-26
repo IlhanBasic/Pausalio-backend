@@ -12,6 +12,40 @@ namespace Pausalio.Evaluation
     {
         private const string DetailedCsvPath = "results-detailed.csv";
         private const string SummaryJsonPath = "results-summary.json";
+        private const string TemperatureComparisonCsvPath = "results-temperature-comparison.csv";
+        private const string TemperatureComparisonJsonPath = "results-temperature-comparison.json";
+        public static void ExportTemperatureComparison(List<EvalResult> allResults)
+        {
+            var byTemperature = allResults
+                .GroupBy(r => r.Temperature)
+                .OrderBy(g => g.Key)
+                .Select(g => new TemperatureSummaryResult
+                {
+                    Temperature = g.Key,
+                    TotalQuestions = g.Count(),
+                    ToolMatchRate = g.Any() ? (double)g.Count(r => r.IsToolCallMatch) / g.Count() : 0.0,
+                    AvgParameterAccuracy = g.Any() ? g.Average(r => r.ParameterAccuracyScore) : 0.0,
+                    AvgDurationMs = g.Any() ? g.Average(r => r.ExecutionDurationMs) : 0.0,
+                    TotalPromptTokens = g.Sum(r => r.PromptTokens),
+                    TotalCompletionTokens = g.Sum(r => r.CompletionTokens)
+                })
+                .ToList();
+
+            using (var writer = new StreamWriter(TemperatureComparisonCsvPath, false, System.Text.Encoding.UTF8))
+            {
+                writer.WriteLine("Temperature,TotalQuestions,ToolMatchRate,AvgParameterAccuracy,AvgDurationMs,TotalPromptTokens,TotalCompletionTokens");
+                foreach (var s in byTemperature)
+                {
+                    writer.WriteLine(string.Format(CultureInfo.InvariantCulture,
+                        "{0},{1},{2:F4},{3:F4},{4:F2},{5},{6}",
+                        s.Temperature, s.TotalQuestions, s.ToolMatchRate, s.AvgParameterAccuracy,
+                        s.AvgDurationMs, s.TotalPromptTokens, s.TotalCompletionTokens));
+                }
+            }
+
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            File.WriteAllText(TemperatureComparisonJsonPath, JsonSerializer.Serialize(byTemperature, options));
+        }
 
         public static void Export(List<EvalResult> results, EvaluationSettings settings)
         {

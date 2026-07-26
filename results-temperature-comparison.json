@@ -1,0 +1,38 @@
+[
+  {
+    "Temperature": 0,
+    "TotalQuestions": 100,
+    "ToolMatchRate": 0.82,
+    "AvgParameterAccuracy": 0.705,
+    "AvgDurationMs": 4917,
+    "TotalPromptTokens": 561362,
+    "TotalCompletionTokens": 28642
+  },
+  {
+    "Temperature": 0.2,
+    "TotalQuestions": 100,
+    "ToolMatchRate": 0.81,
+    "AvgParameterAccuracy": 0.705,
+    "AvgDurationMs": 3663.11,
+    "TotalPromptTokens": 563125,
+    "TotalCompletionTokens": 28493
+  },
+  {
+    "Temperature": 0.7,
+    "TotalQuestions": 100,
+    "ToolMatchRate": 0.81,
+    "AvgParameterAccuracy": 0.71,
+    "AvgDurationMs": 4662.88,
+    "TotalPromptTokens": 562184,
+    "TotalCompletionTokens": 28080
+  },
+  {
+    "Temperature": 1,
+    "TotalQuestions": 100,
+    "ToolMatchRate": 0.81,
+    "AvgParameterAccuracy": 0.705,
+    "AvgDurationMs": 4748.13,
+    "TotalPromptTokens": 561353,
+    "TotalCompletionTokens": 29190
+  }
+]
