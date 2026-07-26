@@ -170,6 +170,9 @@ namespace Pausalio.Application.Services.Implementations
             CachedToolData? cachedData = null;
             var toolCallRound = 0;
 
+            // Accumulate token usage across all tool-call rounds
+            int accPromptTokens = 0, accCompletionTokens = 0, accTotalTokens = 0;
+
             while (true)
             {
                 var response = await _openRouterClient.SendRequestAsync(
@@ -183,6 +186,14 @@ namespace Pausalio.Application.Services.Implementations
                 var responseString = await response.Content.ReadAsStringAsync();
                 var parsedResponse = _responseParser.Parse(responseString);
 
+                // Accumulate tokens from this round
+                if (parsedResponse.Usage != null)
+                {
+                    accPromptTokens += parsedResponse.Usage.PromptTokens;
+                    accCompletionTokens += parsedResponse.Usage.CompletionTokens;
+                    accTotalTokens += parsedResponse.Usage.TotalTokens;
+                }
+
                 if (parsedResponse.FinishReason != "tool_calls")
                 {
                     var finalAnswer = parsedResponse.AssistantMessage ?? "Nije moguće dobiti odgovor.";
@@ -193,7 +204,7 @@ namespace Pausalio.Application.Services.Implementations
                     {
                         ConversationId = conversation.Id,
                         Message = finalAnswer,
-                        Usage = parsedResponse.Usage
+                        Usage = new AIUsageDto { PromptTokens = accPromptTokens, CompletionTokens = accCompletionTokens, TotalTokens = accTotalTokens }
                     };
                 }
 
@@ -211,7 +222,7 @@ namespace Pausalio.Application.Services.Implementations
                     {
                         ConversationId = conversation.Id,
                         Message = finalAnswer,
-                        Usage = parsedResponse.Usage
+                        Usage = new AIUsageDto { PromptTokens = accPromptTokens, CompletionTokens = accCompletionTokens, TotalTokens = accTotalTokens }
                     };
                 }
 
@@ -227,7 +238,7 @@ namespace Pausalio.Application.Services.Implementations
                     {
                         ConversationId = conversation.Id,
                         Message = fallbackAnswer,
-                        Usage = parsedResponse.Usage
+                        Usage = new AIUsageDto { PromptTokens = accPromptTokens, CompletionTokens = accCompletionTokens, TotalTokens = accTotalTokens }
                     };
                 }
 
@@ -340,6 +351,9 @@ namespace Pausalio.Application.Services.Implementations
             CachedToolData? cachedData = null;
             var toolCallRound = 0;
 
+            // Accumulate token usage across all tool-call rounds
+            int accPromptTokens = 0, accCompletionTokens = 0, accTotalTokens = 0;
+
             while (true)
             {
                 if (cancellationToken.IsCancellationRequested)
@@ -361,6 +375,14 @@ namespace Pausalio.Application.Services.Implementations
                 using var responseStream = await response.Content.ReadAsStreamAsync(cancellationToken);
                 var parsedResponse = await _streamParser.ParseStreamAsync(responseStream, assistantBuffer, conversation.Id, onChunk, cancellationToken);
 
+                // Accumulate tokens from this round
+                if (parsedResponse.Usage != null)
+                {
+                    accPromptTokens += parsedResponse.Usage.PromptTokens;
+                    accCompletionTokens += parsedResponse.Usage.CompletionTokens;
+                    accTotalTokens += parsedResponse.Usage.TotalTokens;
+                }
+
                 if (parsedResponse.FinishReason != "tool_calls")
                 {
                     var finalAnswer = parsedResponse.AssistantMessage ?? assistantBuffer.ToString();
@@ -374,7 +396,7 @@ namespace Pausalio.Application.Services.Implementations
                         Type = "final",
                         Content = finalAnswer,
                         IsFinal = true,
-                        Usage = parsedResponse.Usage
+                        Usage = new AIUsageDto { PromptTokens = accPromptTokens, CompletionTokens = accCompletionTokens, TotalTokens = accTotalTokens }
                     });
 
                     return;
@@ -398,7 +420,7 @@ namespace Pausalio.Application.Services.Implementations
                         Type = "final",
                         Content = finalAnswer,
                         IsFinal = true,
-                        Usage = parsedResponse.Usage
+                        Usage = new AIUsageDto { PromptTokens = accPromptTokens, CompletionTokens = accCompletionTokens, TotalTokens = accTotalTokens }
                     });
 
                     return;
@@ -417,7 +439,7 @@ namespace Pausalio.Application.Services.Implementations
                         Type = "final",
                         Content = fallbackAnswer,
                         IsFinal = true,
-                        Usage = parsedResponse.Usage
+                        Usage = new AIUsageDto { PromptTokens = accPromptTokens, CompletionTokens = accCompletionTokens, TotalTokens = accTotalTokens }
                     });
 
                     return;

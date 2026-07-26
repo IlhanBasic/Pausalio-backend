@@ -1,0 +1,873 @@
+[
+    {
+        "id": 1,
+        "category": "Clients",
+        "question": "Koja su moja top 3 klijenta po zaradi u 2024. godini?",
+        "expected_tools": [
+            "get_top_clients"
+        ],
+        "expected_parameters": {
+            "limit": 3,
+            "year": 2024
+        }
+    },
+    {
+        "id": 2,
+        "category": "Clients",
+        "question": "Prikaži top 5 klijenata za 2025. godinu.",
+        "expected_tools": [
+            "get_top_clients"
+        ],
+        "expected_parameters": {
+            "limit": 5,
+            "year": 2025
+        }
+    },
+    {
+        "id": 3,
+        "category": "Clients",
+        "question": "Ko je moj najbolji klijent po zaradi svih vremena?",
+        "expected_tools": [
+            "get_top_clients"
+        ],
+        "expected_parameters": {
+            "limit": 1
+        }
+    },
+    {
+        "id": 4,
+        "category": "Clients",
+        "question": "Daj mi spisak svih mojih aktivnih klijenata.",
+        "expected_tools": [
+            "get_client_list"
+        ],
+        "expected_parameters": {
+            "onlyActive": true
+        }
+    },
+    {
+        "id": 5,
+        "category": "Clients",
+        "question": "Lista svih klijenata, uključujući i neaktivne.",
+        "expected_tools": [
+            "get_client_list"
+        ],
+        "expected_parameters": {
+            "onlyActive": false
+        }
+    },
+    {
+        "id": 6,
+        "category": "Clients",
+        "question": "Izlistaj sve registrovane klijente.",
+        "expected_tools": [
+            "get_client_list"
+        ],
+        "expected_parameters": {}
+    },
+    {
+        "id": 7,
+        "category": "Clients",
+        "question": "Prikaži mi strukturu pruženih usluga za klijenta TechCorp d.o.o.",
+        "expected_tools": [
+            "get_client_service_breakdown"
+        ],
+        "expected_parameters": {
+            "clientName": "TechCorp d.o.o."
+        }
+    },
+    {
+        "id": 8,
+        "category": "Clients",
+        "question": "Daj mi specifikaciju usluga za klijenta GlobalSoft SRB.",
+        "expected_tools": [
+            "get_client_service_breakdown"
+        ],
+        "expected_parameters": {
+            "clientName": "GlobalSoft SRB"
+        }
+    },
+    {
+        "id": 9,
+        "category": "Clients",
+        "question": "Analiza usluga klijenta München Consulting GmbH.",
+        "expected_tools": [
+            "get_client_service_breakdown"
+        ],
+        "expected_parameters": {
+            "clientName": "München Consulting GmbH"
+        }
+    },
+    {
+        "id": 10,
+        "category": "Invoices",
+        "question": "Prikaži mi sve poslate fakture.",
+        "expected_tools": [
+            "get_invoices_by_status"
+        ],
+        "expected_parameters": {
+            "status": 2
+        }
+    },
+    {
+        "id": 11,
+        "category": "Invoices",
+        "question": "Daj mi listu svih završenih faktura.",
+        "expected_tools": [
+            "get_invoices_by_status"
+        ],
+        "expected_parameters": {
+            "status": 4
+        }
+    },
+    {
+        "id": 12,
+        "category": "Invoices",
+        "question": "Pronađi otkazane fakture.",
+        "expected_tools": [
+            "get_invoices_by_status"
+        ],
+        "expected_parameters": {
+            "status": 3
+        }
+    },
+    {
+        "id": 13,
+        "category": "Invoices",
+        "question": "Prikaži sve plaćene fakture.",
+        "expected_tools": [
+            "get_invoices_by_payment_status"
+        ],
+        "expected_parameters": {
+            "status": 2
+        }
+    },
+    {
+        "id": 14,
+        "category": "Invoices",
+        "question": "Izlistaj mi sve neplaćene račune.",
+        "expected_tools": [
+            "get_invoices_by_payment_status"
+        ],
+        "expected_parameters": {
+            "status": 1
+        }
+    },
+    {
+        "id": 15,
+        "category": "Invoices",
+        "question": "Koje su fakture samo delimično plaćene?",
+        "expected_tools": [
+            "get_invoices_by_payment_status"
+        ],
+        "expected_parameters": {
+            "status": 3
+        }
+    },
+    {
+        "id": 16,
+        "category": "Invoices",
+        "question": "Daj mi sve fakture iz 2024. godine.",
+        "expected_tools": [
+            "get_invoices_by_year"
+        ],
+        "expected_parameters": {
+            "year": 2024
+        }
+    },
+    {
+        "id": 17,
+        "category": "Invoices",
+        "question": "Lista faktura za 2025. godinu.",
+        "expected_tools": [
+            "get_invoices_by_year"
+        ],
+        "expected_parameters": {
+            "year": 2025
+        }
+    },
+    {
+        "id": 18,
+        "category": "Invoices",
+        "question": "Koje su mi fakture trenutno prekoračile rok za plaćanje (overdue)?",
+        "expected_tools": [
+            "get_overdue_invoices"
+        ],
+        "expected_parameters": {}
+    },
+    {
+        "id": 19,
+        "category": "Invoices",
+        "question": "Prikaži mi zbirni pregled svih faktura za klijenta TechCorp d.o.o. u 2024. godini.",
+        "expected_tools": [
+            "get_invoice_summary"
+        ],
+        "expected_parameters": {
+            "clientName": "TechCorp d.o.o.",
+            "year": 2024
+        }
+    },
+    {
+        "id": 20,
+        "category": "Invoices",
+        "question": "Zbirni izveštaj faktura za GlobalSoft SRB za 2025. godinu.",
+        "expected_tools": [
+            "get_invoice_summary"
+        ],
+        "expected_parameters": {
+            "clientName": "GlobalSoft SRB",
+            "year": 2025
+        }
+    },
+    {
+        "id": 21,
+        "category": "Invoices",
+        "question": "Pronađi mi fakturu broj F-2024-005.",
+        "expected_tools": [
+            "get_invoice_by_number"
+        ],
+        "expected_parameters": {
+            "invoiceNumber": "F-2024-005"
+        }
+    },
+    {
+        "id": 22,
+        "category": "Invoices",
+        "question": "Daj mi detalje fakture F-2025-012.",
+        "expected_tools": [
+            "get_invoice_by_number"
+        ],
+        "expected_parameters": {
+            "invoiceNumber": "F-2025-012"
+        }
+    },
+    {
+        "id": 23,
+        "category": "Invoices",
+        "question": "Izveštaj o fakturama za klijenta München Consulting GmbH.",
+        "expected_tools": [
+            "get_invoice_summary"
+        ],
+        "expected_parameters": {
+            "clientName": "München Consulting GmbH"
+        }
+    },
+    {
+        "id": 24,
+        "category": "Invoices",
+        "question": "Sve fakture iz 2024. godine koje su poslate (status Sent).",
+        "expected_tools": [
+            "get_invoices_by_year"
+        ],
+        "expected_parameters": {
+            "year": 2024
+        }
+    },
+    {
+        "id": 25,
+        "category": "Invoices",
+        "question": "Spisak neplaćenih faktura za TechCorp d.o.o.",
+        "expected_tools": [
+            "get_invoices_by_payment_status"
+        ],
+        "expected_parameters": {
+            "status": 1
+        }
+    },
+    {
+        "id": 26,
+        "category": "Expenses",
+        "question": "Daj mi spisak troškova koji čekaju plaćanje (status Pending).",
+        "expected_tools": [
+            "get_expenses_by_status"
+        ],
+        "expected_parameters": {
+            "status": 1
+        }
+    },
+    {
+        "id": 27,
+        "category": "Expenses",
+        "question": "Prikaži mi sve plaćene troškove.",
+        "expected_tools": [
+            "get_expenses_by_status"
+        ],
+        "expected_parameters": {
+            "status": 2
+        }
+    },
+    {
+        "id": 28,
+        "category": "Expenses",
+        "question": "Daj mi pregled svih troškova u 2024. godini.",
+        "expected_tools": [
+            "get_expenses_by_year"
+        ],
+        "expected_parameters": {
+            "year": 2024
+        }
+    },
+    {
+        "id": 29,
+        "category": "Expenses",
+        "question": "Lista troškova za 2025. godinu.",
+        "expected_tools": [
+            "get_expenses_by_year"
+        ],
+        "expected_parameters": {
+            "year": 2025
+        }
+    },
+    {
+        "id": 30,
+        "category": "Expenses",
+        "question": "Zbirni izveštaj troškova za 2024. godinu.",
+        "expected_tools": [
+            "get_expense_summary"
+        ],
+        "expected_parameters": {
+            "year": 2024
+        }
+    },
+    {
+        "id": 31,
+        "category": "Expenses",
+        "question": "Daj mi sumarni pregled troškova za 2025. godinu po kategorijama.",
+        "expected_tools": [
+            "get_expense_summary"
+        ],
+        "expected_parameters": {
+            "year": 2025
+        }
+    },
+    {
+        "id": 32,
+        "category": "Expenses",
+        "question": "Ukupni pregled troškova svih vremena.",
+        "expected_tools": [
+            "get_expense_summary"
+        ],
+        "expected_parameters": {}
+    },
+    {
+        "id": 33,
+        "category": "Expenses",
+        "question": "Svi troškovi koji su arhivirani.",
+        "expected_tools": [
+            "get_expenses_by_status"
+        ],
+        "expected_parameters": {
+            "status": 3
+        }
+    },
+    {
+        "id": 34,
+        "category": "Taxes",
+        "question": "Koje su moje poreske obaveze za 2024. godinu?",
+        "expected_tools": [
+            "get_tax_obligations_by_year"
+        ],
+        "expected_parameters": {
+            "year": 2024
+        }
+    },
+    {
+        "id": 35,
+        "category": "Taxes",
+        "question": "Spisak poreza i doprinosa za 2025. godinu.",
+        "expected_tools": [
+            "get_tax_obligations_by_year"
+        ],
+        "expected_parameters": {
+            "year": 2025
+        }
+    },
+    {
+        "id": 36,
+        "category": "Taxes",
+        "question": "Daj mi sve poreske obaveze koje su plaćene.",
+        "expected_tools": [
+            "get_tax_obligations_by_status"
+        ],
+        "expected_parameters": {
+            "status": 2
+        }
+    },
+    {
+        "id": 37,
+        "category": "Taxes",
+        "question": "Porezi koji čekaju na plaćanje (Pending).",
+        "expected_tools": [
+            "get_tax_obligations_by_status"
+        ],
+        "expected_parameters": {
+            "status": 1
+        }
+    },
+    {
+        "id": 38,
+        "category": "Taxes",
+        "question": "Da li imam neke neplaćene poreze kojima je istekao rok?",
+        "expected_tools": [
+            "get_overdue_taxes"
+        ],
+        "expected_parameters": {}
+    },
+    {
+        "id": 39,
+        "category": "Taxes",
+        "question": "Sumarni izveštaj o plaćenim porezima u 2024. godini.",
+        "expected_tools": [
+            "get_tax_summary"
+        ],
+        "expected_parameters": {
+            "year": 2024
+        }
+    },
+    {
+        "id": 40,
+        "category": "Taxes",
+        "question": "Zbirni izveštaj o porezima za 2025. godinu.",
+        "expected_tools": [
+            "get_tax_summary"
+        ],
+        "expected_parameters": {
+            "year": 2025
+        }
+    },
+    {
+        "id": 41,
+        "category": "Taxes",
+        "question": "Da li kasnim sa plaćanjem poreza i kolika je prosečna latencija (analiza kašnjenja)?",
+        "expected_tools": [
+            "get_tax_delay_analysis"
+        ],
+        "expected_parameters": {}
+    },
+    {
+        "id": 42,
+        "category": "Taxes",
+        "question": "Svi moji arhivirani porezi.",
+        "expected_tools": [
+            "get_tax_obligations_by_status"
+        ],
+        "expected_parameters": {
+            "status": 3
+        }
+    },
+    {
+        "id": 43,
+        "category": "Taxes",
+        "question": "Poreske obaveze za oktobar 2024. godine.",
+        "expected_tools": [
+            "get_tax_obligations_by_year"
+        ],
+        "expected_parameters": {
+            "year": 2024
+        }
+    },
+    {
+        "id": 44,
+        "category": "Taxes",
+        "question": "Koliko poreza sam ukupno platio u 2024. godini?",
+        "expected_tools": [
+            "get_tax_summary"
+        ],
+        "expected_parameters": {
+            "year": 2024
+        }
+    },
+    {
+        "id": 45,
+        "category": "Taxes",
+        "question": "Koje obaveze za doprinose za 2025. još nisu regulisane?",
+        "expected_tools": [
+            "get_tax_obligations_by_status"
+        ],
+        "expected_parameters": {
+            "status": 1
+        }
+    },
+    {
+        "id": 46,
+        "category": "Analytics",
+        "question": "Prikaži mi mesečne prihode za 2024. godinu.",
+        "expected_tools": [
+            "get_monthly_income"
+        ],
+        "expected_parameters": {
+            "year": 2024
+        }
+    },
+    {
+        "id": 47,
+        "category": "Analytics",
+        "question": "Mesečni prihodi u 2025. godini.",
+        "expected_tools": [
+            "get_monthly_income"
+        ],
+        "expected_parameters": {
+            "year": 2025
+        }
+    },
+    {
+        "id": 48,
+        "category": "Analytics",
+        "question": "Uporedi mi prihode sa troškovima za 2024. godinu.",
+        "expected_tools": [
+            "get_income_vs_expenses"
+        ],
+        "expected_parameters": {
+            "year": 2024
+        }
+    },
+    {
+        "id": 49,
+        "category": "Analytics",
+        "question": "Prihodi vs rashodi za 2025. godinu.",
+        "expected_tools": [
+            "get_income_vs_expenses"
+        ],
+        "expected_parameters": {
+            "year": 2025
+        }
+    },
+    {
+        "id": 50,
+        "category": "Analytics",
+        "question": "Koje su moje najbolje usluge po prihodu u 2024. godini?",
+        "expected_tools": [
+            "get_top_services"
+        ],
+        "expected_parameters": {
+            "year": 2024,
+            "limit": 5
+        }
+    },
+    {
+        "id": 51,
+        "category": "Analytics",
+        "question": "Top 3 najbolje usluge za 2025. godinu.",
+        "expected_tools": [
+            "get_top_services"
+        ],
+        "expected_parameters": {
+            "year": 2025,
+            "limit": 3
+        }
+    },
+    {
+        "id": 52,
+        "category": "Analytics",
+        "question": "Prikaži ostvareni novčani tok (actual cashflow) za 2024. godinu.",
+        "expected_tools": [
+            "get_actual_cashflow"
+        ],
+        "expected_parameters": {
+            "year": 2024
+        }
+    },
+    {
+        "id": 53,
+        "category": "Analytics",
+        "question": "Kakav je bio stvarni novčani tok u 2025. godini?",
+        "expected_tools": [
+            "get_actual_cashflow"
+        ],
+        "expected_parameters": {
+            "year": 2025
+        }
+    },
+    {
+        "id": 54,
+        "category": "Analytics",
+        "question": "Koliko u proseku klijenti kasne sa plaćanjem u 2024. godini?",
+        "expected_tools": [
+            "get_avg_payment_delay_by_client"
+        ],
+        "expected_parameters": {
+            "year": 2024
+        }
+    },
+    {
+        "id": 55,
+        "category": "Analytics",
+        "question": "Prosečno kašnjenje plaćanja klijenata u 2025. godini.",
+        "expected_tools": [
+            "get_avg_payment_delay_by_client"
+        ],
+        "expected_parameters": {
+            "year": 2025
+        }
+    },
+    {
+        "id": 56,
+        "category": "Analytics",
+        "question": "Najunosnije usluge svih vremena.",
+        "expected_tools": [
+            "get_top_services"
+        ],
+        "expected_parameters": {}
+    },
+    {
+        "id": 57,
+        "category": "Analytics",
+        "question": "Prosečno vreme kašnjenja za sve vreme.",
+        "expected_tools": [
+            "get_avg_payment_delay_by_client"
+        ],
+        "expected_parameters": {}
+    },
+    {
+        "id": 58,
+        "category": "Profile/Other",
+        "question": "Daj mi osnovne podatke o mojoj firmi.",
+        "expected_tools": [
+            "get_business_profile_info"
+        ],
+        "expected_parameters": {}
+    },
+    {
+        "id": 59,
+        "category": "Profile/Other",
+        "question": "Koji su moji registrovani bankovni računi?",
+        "expected_tools": [
+            "get_bank_accounts"
+        ],
+        "expected_parameters": {}
+    },
+    {
+        "id": 60,
+        "category": "Profile/Other",
+        "question": "Koji su sledeći upcoming podsetnici?",
+        "expected_tools": [
+            "get_upcoming_reminders"
+        ],
+        "expected_parameters": {
+            "limit": 5
+        }
+    },
+    {
+        "id": 61,
+        "category": "Profile/Other",
+        "question": "Pokaži 10 predstojećih podsetnika.",
+        "expected_tools": [
+            "get_upcoming_reminders"
+        ],
+        "expected_parameters": {
+            "limit": 10
+        }
+    },
+    {
+        "id": 62,
+        "category": "Profile/Other",
+        "question": "Prikaži detalje o mom poslovnom profilu.",
+        "expected_tools": [
+            "get_business_profile_info"
+        ],
+        "expected_parameters": {}
+    },
+    {
+        "id": 63,
+        "category": "Profile/Other",
+        "question": "Izlistaj mi sve račune u bankama.",
+        "expected_tools": [
+            "get_bank_accounts"
+        ],
+        "expected_parameters": {}
+    },
+    {
+        "id": 64,
+        "category": "Multi-tool",
+        "question": "Želim da proverim stvarni novčani tok za 2024. i da uporedim prihode i troškove za istu godinu.",
+        "expected_tools": [
+            "get_actual_cashflow",
+            "get_income_vs_expenses"
+        ],
+        "expected_parameters": {
+            "year": 2024
+        }
+    },
+    {
+        "id": 65,
+        "category": "Multi-tool",
+        "question": "Prikaži mi top 3 klijenta za 2025. godinu i izlistaj mi sve aktivne klijente.",
+        "expected_tools": [
+            "get_top_clients",
+            "get_client_list"
+        ],
+        "expected_parameters": {
+            "year": 2025,
+            "limit": 3,
+            "onlyActive": true
+        }
+    },
+    {
+        "id": 66,
+        "category": "Multi-tool",
+        "question": "Interesuju me moji bankovni računi i da li imam neke predstojeće podsetnike.",
+        "expected_tools": [
+            "get_bank_accounts",
+            "get_upcoming_reminders"
+        ],
+        "expected_parameters": {}
+    },
+    {
+        "id": 67,
+        "category": "Multi-tool",
+        "question": "Pronađi mi fakturu F-2024-001 i prikaži spisak poslatih faktura.",
+        "expected_tools": [
+            "get_invoice_by_number",
+            "get_invoices_by_status"
+        ],
+        "expected_parameters": {
+            "invoiceNumber": "F-2024-001",
+            "status": 2
+        }
+    },
+    {
+        "id": 68,
+        "category": "Multi-tool",
+        "question": "Koje su poreske obaveze za 2024. i proveri da li imam neplaćene poreze kojima je istekao rok.",
+        "expected_tools": [
+            "get_tax_obligations_by_year",
+            "get_overdue_taxes"
+        ],
+        "expected_parameters": {
+            "year": 2024
+        }
+    },
+    {
+        "id": 69,
+        "category": "Negative/Trap",
+        "question": "Molim te promeni email klijenta TechCorp d.o.o. na info@techcorp.rs.",
+        "expected_tools": [],
+        "expected_parameters": {}
+    },
+    {
+        "id": 70,
+        "category": "Negative/Trap",
+        "question": "Unesi novi trošak od 12000 RSD za kancelarijski materijal.",
+        "expected_tools": [],
+        "expected_parameters": {}
+    },
+    {
+        "id": 71,
+        "category": "Negative/Trap",
+        "question": "Kakvo je vreme danas u Beogradu?",
+        "expected_tools": [],
+        "expected_parameters": {}
+    },
+    {
+        "id": 72,
+        "category": "Negative/Trap",
+        "question": "Kako da napišem dobar ugovor o poverljivosti (NDA)?",
+        "expected_tools": [],
+        "expected_parameters": {}
+    },
+    {
+        "id": 73,
+        "category": "Negative/Trap",
+        "question": "Izbriši fakturu F-2025-001 iz baze podataka.",
+        "expected_tools": [],
+        "expected_parameters": {}
+    },
+    {
+        "id": 74,
+        "category": "Negative/Trap",
+        "question": "Koji je moj lozinka za prijavu na sajt?",
+        "expected_tools": [],
+        "expected_parameters": {}
+    },
+    {
+        "id": 75,
+        "category": "Negative/Trap",
+        "question": "Kreiraj novu fakturu za klijenta GlobalSoft.",
+        "expected_tools": [],
+        "expected_parameters": {}
+    },
+    {
+        "id": 76,
+        "category": "Multi-tool",
+        "question": "Prikaži statistiku mojih faktura i izlistaj mi neplaćene troškove.",
+        "expected_tools": [
+            "get_invoice_summary",
+            "get_expenses_by_status"
+        ],
+        "expected_parameters": {
+            "status": "Pending"
+        }
+    },
+    {
+        "id": 77,
+        "category": "Multi-tool",
+        "question": "Da li imam poreskih dugovanja u 2025. godini i predstavi stvarni novčani tok za decembar te godine?",
+        "expected_tools": [
+            "get_tax_obligations_by_year",
+            "get_actual_cashflow"
+        ],
+        "expected_parameters": {
+            "year": 2025,
+            "month": 12
+        }
+    },
+    {
+        "id": 78,
+        "category": "Multi-tool",
+        "question": "Koje su mi najprodavanije usluge u 2025. godini i daj mi profil moje firme.",
+        "expected_tools": [
+            "get_top_services",
+            "get_business_profile_info"
+        ],
+        "expected_parameters": {
+            "year": 2025,
+            "top": 5
+        }
+    },
+    {
+        "id": 79,
+        "category": "Multi-tool",
+        "question": "Izlistaj mi sve poslate fakture i daj mi prosečno kašnjenje plaćanja klijenata.",
+        "expected_tools": [
+            "get_invoices_by_status",
+            "get_avg_payment_delay_by_client"
+        ],
+        "expected_parameters": {
+            "status": "Sent",
+            "top": 5
+        }
+    },
+    {
+        "id": 80,
+        "category": "Multi-tool",
+        "question": "Uplatio bih poreske obaveze za 2024. godinu pa mi daj te obaveze i spisak mojih bankovnih računa.",
+        "expected_tools": [
+            "get_tax_obligations_by_year",
+            "get_bank_accounts"
+        ],
+        "expected_parameters": {
+            "year": 2024
+        }
+    },
+    {
+        "id": 81,
+        "category": "Negative/Trap",
+        "question": "Možeš li mi reći kako da optimizujem svoj sajt za pretraživače (SEO)?",
+        "expected_tools": [],
+        "expected_parameters": {}
+    },
+    {
+        "id": 82,
+        "category": "Negative/Trap",
+        "question": "Koji je najbolji restoran u Beogradu po tvom mišljenju?",
+        "expected_tools": [],
+        "expected_parameters": {}
+    },
+    {
+        "id": 83,
+        "category": "Negative/Trap",
+        "question": "Markiraj podsetnik 'Sastanak sa klijentom' kao završen.",
+        "expected_tools": [],
+        "expected_parameters": {}
+    }
+]
