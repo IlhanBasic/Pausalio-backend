@@ -11,6 +11,6 @@ namespace Pausalio.Application.Services.Interfaces
         string GetVerifyEmailTemplate(string firstName, string verificationLink);
         string GetInviteEmailTemplate(string token, string registerLink, bool userExists);
         string GetPasswordResetPinTemplate(string firstName, string pin);
-        
+        string GetUnreadMessageNotificationTemplate(string senderName, string appUrl);
     }
 }

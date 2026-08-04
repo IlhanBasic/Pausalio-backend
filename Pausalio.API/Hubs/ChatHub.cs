@@ -1,6 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Pausalio.Application.DTOs.ChatMessage;
 using Pausalio.Application.Services.Interfaces;
+using Pausalio.Infrastructure.Persistence;
+using System.Net;
 using System.Security.Claims;
 
 namespace Pausalio.API.Hubs
@@ -9,19 +14,49 @@ namespace Pausalio.API.Hubs
     public class ChatHub : Hub
     {
         private readonly IChatService _chatService;
+        private readonly IChatConnectionManager _connectionManager;
+        private readonly IEmailService _emailService;
+        private readonly IEmailTemplateService _emailTemplateService;
+        private readonly IServiceScopeFactory _scopeFactory;
+        private readonly ILogger<ChatHub> _logger;
 
-        public ChatHub(IChatService chatService)
+        public ChatHub(
+            IChatService chatService,
+            IChatConnectionManager connectionManager,
+            IEmailService emailService,
+            IEmailTemplateService emailTemplateService,
+            IServiceScopeFactory scopeFactory,
+            ILogger<ChatHub> logger)
         {
             _chatService = chatService;
+            _connectionManager = connectionManager;
+            _emailService = emailService;
+            _emailTemplateService = emailTemplateService;
+            _scopeFactory = scopeFactory;
+            _logger = logger;
         }
 
         public override async Task OnConnectedAsync()
         {
+            var userId = GetCurrentUserId();
+            if (!string.IsNullOrWhiteSpace(userId))
+            {
+                _connectionManager.AddConnection(userId, Context.ConnectionId);
+                _logger.LogInformation("SignalR connection tracked. UserId: {UserId}, ConnectionId: {ConnectionId}", userId, Context.ConnectionId);
+            }
+
             await base.OnConnectedAsync();
         }
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
+            var userId = GetCurrentUserId();
+            if (!string.IsNullOrWhiteSpace(userId))
+            {
+                _connectionManager.RemoveConnection(userId, Context.ConnectionId);
+                _logger.LogInformation("SignalR connection removed. UserId: {UserId}, ConnectionId: {ConnectionId}", userId, Context.ConnectionId);
+            }
+
             await base.OnDisconnectedAsync(exception);
         }
 
@@ -70,10 +105,28 @@ namespace Pausalio.API.Hubs
             var roomKey = GetRoomKey(senderId, receiverId, businessId);
             Console.WriteLine($"SendMessage: roomKey={roomKey}");
 
+            await Clients.Caller.SendAsync("ReceiveMessage", message);
             await Clients.Group(roomKey).SendAsync("ReceiveMessage", message);
-            await Clients.Group($"user-{receiverId}-{businessId}").SendAsync("NewMessageNotification", message);
 
-            Console.WriteLine($"SendMessage: poruka poslata u sobu {roomKey}");
+            if (_connectionManager.IsOnline(receiverId))
+            {
+                await Clients.Group($"user-{receiverId}-{businessId}").SendAsync("NewMessageNotification", message);
+                Console.WriteLine($"SendMessage: poruka poslata u sobu {roomKey}");
+                return;
+            }
+
+            _logger.LogInformation(
+                "Recipient {ReceiverId} is offline. Scheduling email fallback for unread message from {SenderName}.",
+                receiverId,
+                message.SenderName);
+
+            if (!_connectionManager.ShouldSendOfflineEmailNotification(receiverId))
+            {
+                _logger.LogInformation("Offline email fallback skipped for recipient {ReceiverId} because the cooldown window is still active.", receiverId);
+                return;
+            }
+
+            _ = SendUnreadMessageEmailFallbackAsync(message, receiverId);
         }
 
         public async Task LeaveChat(string otherUserId, string businessId)
@@ -112,6 +165,37 @@ namespace Pausalio.API.Hubs
                 readBy = readerId,
                 businessId
             });
+        }
+
+        private async Task SendUnreadMessageEmailFallbackAsync(ChatMessageDto message, string receiverId)
+        {
+            try
+            {
+                using var scope = _scopeFactory.CreateScope();
+                var dbContext = scope.ServiceProvider.GetRequiredService<PausalioDbContext>();
+                var receiver = await dbContext.UserProfiles
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(x => x.Id == Guid.Parse(receiverId));
+
+                if (receiver == null || string.IsNullOrWhiteSpace(receiver.Email))
+                {
+                    _logger.LogWarning("Unable to send unread message email fallback because recipient {ReceiverId} has no email address.", receiverId);
+                    return;
+                }
+
+                var senderName = string.IsNullOrWhiteSpace(message.SenderName) ? "Korisnik" : message.SenderName;
+                var appUrl = "https://app-pausalio.netlify.app";
+                var emailBody = _emailTemplateService.GetUnreadMessageNotificationTemplate(
+                    WebUtility.HtmlEncode(senderName),
+                    appUrl);
+
+                await _emailService.SendEmailAsync(receiver.Email, "Nova poruka na platformi Paušalio", emailBody);
+                _logger.LogInformation("Unread message email fallback sent to {RecipientEmail}.", receiver.Email);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to send unread message email fallback for recipient {ReceiverId}.", receiverId);
+            }
         }
 
         private string? GetCurrentUserId()

@@ -51,6 +51,9 @@
 		<None Update="Templates\PasswordResetPinEmail.html">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
+		<None Update="Templates\UnreadChatMessageEmail.html">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 		<None Update="Templates\InvoiceTemplate.html">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>

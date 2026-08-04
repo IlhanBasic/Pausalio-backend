@@ -171,6 +171,7 @@ builder.Services.AddScoped<IAIAssistantService, AIAssistantService>();
 builder.Services.AddScoped<IFinancialContextService, FinancialContextService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IEncryptionService, AesEncryptionService>();
+builder.Services.AddSingleton<IChatConnectionManager, ChatConnectionManager>();
 // -------------------- FluentValidation --------------------
 builder.Services.AddValidatorsFromAssemblyContaining<AddBankAccountDtoValidator>();
 builder.Services.AddFluentValidationAutoValidation();

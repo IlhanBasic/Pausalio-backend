@@ -1,6 +1,6 @@
 ﻿using Pausalio.Application.Services.Interfaces;
 using Pausalio.Shared.Localization;
-using System.Reflection;
+using System.Net;
 
 namespace Pausalio.Application.Services.Implementations
 {
@@ -15,8 +15,7 @@ namespace Pausalio.Application.Services.Implementations
 
         public string GetVerifyEmailTemplate(string firstName, string verificationLink)
         {
-            var assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            var path = Path.Combine(assemblyFolder!, "Templates", "VerifyEmail.html");
+            var path = Path.Combine(AppContext.BaseDirectory, "Templates", "VerifyEmail.html");
 
             if (!File.Exists(path))
                 throw new FileNotFoundException($"Email template not found at path: {path}");
@@ -35,8 +34,7 @@ namespace Pausalio.Application.Services.Implementations
         }
         public string GetInviteEmailTemplate(string token, string registerLink, bool userExists)
         {
-            var assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            var path = Path.Combine(assemblyFolder!, "Templates", "InviteTokenEmail.html");
+            var path = Path.Combine(AppContext.BaseDirectory, "Templates", "InviteTokenEmail.html");
             if (!File.Exists(path))
                 throw new FileNotFoundException($"Verification success template not found at path: {path}");
 
@@ -54,8 +52,7 @@ namespace Pausalio.Application.Services.Implementations
         }
         public string GetPasswordResetPinTemplate(string firstName, string pin)
         {
-            var assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            var path = Path.Combine(assemblyFolder!, "Templates", "PasswordResetPinEmail.html");
+            var path = Path.Combine(AppContext.BaseDirectory, "Templates", "PasswordResetPinEmail.html");
 
             if (!File.Exists(path))
                 throw new FileNotFoundException($"Password reset email template not found at path: {path}");
@@ -67,6 +64,20 @@ namespace Pausalio.Application.Services.Implementations
                                .Replace("{{Message}}", _localizationHelper.PasswordResetText)
                                .Replace("{{Token}}", pin)
                                .Replace("{{Footer}}", _localizationHelper.EmailVerifyFooter);
+
+            return template;
+        }
+
+        public string GetUnreadMessageNotificationTemplate(string senderName, string appUrl)
+        {
+            var path = Path.Combine(AppContext.BaseDirectory, "Templates", "UnreadChatMessageEmail.html");
+
+            if (!File.Exists(path))
+                throw new FileNotFoundException($"Unread message notification template not found at path: {path}");
+
+            var template = File.ReadAllText(path);
+            template = template.Replace("{{SenderName}}", senderName)
+                               .Replace("{{AppUrl}}", appUrl);
 
             return template;
         }
