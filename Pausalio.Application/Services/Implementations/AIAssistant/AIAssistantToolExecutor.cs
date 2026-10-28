@@ -7,6 +7,7 @@ using Pausalio.Application.DTOs.Reminder;
 using Pausalio.Application.DTOs.Client;
 using Pausalio.Application.DTOs.BusinessProfile;
 using Pausalio.Application.DTOs.BankAccount;
+using Pausalio.Application.DTOs.KpoBook;
 using Pausalio.Shared.Enums;
 using System.Text.Json;
 
@@ -74,6 +75,10 @@ namespace Pausalio.Application.Services.Implementations.AIAssistant
                         return ExecuteGetBankAccounts(data);
                     case "get_business_financial_health":
                         return ExecuteGetBusinessFinancialHealth(data);
+                    case "get_kpo_summary":
+                        return ExecuteGetKpoSummary(args, data);
+                    case "get_kpo_entries":
+                        return ExecuteGetKpoEntries(args, data);
                     default:
                         return "Alat nije pronađen.";
                 }
@@ -650,6 +655,96 @@ namespace Pausalio.Application.Services.Implementations.AIAssistant
                 .ToList();
 
             return JsonSerializer.Serialize(accounts);
+        }
+
+        private string ExecuteGetKpoSummary(JsonElement args, CachedToolData data)
+        {
+            var year = GetOptionalInt(args, "year") ?? DateTime.UtcNow.Year;
+            var yearSummary = data.KpoSummary;
+
+            if (yearSummary != null && yearSummary.Year == year)
+            {
+                var result = new
+                {
+                    Godina = yearSummary.Year,
+                    UkupnoProdajniPrihodRSD = yearSummary.TotalProductIncome,
+                    UkupnoUsluzniPrihodRSD = yearSummary.TotalServiceIncome,
+                    UkupnoKpoRSD = yearSummary.GrandTotal,
+                    BrojUnosa = yearSummary.EntryCount,
+                    RemainingTo6MLimit = yearSummary.RemainingTo6MLimit,
+                    RemainingTo8MLimit = yearSummary.RemainingTo8MLimit,
+                    VatExposureTotal = yearSummary.VatExposureTotal,
+                    Alerts = yearSummary.Alerts.Select(x => new
+                    {
+                        ThresholdName = x.ThresholdName,
+                        ThresholdAmount = x.ThresholdAmount,
+                        CurrentTotal = x.CurrentTotal,
+                        IsExceeded = x.IsExceeded
+                    })
+                };
+
+                return JsonSerializer.Serialize(result);
+            }
+
+            var entries = data.KpoEntries
+                .Where(x => x.Year == year)
+                .ToList();
+
+            if (!entries.Any())
+                return $"Nema KPO podataka za godinu {year}.";
+
+            var totalProduct = entries.Sum(x => x.ProductIncome);
+            var totalService = entries.Sum(x => x.ServiceIncome);
+            var total = entries.Sum(x => x.TotalIncome);
+
+            var resultFallback = new
+            {
+                Godina = year,
+                UkupnoProdajniPrihodRSD = totalProduct,
+                UkupnoUsluzniPrihodRSD = totalService,
+                UkupnoKpoRSD = total,
+                BrojUnosa = entries.Count,
+                RemainingTo6MLimit = Math.Max(0m, 6_000_000m - total),
+                RemainingTo8MLimit = Math.Max(0m, 8_000_000m - total),
+                VatExposureTotal = total,
+                Alerts = Array.Empty<object>()
+            };
+
+            return JsonSerializer.Serialize(resultFallback);
+        }
+
+        private string ExecuteGetKpoEntries(JsonElement args, CachedToolData data)
+        {
+            var year = GetOptionalInt(args, "year") ?? DateTime.UtcNow.Year;
+            var limit = GetOptionalInt(args, "limit") ?? int.MaxValue;
+
+            var entries = data.KpoEntries
+                .Where(x => x.Year == year)
+                .OrderByDescending(x => x.EntryDate)
+                .ThenByDescending(x => x.SequenceNumber)
+                .Take(limit)
+                .Select(x => new
+                {
+                    x.Id,
+                    x.Year,
+                    x.SequenceNumber,
+                    x.EntryDate,
+                    x.Description,
+                    x.ProductIncome,
+                    x.ServiceIncome,
+                    x.TotalIncome,
+                    OriginalCurrency = x.OriginalCurrency.ToString(),
+                    x.OriginalAmount,
+                    x.ExchangeRate,
+                    EntryType = x.EntryType.ToString(),
+                    x.InvoiceId,
+                    x.InvoiceNumber,
+                    x.OriginalEntryId,
+                    x.CreatedAt
+                })
+                .ToList();
+
+            return JsonSerializer.Serialize(entries);
         }
 
         private static TEnum? ParseEnum<TEnum>(JsonElement args, string propertyName)

@@ -32,6 +32,7 @@ namespace Pausalio.Infrastructure.Repositories.Interfaces
         IAiConversationRepository AiConversationRepository {  get; }
         IAiMessageRepository AiMessageRepository { get; }
         IAiToolCallRepository AiToolCallRepository { get; }
+        IKpoEntryRepository KpoEntryRepository { get; }
         Task<int> SaveChangesAsync();
         Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
     }   

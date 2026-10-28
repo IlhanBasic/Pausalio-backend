@@ -83,6 +83,57 @@ namespace Pausalio.Application.Services.Implementations
             }
         }
 
+        public async Task<decimal?> GetExchangeRateByDateAsync(Currency currency, DateTime date)
+        {
+            if (currency == Currency.RSD)
+                return 1m;
+
+            var dateStr = date.ToString("yyyy-MM-dd");
+            var cacheKey = $"exchange_rate_{currency}_{dateStr}";
+
+            if (_cache.TryGetValue(cacheKey, out decimal cachedRate))
+            {
+                return cachedRate;
+            }
+
+            var currencyCode = currency.ToString().ToLower();
+            var requestUri = $"{_exchangeRateSettings.Value.BaseUrl}/{currencyCode}/rates/{dateStr}";
+
+            try
+            {
+                var response = await _httpClient.GetAsync(requestUri);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    _logger.LogWarning("Exchange Rate API returned {StatusCode} for {Currency} on {Date}",
+                        response.StatusCode, currency, dateStr);
+                    return null;
+                }
+
+                var content = await response.Content.ReadAsStringAsync();
+
+                var result = JsonSerializer.Deserialize<ExchangeRateApiResponse>(
+                    content,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                if (result == null)
+                    return null;
+
+                // Keširaj na 24h jer se istorijski kursevi ne menjaju
+                _cache.Set(cacheKey, result.ExchangeMiddle, TimeSpan.FromHours(24));
+
+                _logger.LogInformation("Fetched historical rate for {Currency} on {Date}: {Rate}",
+                    currency, dateStr, result.ExchangeMiddle);
+
+                return result.ExchangeMiddle;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching historical rate for {Currency} on {Date}", currency, dateStr);
+                return null;
+            }
+        }
+
         public async Task<decimal?> ConvertAsync(decimal amount, Currency fromCurrency, Currency toCurrency)
         {
             if (amount <= 0)

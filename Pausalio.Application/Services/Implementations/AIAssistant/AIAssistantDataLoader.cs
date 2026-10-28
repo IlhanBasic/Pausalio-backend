@@ -7,6 +7,7 @@ using Pausalio.Application.DTOs.Client;
 using Pausalio.Application.DTOs.BusinessProfile;
 using Pausalio.Application.DTOs.BankAccount;
 using Pausalio.Application.Services.Interfaces;
+using Pausalio.Application.DTOs.KpoBook;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -23,6 +24,7 @@ namespace Pausalio.Application.Services.Implementations.AIAssistant
         private readonly IClientService _clientService;
         private readonly IBankAccountService _bankAccountService;
         private readonly IBusinessProfileService _businessProfileService;
+        private readonly IKpoBookService _kpoBookService;
         private readonly ICurrentUserService _currentUserService;
 
         public AIAssistantDataLoader(
@@ -34,6 +36,7 @@ namespace Pausalio.Application.Services.Implementations.AIAssistant
             IClientService clientService,
             IBankAccountService bankAccountService,
             IBusinessProfileService businessProfileService,
+            IKpoBookService kpoBookService,
             ICurrentUserService currentUserService)
         {
             _invoiceService = invoiceService;
@@ -44,6 +47,7 @@ namespace Pausalio.Application.Services.Implementations.AIAssistant
             _clientService = clientService;
             _bankAccountService = bankAccountService;
             _businessProfileService = businessProfileService;
+            _kpoBookService = kpoBookService;
             _currentUserService = currentUserService;
         }
 
@@ -59,6 +63,10 @@ namespace Pausalio.Application.Services.Implementations.AIAssistant
             var reminders = await _reminderService.GetAllAsync();
             var clients = await _clientService.GetAllAsync();
             var bankAccounts = await _bankAccountService.GetAllAsync();
+
+            var currentYear = DateTime.UtcNow.Year;
+            var kpoEntries = await _kpoBookService.GetEntriesByYearAsync(currentYear);
+            var kpoSummary = await _kpoBookService.GetYearlySummaryAsync(currentYear);
 
             BusinessProfileToReturnDto? businessProfile = null;
             var companyIdString = _currentUserService.GetCompany();
@@ -78,7 +86,9 @@ namespace Pausalio.Application.Services.Implementations.AIAssistant
                 Reminders = reminders,
                 Clients = clients,
                 BankAccounts = bankAccounts,
-                BusinessProfile = businessProfile
+                BusinessProfile = businessProfile,
+                KpoEntries = kpoEntries,
+                KpoSummary = kpoSummary
             };
         }
     }

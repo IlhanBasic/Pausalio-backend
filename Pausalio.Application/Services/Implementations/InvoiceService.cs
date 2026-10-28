@@ -16,19 +16,22 @@ namespace Pausalio.Application.Services.Implementations
         private readonly ILocalizationHelper _localizationHelper;
         private readonly ICurrentUserService _currentUserService;
         private readonly IExchangeRateService _exchangeRateService;
+        private readonly IKpoBookService _kpoBookService;
 
         public InvoiceService(
             IUnitOfWork unitOfWork,
             IMapper mapper,
             ILocalizationHelper localizationHelper,
             ICurrentUserService currentUserService,
-            IExchangeRateService exchangeRateService)
+            IExchangeRateService exchangeRateService,
+            IKpoBookService kpoBookService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _localizationHelper = localizationHelper;
             _currentUserService = currentUserService;
             _exchangeRateService = exchangeRateService;
+            _kpoBookService = kpoBookService;
         }
 
         public async Task<IEnumerable<InvoiceToReturnDto>> GetAllAsync()
@@ -487,6 +490,37 @@ namespace Pausalio.Application.Services.Implementations
                 throw new InvalidOperationException(_localizationHelper.CannotModifyPaidInvoice);
             invoiceExists.InvoiceStatus = InvoiceStatus.Cancelled;
             await _unitOfWork.SaveChangesAsync();
+
+            // Kreiraj storno KPO zapis ako postoji regularni
+            try
+            {
+                await _kpoBookService.CreateStornoEntryAsync(id);
+            }
+            catch { /* Faktura možda nema KPO zapis (draft koja nikad nije bila sent) */ }
+        }
+
+        public async Task SendInvoiceAsync(Guid id)
+        {
+            var companyId = GetCurrentCompanyId();
+
+            var invoice = await _unitOfWork.InvoiceRepository
+                .FindFirstOrDefaultAsync(x => x.Id == id &&
+                                              x.BusinessProfileId == companyId &&
+                                              !x.IsDeleted);
+
+            if (invoice == null)
+                throw new KeyNotFoundException(_localizationHelper.InvoiceNotFound);
+
+            if (invoice.InvoiceStatus != InvoiceStatus.Draft)
+                throw new InvalidOperationException("Samo draft fakture mogu biti poslate.");
+
+            invoice.InvoiceStatus = InvoiceStatus.Sent;
+            invoice.UpdatedAt = DateTime.UtcNow;
+            _unitOfWork.InvoiceRepository.Update(invoice);
+            await _unitOfWork.SaveChangesAsync();
+
+            // Automatski kreiraj KPO zapis
+            await _kpoBookService.CreateEntryForInvoiceAsync(id);
         }
     }
 }

@@ -30,6 +30,7 @@ namespace Pausalio.Infrastructure.Repositories.Implementations
         public IAiConversationRepository AiConversationRepository { get; }
         public IAiMessageRepository AiMessageRepository { get; }
         public IAiToolCallRepository AiToolCallRepository { get; }
+        public IKpoEntryRepository KpoEntryRepository { get; }
 
         public UnitOfWork(
             PausalioDbContext context,
@@ -53,7 +54,8 @@ namespace Pausalio.Infrastructure.Repositories.Implementations
             IChatMessageRepository chatMessageRepository,
             IAiConversationRepository aiConversationRepository,
             IAiMessageRepository aiMessageRepository,
-            IAiToolCallRepository aiToolCallRepository
+            IAiToolCallRepository aiToolCallRepository,
+            IKpoEntryRepository kpoEntryRepository
         )
         {
             _context = context;
@@ -79,6 +81,7 @@ namespace Pausalio.Infrastructure.Repositories.Implementations
             AiConversationRepository = aiConversationRepository;
             AiMessageRepository = aiMessageRepository;
             AiToolCallRepository = aiToolCallRepository;
+            KpoEntryRepository = kpoEntryRepository;
         }
 
         public async Task<int> SaveChangesAsync()
@@ -87,6 +90,9 @@ namespace Pausalio.Infrastructure.Repositories.Implementations
         }
         public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
         {
+            if (_context.Database.CurrentTransaction != null)
+                throw new InvalidOperationException("A transaction is already active for this DbContext. Nested transactions are not allowed.");
+
             return await _context.Database.BeginTransactionAsync(cancellationToken);
         }
     }

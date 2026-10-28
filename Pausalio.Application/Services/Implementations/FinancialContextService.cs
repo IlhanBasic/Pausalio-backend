@@ -96,6 +96,23 @@ namespace Pausalio.Application.Services.Implementations
             sb.AppendLine($"Ukupno neplaćenih poreza: {pendingTaxes:N0} RSD");
             sb.AppendLine($"Zakašneli porezi: {overdueTaxes:N0} RSD");
 
+            // === KPO KNJIGA ===
+            var kpoEntries = await _unitOfWork.KpoEntryRepository
+                .GetByYearAsync(companyId, currentYear);
+            var kpoTotal = kpoEntries.Sum(x => x.TotalIncome);
+            var kpoProductTotal = kpoEntries.Sum(x => x.ProductIncome);
+            var kpoServiceTotal = kpoEntries.Sum(x => x.ServiceIncome);
+            var kpoEntryCount = kpoEntries.Count;
+
+            sb.AppendLine();
+            sb.AppendLine("=== KPO KNJIGA ===");
+            sb.AppendLine($"Ukupan promet u {currentYear}: {kpoTotal:N0} RSD");
+            sb.AppendLine($"  - Prihod od proizvoda: {kpoProductTotal:N0} RSD");
+            sb.AppendLine($"  - Prihod od usluga: {kpoServiceTotal:N0} RSD");
+            sb.AppendLine($"Broj KPO zapisa: {kpoEntryCount}");
+            sb.AppendLine($"Preostalo do paušalnog limita (6M): {(6_000_000 - kpoTotal):N0} RSD");
+            sb.AppendLine($"Preostalo do PDV praga (8M): {(8_000_000 - kpoTotal):N0} RSD");
+
             var result = sb.ToString();
 
             _cache.Set(cacheKey, result, TimeSpan.FromMinutes(5));

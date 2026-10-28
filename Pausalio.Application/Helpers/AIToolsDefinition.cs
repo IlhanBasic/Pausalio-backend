@@ -496,6 +496,57 @@
                     }
                 }
             },
+            new
+            {
+                type = "function",
+                function = new
+                {
+                    name = "get_kpo_summary",
+                    description = "Use this tool only when the user asks for KPO annual turnover, product/service split, remaining amount to the KPO thresholds, or the overall KPO status for a year. Do not use it for invoice lists, expense lists, tax records, or general business-health questions. Example questions: 'What is my KPO total for 2026?', 'How much do I have left until the 6M KPO limit?'.",
+                    parameters = new
+                    {
+                        type = "object",
+                        properties = new
+                        {
+                            year = new
+                            {
+                                type = "integer",
+                                description = "Optional year filter. If omitted, the current year is used. Example: 2026."
+                            }
+                        },
+                        required = Array.Empty<string>(),
+                        additionalProperties = false
+                    }
+                }
+            },
+            new
+            {
+                type = "function",
+                function = new
+                {
+                    name = "get_kpo_entries",
+                    description = "Use this tool only when the user asks for KPO ledger entries or a list of KPO records for a specific year. Do not use it for annual totals or threshold summaries; use get_kpo_summary for totals and limits. Example questions: 'Show my KPO entries for 2026', 'List KPO records'.",
+                    parameters = new
+                    {
+                        type = "object",
+                        properties = new
+                        {
+                            year = new
+                            {
+                                type = "integer",
+                                description = "Optional year filter. If omitted, the current year is used. Example: 2026."
+                            },
+                            limit = new
+                            {
+                                type = "integer",
+                                description = "Optional maximum number of KPO entries to return. Example: 25."
+                            }
+                        },
+                        required = Array.Empty<string>(),
+                        additionalProperties = false
+                    }
+                }
+            },
 
             // ===== OSTALO =====
             new

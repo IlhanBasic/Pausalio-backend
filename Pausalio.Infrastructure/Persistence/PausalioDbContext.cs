@@ -29,6 +29,7 @@ namespace Pausalio.Infrastructure.Persistence
         public DbSet<ActivityCode> ActivityCodes { get; set; }
         public DbSet<BusinessInvite> BusinessInvites { get; set; }
         public DbSet<ChatMessage> ChatMessages { get; set; }
+        public DbSet<KpoEntry> KpoEntries { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

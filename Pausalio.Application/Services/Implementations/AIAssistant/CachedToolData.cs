@@ -6,6 +6,7 @@ using Pausalio.Application.DTOs.Reminder;
 using Pausalio.Application.DTOs.Client;
 using Pausalio.Application.DTOs.BusinessProfile;
 using Pausalio.Application.DTOs.BankAccount;
+using Pausalio.Application.DTOs.KpoBook;
 
 namespace Pausalio.Application.Services.Implementations.AIAssistant
 {
@@ -21,5 +22,7 @@ namespace Pausalio.Application.Services.Implementations.AIAssistant
         public required IEnumerable<ClientToReturnDto> Clients { get; init; }
         public required BusinessProfileToReturnDto? BusinessProfile { get; init; }
         public required IEnumerable<BankAccountToReturnDto> BankAccounts { get; init; }
+        public required IEnumerable<KpoEntryToReturnDto> KpoEntries { get; init; }
+        public required KpoYearlySummaryDto? KpoSummary { get; init; }
     }
 }

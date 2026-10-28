@@ -18,6 +18,7 @@ namespace Pausalio.Application.Services.Interfaces
         Task UpdateAsync(Guid id, UpdateInvoiceDto dto);
         Task ArchiveInvoice(Guid id);
         Task CancelInvoice(Guid id);
+        Task SendInvoiceAsync(Guid id);
         Task DeleteAsync(Guid id);
         Task<InvoiceSummaryDto> GetSummaryAsync();
         Task<string> GenerateInvoiceNumberAsync();

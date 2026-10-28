@@ -266,6 +266,36 @@ namespace Pausalio.API.Controllers
         }
 
         /// <summary>
+        /// Označava fakturu kao poslatu (Draft → Sent) i automatski kreira KPO zapis.
+        /// </summary>
+        [HttpPatch("send/{id:guid}")]
+        [Authorize(Roles = "Owner, Assistant")]
+        public async Task<IActionResult> MarkAsSent(Guid id)
+        {
+            try
+            {
+                await _invoiceService.SendInvoiceAsync(id);
+                return Ok(new { success = true, message = "Faktura je označena kao poslata i KPO zapis je kreiran." });
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new { success = false, message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { success = false, message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
+
+        /// <summary>
         /// Vraća HTML preview fakture
         /// </summary>
         [HttpGet("{id:guid}/preview")]

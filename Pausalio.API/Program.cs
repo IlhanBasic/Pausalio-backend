@@ -69,6 +69,7 @@ builder.Services.AddScoped<IChatMessageRepository, ChatMessageRepository>();
 builder.Services.AddScoped<IAiToolCallRepository, AiToolCallRepository>();
 builder.Services.AddScoped<IAiConversationRepository, AIConversationRepository>();
 builder.Services.AddScoped<IAiMessageRepository, AiMessageRepository>();
+builder.Services.AddScoped<IKpoEntryRepository, KpoEntryRepository>();
 // -------------------- Configuration --------------------
 builder.Services.Configure<OpenRouterSettings>(builder.Configuration.GetSection("OpenRouterSettings"));
 builder.Services.Configure<ExchangeRateSettings>(builder.Configuration.GetSection("ExchangeRateSettings"));
@@ -169,6 +170,7 @@ builder.Services.AddScoped<IInvoiceExportService, InvoiceExportService>();
 builder.Services.AddSingleton<IPdfFactoryService, PdfFactoryService>();
 builder.Services.AddScoped<IAIAssistantService, AIAssistantService>();
 builder.Services.AddScoped<IFinancialContextService, FinancialContextService>();
+builder.Services.AddScoped<IKpoBookService, KpoBookService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IEncryptionService, AesEncryptionService>();
 builder.Services.AddSingleton<IChatConnectionManager, ChatConnectionManager>();

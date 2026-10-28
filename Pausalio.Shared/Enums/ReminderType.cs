@@ -11,6 +11,7 @@ namespace Pausalio.Shared.Enums
         Tax = 1,
         Expense = 2,
         Meeting = 3,
-        Other = 4
+        Other = 4,
+        KpoThreshold = 5
     }
 }

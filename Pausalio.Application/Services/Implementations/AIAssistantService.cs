@@ -49,6 +49,7 @@ namespace Pausalio.Application.Services.Implementations
             IClientService clientService,
             IBankAccountService bankAccountService,
             IBusinessProfileService businessProfileService,
+            IKpoBookService kpoBookService,
             IOptions<OpenRouterSettings> configuration,
             HttpClient httpClient,
             IUnitOfWork unitOfWork,
@@ -72,6 +73,7 @@ namespace Pausalio.Application.Services.Implementations
                 clientService,
                 bankAccountService,
                 businessProfileService,
+                kpoBookService,
                 currentUserService);
             _toolExecutor = new AIAssistantToolExecutor(loggerFactory.CreateLogger<AIAssistantToolExecutor>());
             _responseParser = new OpenRouterResponseParser();
