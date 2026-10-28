@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Pausalio.Application.DTOs.Invoice;
+using Pausalio.Shared.Enums;
 
 namespace Pausalio.Application.Services.Interfaces
 {
@@ -12,5 +9,6 @@ namespace Pausalio.Application.Services.Interfaces
         string GetInviteEmailTemplate(string token, string registerLink, bool userExists);
         string GetPasswordResetPinTemplate(string firstName, string pin);
         string GetUnreadMessageNotificationTemplate(string senderName, string appUrl);
+        string GetInvoiceEmailTemplate(InvoiceExportDto data, Language lang);
     }
 }

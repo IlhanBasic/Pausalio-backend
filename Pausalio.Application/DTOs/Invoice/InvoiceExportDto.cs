@@ -38,5 +38,14 @@ namespace Pausalio.Application.DTOs.Invoice
 
         // Stavke
         public List<InvoiceItemExportDto> Items { get; set; } = new();
+
+        // Jezik (za lokalizaciju email/PDF/preview)
+        public Language Language { get; set; } = Language.Serbian;
+
+        // Bankarski podaci (iz BankAccount entiteta)
+        public string? BusinessIBAN { get; set; }
+        public string? BusinessSWIFT { get; set; }
+        public string? BusinessBankName { get; set; }
+        public string? BusinessAccountNumber { get; set; }
     }
 }

@@ -3,10 +3,12 @@ using Pausalio.Application.DTOs.InvoiceItem;
 using Pausalio.Application.Services.Interfaces;
 using Pausalio.Infrastructure.Repositories.Interfaces;
 using Pausalio.Shared.Enums;
+using Pausalio.Shared.Helpers;
 using Pausalio.Shared.Localization;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using System.Globalization;
 using System.Reflection;
 using System.Text;
 
@@ -17,6 +19,7 @@ namespace Pausalio.Application.Services.Implementations
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUserService _currentUserService;
         private readonly IEmailService _emailService;
+        private readonly IEmailTemplateService _emailTemplateService;
         private readonly ILocalizationHelper _localizationHelper;
         private readonly IPdfFactoryService _pdfFactoryService;
 
@@ -24,15 +27,53 @@ namespace Pausalio.Application.Services.Implementations
             IUnitOfWork unitOfWork,
             ICurrentUserService currentUserService,
             IEmailService emailService,
+            IEmailTemplateService emailTemplateService,
             ILocalizationHelper localizationHelper,
             IPdfFactoryService pdfFactoryService)
         {
             _unitOfWork = unitOfWork;
             _currentUserService = currentUserService;
             _emailService = emailService;
+            _emailTemplateService = emailTemplateService;
             _localizationHelper = localizationHelper;
             _pdfFactoryService = pdfFactoryService;
         }
+
+        // ── PDF Label Records ──
+        private record InvoicePdfLabels(
+            string Title, string IssuerLabel, string RecipientLabel,
+            string IssueDateLabel, string DueDateLabel, string CurrencyLabel,
+            string ReferenceLabel, string NameCol, string TypeCol,
+            string QtyCol, string PriceCol, string TotalCol,
+            string TotalLabel, string ExchangeRateLabel, string TotalRsdLabel,
+            string GrandTotalLabel, string NoteLabel, string FooterGenerated,
+            string ServiceType, string ProductType,
+            string BankLabel, string AccountLabel, string PaymentInfoLabel,
+            string PaymentReferenceLabel, string IbanLabel, string SwiftLabel);
+
+        private static readonly Dictionary<Language, InvoicePdfLabels> _pdfLabels = new()
+        {
+            [Language.Serbian] = new(
+                "FAKTURA", "IZDAVALAC", "PRIMALAC",
+                "DATUM IZDAVANJA", "ROK PLAĆANJA", "VALUTA",
+                "POZIV NA BROJ", "NAZIV", "TIP",
+                "KOL.", "CENA", "UKUPNO",
+                "Ukupno", "Kurs", "Ukupno (RSD)",
+                "UKUPNO ZA UPLATU", "NAPOMENA", "Dokument generisan automatski — Paušalio",
+                "Usluga", "Proizvod",
+                "Banka", "Broj računa", "PODACI ZA UPLATU",
+                "Poziv na broj", "IBAN", "SWIFT"),
+            [Language.English] = new(
+                "INVOICE", "ISSUER", "RECIPIENT",
+                "ISSUE DATE", "DUE DATE", "CURRENCY",
+                "PAYMENT REF.", "DESCRIPTION", "TYPE",
+                "QTY", "UNIT PRICE", "TOTAL",
+                "Total", "Exchange Rate", "Total (RSD)",
+                "AMOUNT DUE", "NOTE", "Document generated automatically — Paušalio",
+                "Service", "Product",
+                "Bank", "Account No.", "PAYMENT DETAILS",
+                "Payment Reference", "IBAN", "SWIFT/BIC")
+        };
 
         public async Task<InvoiceExportDto> GetExportDataAsync(Guid invoiceId)
         {
@@ -53,6 +94,16 @@ namespace Pausalio.Application.Services.Implementations
 
             if (business == null)
                 throw new KeyNotFoundException(_localizationHelper.BusinessProfileNotFound);
+
+            // Determine language from client type
+            var lang = LanguageResolver.Resolve(invoice.Client.ClientType);
+
+            // Find matching bank account by invoice currency
+            var bankAccounts = await _unitOfWork.BankAccountRepository
+                .FindAllAsync(x => x.BusinessProfileId == companyId && x.IsActive);
+
+            var bankAccount = bankAccounts.FirstOrDefault(x => x.Currency == invoice.Currency)
+                           ?? bankAccounts.FirstOrDefault();
 
             return new InvoiceExportDto
             {
@@ -97,7 +148,16 @@ namespace Pausalio.Application.Services.Implementations
                     UnitPrice = item.UnitPrice,
                     TotalPrice = item.TotalPrice,
                     ItemTypeDisplay = item.ItemType == ItemType.Service ? "Usluga" : "Proizvod"
-                }).ToList()
+                }).ToList(),
+
+                // Jezik
+                Language = lang,
+
+                // Bankarski podaci
+                BusinessBankName = bankAccount?.BankName,
+                BusinessAccountNumber = bankAccount?.AccountNumber,
+                BusinessIBAN = bankAccount?.IBAN,
+                BusinessSWIFT = bankAccount?.SWIFT
             };
         }
 
@@ -110,6 +170,10 @@ namespace Pausalio.Application.Services.Implementations
         public async Task<byte[]> GeneratePdfAsync(Guid invoiceId)
         {
             var data = await GetExportDataAsync(invoiceId);
+            var labels = _pdfLabels[data.Language];
+            var culture = data.Language == Language.English
+                ? CultureInfo.GetCultureInfo("en-US")
+                : CultureInfo.GetCultureInfo("sr-Latn");
 
             return _pdfFactoryService.GeneratePdf(() =>
             {
@@ -143,7 +207,7 @@ namespace Pausalio.Application.Services.Implementations
 
                                 row.RelativeItem().AlignRight().Column(c =>
                                 {
-                                    c.Item().Text("FAKTURA").FontSize(26).Bold().FontColor("#4f46e5");
+                                    c.Item().Text(labels.Title).FontSize(26).Bold().FontColor("#4f46e5");
                                     c.Item().Text(data.InvoiceNumber).FontSize(11).FontColor("#6b7280");
                                 });
                             });
@@ -155,7 +219,7 @@ namespace Pausalio.Application.Services.Implementations
                             {
                                 row.RelativeItem().Column(c =>
                                 {
-                                    c.Item().Text("IZDAVALAC").FontSize(8).Bold()
+                                    c.Item().Text(labels.IssuerLabel).FontSize(8).Bold()
                                         .FontColor("#9ca3af").LetterSpacing(1);
                                     c.Item().Text(data.BusinessName).Bold().FontSize(12);
                                     c.Item().Text($"{data.BusinessAddress}, {data.BusinessCity}")
@@ -165,7 +229,7 @@ namespace Pausalio.Application.Services.Implementations
 
                                 row.RelativeItem().AlignRight().Column(c =>
                                 {
-                                    c.Item().Text("PRIMALAC").FontSize(8).Bold()
+                                    c.Item().Text(labels.RecipientLabel).FontSize(8).Bold()
                                         .FontColor("#9ca3af").LetterSpacing(1);
                                     c.Item().Text(data.ClientName).Bold().FontSize(12);
                                     c.Item().Text($"{data.ClientAddress}, {data.ClientCity}")
@@ -183,26 +247,28 @@ namespace Pausalio.Application.Services.Implementations
                             {
                                 row.RelativeItem().Column(c =>
                                 {
-                                    c.Item().Text("DATUM IZDAVANJA").FontSize(8).Bold().FontColor("#9ca3af");
-                                    c.Item().Text(data.IssueDate.ToString("dd.MM.yyyy")).Bold();
+                                    c.Item().Text(labels.IssueDateLabel).FontSize(8).Bold().FontColor("#9ca3af");
+                                    c.Item().Text(data.IssueDate.ToString(
+                                        data.Language == Language.English ? "MMMM d, yyyy" : "dd.MM.yyyy", culture)).Bold();
                                 });
                                 row.RelativeItem().Column(c =>
                                 {
-                                    c.Item().Text("ROK PLAĆANJA").FontSize(8).Bold().FontColor("#9ca3af");
+                                    c.Item().Text(labels.DueDateLabel).FontSize(8).Bold().FontColor("#9ca3af");
                                     c.Item().Text(data.DueDate.HasValue
-                                        ? data.DueDate.Value.ToString("dd.MM.yyyy")
+                                        ? data.DueDate.Value.ToString(
+                                            data.Language == Language.English ? "MMMM d, yyyy" : "dd.MM.yyyy", culture)
                                         : "—").Bold();
                                 });
                                 row.RelativeItem().Column(c =>
                                 {
-                                    c.Item().Text("VALUTA").FontSize(8).Bold().FontColor("#9ca3af");
+                                    c.Item().Text(labels.CurrencyLabel).FontSize(8).Bold().FontColor("#9ca3af");
                                     c.Item().Text(data.CurrencyDisplay).Bold();
                                 });
                                 if (!string.IsNullOrEmpty(data.ReferenceNumber))
                                 {
                                     row.RelativeItem().Column(c =>
                                     {
-                                        c.Item().Text("POZIV NA BROJ").FontSize(8).Bold().FontColor("#9ca3af");
+                                        c.Item().Text(labels.ReferenceLabel).FontSize(8).Bold().FontColor("#9ca3af");
                                         c.Item().Text(data.ReferenceNumber).Bold();
                                     });
                                 }
@@ -213,36 +279,36 @@ namespace Pausalio.Application.Services.Implementations
                             {
                                 table.ColumnsDefinition(columns =>
                                 {
-                                    columns.ConstantColumn(24);  // #
-                                    columns.RelativeColumn(3);   // Naziv
-                                    columns.RelativeColumn(1);   // Tip
-                                    columns.ConstantColumn(40);  // Kol
-                                    columns.RelativeColumn(1);   // Cena
-                                    columns.RelativeColumn(1);   // Ukupno
+                                    columns.ConstantColumn(24);
+                                    columns.RelativeColumn(3);
+                                    columns.RelativeColumn(1);
+                                    columns.ConstantColumn(40);
+                                    columns.RelativeColumn(1);
+                                    columns.RelativeColumn(1);
                                 });
 
-                                // Header
                                 table.Header(header =>
                                 {
                                     header.Cell().Background("#4f46e5").Padding(8)
                                         .Text("#").FontColor("#fff").FontSize(9).Bold();
                                     header.Cell().Background("#4f46e5").Padding(8)
-                                        .Text("NAZIV").FontColor("#fff").FontSize(9).Bold();
+                                        .Text(labels.NameCol).FontColor("#fff").FontSize(9).Bold();
                                     header.Cell().Background("#4f46e5").Padding(8)
-                                        .Text("TIP").FontColor("#fff").FontSize(9).Bold();
+                                        .Text(labels.TypeCol).FontColor("#fff").FontSize(9).Bold();
                                     header.Cell().Background("#4f46e5").Padding(8)
-                                        .Text("KOL.").FontColor("#fff").FontSize(9).Bold();
+                                        .Text(labels.QtyCol).FontColor("#fff").FontSize(9).Bold();
                                     header.Cell().Background("#4f46e5").Padding(8)
-                                        .Text("CENA").FontColor("#fff").FontSize(9).Bold();
+                                        .Text(labels.PriceCol).FontColor("#fff").FontSize(9).Bold();
                                     header.Cell().Background("#4f46e5").Padding(8)
-                                        .Text("UKUPNO").FontColor("#fff").FontSize(9).Bold();
+                                        .Text(labels.TotalCol).FontColor("#fff").FontSize(9).Bold();
                                 });
 
-                                // Rows
                                 for (int i = 0; i < data.Items.Count; i++)
                                 {
                                     var item = data.Items[i];
                                     var bg = i % 2 == 0 ? "#ffffff" : "#f9fafb";
+                                    var itemTypeDisplay = item.ItemTypeDisplay == "Usluga" || item.ItemTypeDisplay == "Service"
+                                        ? labels.ServiceType : labels.ProductType;
 
                                     table.Cell().Background(bg).Padding(8).Text($"{i + 1}").FontSize(9);
                                     table.Cell().Background(bg).Padding(8).Column(c =>
@@ -252,7 +318,7 @@ namespace Pausalio.Application.Services.Implementations
                                             c.Item().Text(item.Description).FontSize(8).FontColor("#9ca3af");
                                     });
                                     table.Cell().Background(bg).Padding(8)
-                                        .Text(item.ItemTypeDisplay).FontSize(9).FontColor("#6b7280");
+                                        .Text(itemTypeDisplay).FontSize(9).FontColor("#6b7280");
                                     table.Cell().Background(bg).Padding(8)
                                         .Text(item.Quantity.ToString()).FontSize(9);
                                     table.Cell().Background(bg).Padding(8)
@@ -267,7 +333,7 @@ namespace Pausalio.Application.Services.Implementations
                             {
                                 c.Item().BorderBottom(1).BorderColor("#f3f4f6").PaddingVertical(4).Row(r =>
                                 {
-                                    r.RelativeItem().Text($"Ukupno ({data.CurrencyDisplay})").FontColor("#6b7280");
+                                    r.RelativeItem().Text($"{labels.TotalLabel} ({data.CurrencyDisplay})").FontColor("#6b7280");
                                     r.AutoItem().Text($"{data.TotalAmount:N2} {data.CurrencyDisplay}").Bold();
                                 });
 
@@ -275,37 +341,59 @@ namespace Pausalio.Application.Services.Implementations
                                 {
                                     c.Item().BorderBottom(1).BorderColor("#f3f4f6").PaddingVertical(4).Row(r =>
                                     {
-                                        r.RelativeItem().Text($"Kurs ({data.CurrencyDisplay}/RSD)").FontColor("#6b7280");
+                                        r.RelativeItem().Text($"{labels.ExchangeRateLabel} ({data.CurrencyDisplay}/RSD)").FontColor("#6b7280");
                                         r.AutoItem().Text($"{data.ExchangeRate:N4}").Bold();
                                     });
                                     c.Item().BorderBottom(1).BorderColor("#f3f4f6").PaddingVertical(4).Row(r =>
                                     {
-                                        r.RelativeItem().Text("Ukupno (RSD)").FontColor("#6b7280");
+                                        r.RelativeItem().Text(labels.TotalRsdLabel).FontColor("#6b7280");
                                         r.AutoItem().Text($"{data.TotalAmountRSD:N2} RSD").Bold();
                                     });
                                 }
 
                                 c.Item().BorderTop(2).BorderColor("#4f46e5").PaddingTop(8).Row(r =>
                                 {
-                                    r.RelativeItem().Text("UKUPNO ZA UPLATU")
+                                    r.RelativeItem().Text(labels.GrandTotalLabel)
                                         .Bold().FontSize(13).FontColor("#4f46e5");
                                     r.AutoItem().Text($"{data.TotalAmount:N2} {data.CurrencyDisplay}")
                                         .Bold().FontSize(13).FontColor("#4f46e5");
                                 });
                             });
 
-                            // NOTES — FIX: zamenjeno BorderLeft sa Row layout
-                            // BorderLeft + BorderColor koristi canvas_draw_complex_border koji puca na Azure
+                            // BANK ACCOUNT
+                            if (!string.IsNullOrEmpty(data.BusinessBankName))
+                            {
+                                col.Item().PaddingTop(16).Background("#f0f9ff")
+                                    .Padding(12).Column(c =>
+                                    {
+                                        c.Item().Text(labels.PaymentInfoLabel)
+                                            .FontSize(8).Bold().FontColor("#0ea5e9").LetterSpacing(1);
+                                        c.Item().PaddingTop(4).Text($"{labels.BankLabel}: {data.BusinessBankName}")
+                                            .FontSize(9).FontColor("#334155");
+                                        c.Item().Text($"{labels.AccountLabel}: {data.BusinessAccountNumber}")
+                                            .FontSize(9).FontColor("#334155");
+                                        if (!string.IsNullOrEmpty(data.BusinessIBAN))
+                                            c.Item().Text($"{labels.IbanLabel}: {data.BusinessIBAN}")
+                                                .FontSize(9).FontColor("#334155");
+                                        if (!string.IsNullOrEmpty(data.BusinessSWIFT))
+                                            c.Item().Text($"{labels.SwiftLabel}: {data.BusinessSWIFT}")
+                                                .FontSize(9).FontColor("#334155");
+                                        if (!string.IsNullOrEmpty(data.ReferenceNumber))
+                                            c.Item().Text($"{labels.PaymentReferenceLabel}: {data.ReferenceNumber}")
+                                                .FontSize(9).FontColor("#334155");
+                                    });
+                            }
+
+                            // NOTES
                             if (!string.IsNullOrEmpty(data.Notes))
                             {
                                 col.Item().PaddingTop(16).Background("#fef9c3")
                                     .Padding(12).Row(row =>
                                     {
-                                        // Leva žuta traka kao poseban element umesto BorderLeft
                                         row.ConstantItem(4).Background("#f59e0b");
                                         row.RelativeItem().PaddingLeft(8).Column(c =>
                                         {
-                                            c.Item().Text("NAPOMENA")
+                                            c.Item().Text(labels.NoteLabel)
                                                 .FontSize(8).Bold().FontColor("#92400e");
                                             c.Item().Text(data.Notes)
                                                 .FontSize(10).FontColor("#78350f");
@@ -321,7 +409,7 @@ namespace Pausalio.Application.Services.Implementations
                             c.Item().PaddingTop(8).Text(
                                 $"{data.BusinessName} | PIB: {data.BusinessPIB} | {data.BusinessEmail}")
                                 .FontSize(8).FontColor("#9ca3af");
-                            c.Item().Text("Dokument generisan automatski — Paušalio")
+                            c.Item().Text(labels.FooterGenerated)
                                 .FontSize(8).FontColor("#9ca3af");
                         });
                     });
@@ -336,9 +424,17 @@ namespace Pausalio.Application.Services.Implementations
 
             var data = await GetExportDataAsync(invoiceId);
             var pdfBytes = await GeneratePdfAsync(invoiceId);
-            var subject = $"Faktura {data.InvoiceNumber} — {data.BusinessName}";
 
-            var body = BuildEmailBody(data);
+            var lang = data.Language;
+            var subject = lang == Language.English
+                ? $"Invoice {data.InvoiceNumber} — {data.BusinessName}"
+                : $"Faktura {data.InvoiceNumber} — {data.BusinessName}";
+
+            var body = _emailTemplateService.GetInvoiceEmailTemplate(data, lang);
+
+            var attachmentName = lang == Language.English
+                ? $"Invoice_{data.InvoiceNumber}.pdf"
+                : $"Faktura_{data.InvoiceNumber}.pdf";
 
             foreach (var email in dto.Emails)
             {
@@ -347,27 +443,42 @@ namespace Pausalio.Application.Services.Implementations
                     subject,
                     body,
                     pdfBytes,
-                    $"Faktura_{data.InvoiceNumber}.pdf"
+                    attachmentName
                 );
             }
         }
 
-        // HTML za preview na frontendu
+        // HTML za preview na frontendu — lokalizovan po jeziku klijenta
         private string BuildHtml(InvoiceExportDto data)
         {
+            var lang = data.Language;
+            var templateName = lang == Language.English ? "InvoiceTemplate_en.html" : "InvoiceTemplate.html";
             var assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            var path = Path.Combine(assemblyFolder!, "Templates", "InvoiceTemplate.html");
+            var path = Path.Combine(assemblyFolder!, "Templates", templateName);
+
+            // Fallback to Serbian if English template doesn't exist
+            if (!File.Exists(path) && lang == Language.English)
+            {
+                path = Path.Combine(assemblyFolder!, "Templates", "InvoiceTemplate.html");
+            }
 
             if (!File.Exists(path))
                 throw new FileNotFoundException($"Invoice template not found: {path}");
 
             var template = File.ReadAllText(path);
+            var labels = _pdfLabels[lang];
+            var culture = lang == Language.English
+                ? CultureInfo.GetCultureInfo("en-US")
+                : CultureInfo.GetCultureInfo("sr-Latn");
 
             // Item rows
             var itemRows = new StringBuilder();
             for (int i = 0; i < data.Items.Count; i++)
             {
                 var item = data.Items[i];
+                var itemTypeDisplay = item.ItemTypeDisplay == "Usluga" || item.ItemTypeDisplay == "Service"
+                    ? labels.ServiceType : labels.ProductType;
+
                 itemRows.AppendLine($@"
                 <tr>
                     <td>{i + 1}</td>
@@ -375,7 +486,7 @@ namespace Pausalio.Application.Services.Implementations
                         {item.Name}
                         {(string.IsNullOrEmpty(item.Description) ? "" : $"<div class='item-description'>{item.Description}</div>")}
                     </td>
-                    <td>{item.ItemTypeDisplay}</td>
+                    <td>{itemTypeDisplay}</td>
                     <td>{item.Quantity}</td>
                     <td>{item.UnitPrice:N2} {data.CurrencyDisplay}</td>
                     <td>{item.TotalPrice:N2} {data.CurrencyDisplay}</td>
@@ -384,14 +495,16 @@ namespace Pausalio.Application.Services.Implementations
 
             var exchangeRateRow = data.Currency != Currency.RSD
                 ? $@"<div class='totals-row'>
-                        <span class='label'>Kurs ({data.CurrencyDisplay}/RSD)</span>
+                        <span class='label'>{labels.ExchangeRateLabel} ({data.CurrencyDisplay}/RSD)</span>
                         <span>{data.ExchangeRate:N4}</span>
                      </div>
                      <div class='totals-row'>
-                        <span class='label'>Ukupno (RSD)</span>
+                        <span class='label'>{labels.TotalRsdLabel}</span>
                         <span>{data.TotalAmountRSD:N2} RSD</span>
                      </div>"
                 : "";
+
+            var dateFormat = lang == Language.English ? "MMMM d, yyyy" : "dd.MM.yyyy";
 
             template = template
                 .Replace("{{BusinessLogo}}", data.BusinessLogo ?? "")
@@ -411,8 +524,8 @@ namespace Pausalio.Application.Services.Implementations
                 .Replace("{{ClientEmail}}", data.ClientEmail)
                 .Replace("{{ClientPhone}}", data.ClientPhone ?? "")
                 .Replace("{{InvoiceNumber}}", data.InvoiceNumber)
-                .Replace("{{IssueDate}}", data.IssueDate.ToString("dd.MM.yyyy"))
-                .Replace("{{DueDate}}", data.DueDate.HasValue ? data.DueDate.Value.ToString("dd.MM.yyyy") : "—")
+                .Replace("{{IssueDate}}", data.IssueDate.ToString(dateFormat, culture))
+                .Replace("{{DueDate}}", data.DueDate.HasValue ? data.DueDate.Value.ToString(dateFormat, culture) : "—")
                 .Replace("{{CurrencyDisplay}}", data.CurrencyDisplay)
                 .Replace("{{ReferenceNumber}}", data.ReferenceNumber ?? "")
                 .Replace("{{Notes}}", data.Notes ?? "")
@@ -421,7 +534,11 @@ namespace Pausalio.Application.Services.Implementations
                 .Replace("{{TotalAmountRSD}}", data.TotalAmountRSD.ToString("N2"))
                 .Replace("{{ExchangeRate}}", data.ExchangeRate.ToString("N4"))
                 .Replace("{{ExchangeRateRows}}", exchangeRateRow)
-                .Replace("{{ShowExchangeRate}}", (data.Currency != Currency.RSD).ToString().ToLower());
+                .Replace("{{ShowExchangeRate}}", (data.Currency != Currency.RSD).ToString().ToLower())
+                .Replace("{{BusinessBankName}}", data.BusinessBankName ?? "")
+                .Replace("{{BusinessAccountNumber}}", data.BusinessAccountNumber ?? "")
+                .Replace("{{BusinessIBAN}}", data.BusinessIBAN ?? "")
+                .Replace("{{BusinessSWIFT}}", data.BusinessSWIFT ?? "");
 
             template = HandleConditionals(template, "BusinessLogo", !string.IsNullOrEmpty(data.BusinessLogo));
             template = HandleConditionals(template, "BusinessPhone", !string.IsNullOrEmpty(data.BusinessPhone));
@@ -432,46 +549,11 @@ namespace Pausalio.Application.Services.Implementations
             template = HandleConditionals(template, "ReferenceNumber", !string.IsNullOrEmpty(data.ReferenceNumber));
             template = HandleConditionals(template, "Notes", !string.IsNullOrEmpty(data.Notes));
             template = HandleConditionals(template, "ShowExchangeRate", data.Currency != Currency.RSD);
+            template = HandleConditionals(template, "HasBankAccount", !string.IsNullOrEmpty(data.BusinessBankName));
+            template = HandleConditionals(template, "HasIBAN", !string.IsNullOrEmpty(data.BusinessIBAN));
+            template = HandleConditionals(template, "HasSWIFT", !string.IsNullOrEmpty(data.BusinessSWIFT));
 
             return template;
-        }
-
-        private string BuildEmailBody(InvoiceExportDto data)
-        {
-            return $@"
-            <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
-                <div style='background: #4f46e5; padding: 24px; border-radius: 8px 8px 0 0;'>
-                    <h1 style='color: white; margin: 0; font-size: 20px;'>Nova faktura</h1>
-                </div>
-                <div style='background: #f9fafb; padding: 24px; border-radius: 0 0 8px 8px;'>
-                    <p>Poštovani/a,</p>
-                    <p>U prilogu se nalazi faktura <strong>{data.InvoiceNumber}</strong> od <strong>{data.BusinessName}</strong>.</p>
-                    <table style='width: 100%; margin: 16px 0; border-collapse: collapse;'>
-                        <tr>
-                            <td style='padding: 8px; color: #6b7280;'>Broj fakture:</td>
-                            <td style='padding: 8px; font-weight: bold;'>{data.InvoiceNumber}</td>
-                        </tr>
-                        <tr style='background: #fff;'>
-                            <td style='padding: 8px; color: #6b7280;'>Datum izdavanja:</td>
-                            <td style='padding: 8px;'>{data.IssueDate:dd.MM.yyyy}</td>
-                        </tr>
-                        <tr>
-                            <td style='padding: 8px; color: #6b7280;'>Rok plaćanja:</td>
-                            <td style='padding: 8px;'>{(data.DueDate.HasValue ? data.DueDate.Value.ToString("dd.MM.yyyy") : "—")}</td>
-                        </tr>
-                        <tr style='background: #fff;'>
-                            <td style='padding: 8px; color: #6b7280;'>Iznos:</td>
-                            <td style='padding: 8px; font-weight: bold; color: #4f46e5;'>{data.TotalAmount:N2} {data.CurrencyDisplay}</td>
-                        </tr>
-                    </table>
-                    <p style='color: #6b7280; font-size: 12px;'>Faktura je priložena kao PDF dokument.</p>
-                    <hr style='border: none; border-top: 1px solid #e5e7eb; margin: 16px 0;'>
-                    <p style='color: #9ca3af; font-size: 11px;'>
-                        {data.BusinessName} | {data.BusinessEmail}
-                        {(string.IsNullOrEmpty(data.BusinessPhone) ? "" : $" | {data.BusinessPhone}")}
-                    </p>
-                </div>
-            </div>";
         }
 
         // Helper za {{#if}} / {{/if}} blokove u HTML templatu
