@@ -2,37 +2,37 @@
   {
     "Temperature": 0,
     "TotalQuestions": 100,
-    "ToolMatchRate": 0.82,
-    "AvgParameterAccuracy": 0.705,
-    "AvgDurationMs": 4917,
-    "TotalPromptTokens": 561362,
-    "TotalCompletionTokens": 28642
+    "ToolMatchRate": 0.85,
+    "AvgParameterAccuracy": 0.945,
+    "AvgDurationMs": 3877.17,
+    "TotalPromptTokens": 622859,
+    "TotalCompletionTokens": 18885
   },
   {
     "Temperature": 0.2,
     "TotalQuestions": 100,
-    "ToolMatchRate": 0.81,
-    "AvgParameterAccuracy": 0.705,
-    "AvgDurationMs": 3663.11,
-    "TotalPromptTokens": 563125,
-    "TotalCompletionTokens": 28493
+    "ToolMatchRate": 0.86,
+    "AvgParameterAccuracy": 0.945,
+    "AvgDurationMs": 4886.91,
+    "TotalPromptTokens": 622902,
+    "TotalCompletionTokens": 18829
   },
   {
     "Temperature": 0.7,
     "TotalQuestions": 100,
-    "ToolMatchRate": 0.81,
-    "AvgParameterAccuracy": 0.71,
-    "AvgDurationMs": 4662.88,
-    "TotalPromptTokens": 562184,
-    "TotalCompletionTokens": 28080
+    "ToolMatchRate": 0.85,
+    "AvgParameterAccuracy": 0.945,
+    "AvgDurationMs": 3758.77,
+    "TotalPromptTokens": 622937,
+    "TotalCompletionTokens": 19138
   },
   {
     "Temperature": 1,
     "TotalQuestions": 100,
-    "ToolMatchRate": 0.81,
-    "AvgParameterAccuracy": 0.705,
-    "AvgDurationMs": 4748.13,
-    "TotalPromptTokens": 561353,
-    "TotalCompletionTokens": 29190
+    "ToolMatchRate": 0.86,
+    "AvgParameterAccuracy": 0.945,
+    "AvgDurationMs": 3796.23,
+    "TotalPromptTokens": 622426,
+    "TotalCompletionTokens": 18487
   }
 ]

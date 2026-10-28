@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Options;
 using Pausalio.Application.DTOs.AIAssistant;
 using Pausalio.Application.Helpers;
-using Pausalio.Application.Helpers.Pausalio.Application.Helpers;
 using Pausalio.Application.Services.Implementations.AIAssistant;
 using Pausalio.Application.Services.Interfaces;
 using Pausalio.Domain.Entities;

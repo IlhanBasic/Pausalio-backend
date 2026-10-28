@@ -32,28 +32,30 @@ namespace Pausalio.Application.Services.Implementations.AIAssistant
                 {
                     case "get_top_clients":
                         return ExecuteGetTopClients(args, data);
-                    case "get_invoices_by_status":
-                        return ExecuteGetInvoicesByStatus(args, data);
-                    case "get_invoices_by_payment_status":
-                        return ExecuteGetInvoicesByPaymentStatus(args, data);
-                    case "get_invoices_by_year":
-                        return ExecuteGetInvoicesByYear(args, data);
+                    case "get_client_list":
+                        return ExecuteGetClientList(args, data);
+                    case "get_client_service_breakdown":
+                        return ExecuteGetClientServiceBreakdown(args, data);
+                    case "get_invoices":
+                        return ExecuteGetInvoiceList(args, data);
                     case "get_overdue_invoices":
                         return ExecuteGetOverdueInvoices(data);
                     case "get_invoice_summary":
                         return JsonSerializer.Serialize(data.InvoiceSummary);
-                    case "get_expenses_by_status":
-                        return ExecuteGetExpensesByStatus(args, data);
+                    case "get_invoice_by_number":
+                        return ExecuteGetInvoiceByNumber(args, data);
+                    case "get_expenses":
+                        return ExecuteGetExpenseList(args, data);
                     case "get_expense_summary":
                         return JsonSerializer.Serialize(data.ExpenseSummary);
-                    case "get_tax_obligations_by_year":
-                        return ExecuteGetTaxObligationsByYear(args, data);
-                    case "get_tax_obligations_by_status":
-                        return ExecuteGetTaxObligationsByStatus(args, data);
+                    case "get_tax_obligations":
+                        return ExecuteGetTaxObligationList(args, data);
                     case "get_overdue_taxes":
                         return ExecuteGetOverdueTaxes(data);
                     case "get_tax_summary":
                         return ExecuteGetTaxSummary(args, data);
+                    case "get_tax_delay_analysis":
+                        return ExecuteGetTaxDelayAnalysis(data);
                     case "get_monthly_income":
                         return ExecuteGetMonthlyIncome(args, data);
                     case "get_income_vs_expenses":
@@ -62,24 +64,16 @@ namespace Pausalio.Application.Services.Implementations.AIAssistant
                         return ExecuteGetTopServices(args, data);
                     case "get_actual_cashflow":
                         return ExecuteGetActualCashflow(args, data);
-                    case "get_avg_payment_delay_by_client":
+                    case "get_client_payment_delay_analysis":
                         return ExecuteGetAvgPaymentDelayByClient(args, data);
-                    case "get_tax_delay_analysis":
-                        return ExecuteGetTaxDelayAnalysis(data);
-                    case "get_client_service_breakdown":
-                        return ExecuteGetClientServiceBreakdown(args, data);
-                    case "get_client_list":
-                        return ExecuteGetClientList(data);
-                    case "get_invoice_by_number":
-                        return ExecuteGetInvoiceByNumber(args, data);
                     case "get_upcoming_reminders":
                         return ExecuteGetUpcomingReminders(data);
-                    case "get_expenses_by_year":
-                        return ExecuteGetExpensesByYear(args, data);
                     case "get_business_profile_info":
                         return ExecuteGetBusinessProfileInfo(data);
                     case "get_bank_accounts":
                         return ExecuteGetBankAccounts(data);
+                    case "get_business_financial_health":
+                        return ExecuteGetBusinessFinancialHealth(data);
                     default:
                         return "Alat nije pronađen.";
                 }
@@ -138,6 +132,64 @@ namespace Pausalio.Application.Services.Implementations.AIAssistant
             return parsedValue;
         }
 
+        private static bool? GetOptionalBool(JsonElement args, string propertyName)
+        {
+            if (!args.TryGetProperty(propertyName, out var propertyValue)
+                || propertyValue.ValueKind != JsonValueKind.True
+                && propertyValue.ValueKind != JsonValueKind.False)
+            {
+                return null;
+            }
+
+            return propertyValue.GetBoolean();
+        }
+       private string ExecuteGetBusinessFinancialHealth(CachedToolData data)
+        {
+            var invoices = data.Invoices
+                .Where(x => x.InvoiceStatus != InvoiceStatus.Cancelled)
+                .ToList();
+
+            var totalIncome = invoices.Sum(x => x.TotalAmountRSD);
+            var totalExpenses = data.Expenses.Sum(x => x.Amount);
+
+            var paidInvoices = invoices
+                .Count(x => x.PaymentStatus == PaymentStatus.Paid);
+
+            var unpaidInvoices = invoices
+                .Count(x => x.PaymentStatus == PaymentStatus.Unpaid);
+
+            var overdueInvoices = invoices
+                .Where(x => x.PaymentStatus == PaymentStatus.Unpaid
+                            && x.DueDate.HasValue
+                            && x.DueDate < DateTime.UtcNow)
+                .Sum(x => x.TotalAmountRSD);
+
+            var pendingTaxes = data.TaxObligations
+                .Where(x => x.Status == TaxObligationStatus.Pending)
+                .Sum(x => x.TotalAmount);
+
+            var health = new
+            {
+                UkupniPrihodiRSD = totalIncome,
+                UkupniTroskoviRSD = totalExpenses,
+                NetoPrihodRSD = totalIncome - totalExpenses,
+
+                ProfitabilnostProcenat = totalIncome > 0
+                    ? Math.Round(((totalIncome - totalExpenses) / totalIncome) * 100, 2)
+                    : 0,
+
+                BrojFaktura = invoices.Count,
+                PlaceneFakture = paidInvoices,
+                NeplaceneFakture = unpaidInvoices,
+
+                IznosKasnjenjaNaplateRSD = overdueInvoices,
+
+                NeizmirenePoreskeObavezeRSD = pendingTaxes
+            };
+
+            return JsonSerializer.Serialize(health);
+        }
+
         private string ExecuteGetTopClients(JsonElement args, CachedToolData data)
         {
             var top = GetRequiredInt(args, "top");
@@ -159,60 +211,33 @@ namespace Pausalio.Application.Services.Implementations.AIAssistant
             return JsonSerializer.Serialize(topClients);
         }
 
-        private string ExecuteGetInvoicesByStatus(JsonElement args, CachedToolData data)
+        private string ExecuteGetInvoiceList(JsonElement args, CachedToolData data)
         {
-            var statusStr = GetRequiredString(args, "status");
-            if (!Enum.TryParse<InvoiceStatus>(statusStr, true, out var status))
-                return "Nepoznat status fakture.";
+            var year = GetOptionalInt(args, "year");
+            var invoiceStatus = ParseEnum<InvoiceStatus>(args, "invoiceStatus") ?? ParseEnum<InvoiceStatus>(args, "status");
+            var paymentStatus = ParseEnum<PaymentStatus>(args, "paymentStatus");
+            var overdueOnly = GetOptionalBool(args, "overdueOnly") ?? false;
+            var limit = GetOptionalInt(args, "limit") ?? int.MaxValue;
+            var now = DateTime.UtcNow;
 
             var result = data.Invoices
-                .Where(x => x.InvoiceStatus == status)
+                .Where(x => year == null || x.IssueDate.Year == year.Value)
+                .Where(x => invoiceStatus == null || x.InvoiceStatus == invoiceStatus.Value)
+                .Where(x => paymentStatus == null || x.PaymentStatus == paymentStatus.Value)
+                .Where(x => !overdueOnly || (x.PaymentStatus == PaymentStatus.Unpaid
+                    && x.DueDate.HasValue
+                    && x.DueDate < now
+                    && x.InvoiceStatus != InvoiceStatus.Cancelled))
+                .OrderByDescending(x => x.IssueDate)
+                .Take(limit)
                 .Select(x => new
                 {
                     x.InvoiceNumber,
                     Klijent = x.Client.Name,
                     x.TotalAmountRSD,
                     x.PaymentStatus,
-                    x.IssueDate
-                });
-
-            return JsonSerializer.Serialize(result);
-        }
-
-        private string ExecuteGetInvoicesByPaymentStatus(JsonElement args, CachedToolData data)
-        {
-            var statusStr = GetRequiredString(args, "paymentStatus");
-            if (!Enum.TryParse<PaymentStatus>(statusStr, true, out var paymentStatus))
-                return "Nepoznat status plaćanja.";
-
-            var result = data.Invoices
-                .Where(x => x.PaymentStatus == paymentStatus)
-                .Select(x => new
-                {
-                    x.InvoiceNumber,
-                    Klijent = x.Client.Name,
-                    x.TotalAmountRSD,
                     x.InvoiceStatus,
                     x.DueDate,
-                    x.IssueDate
-                });
-
-            return JsonSerializer.Serialize(result);
-        }
-
-        private string ExecuteGetInvoicesByYear(JsonElement args, CachedToolData data)
-        {
-            var year = GetRequiredInt(args, "year");
-
-            var result = data.Invoices
-                .Where(x => x.IssueDate.Year == year)
-                .Select(x => new
-                {
-                    x.InvoiceNumber,
-                    Klijent = x.Client.Name,
-                    x.TotalAmountRSD,
-                    x.PaymentStatus,
-                    x.InvoiceStatus,
                     x.IssueDate
                 });
 
@@ -241,31 +266,45 @@ namespace Pausalio.Application.Services.Implementations.AIAssistant
             return JsonSerializer.Serialize(result);
         }
 
-        private string ExecuteGetExpensesByStatus(JsonElement args, CachedToolData data)
+        private string ExecuteGetExpenseList(JsonElement args, CachedToolData data)
         {
-            var statusStr = GetRequiredString(args, "status");
-            if (!Enum.TryParse<ExpenseStatus>(statusStr, true, out var status))
-                return "Nepoznat status troška.";
+            var year = GetOptionalInt(args, "year");
+            var expenseStatus = ParseEnum<ExpenseStatus>(args, "expenseStatus") ?? ParseEnum<ExpenseStatus>(args, "status");
+            var limit = GetOptionalInt(args, "limit") ?? int.MaxValue;
 
             var result = data.Expenses
-                .Where(x => x.Status == status)
+                .Where(x => year == null || x.CreatedAt.Year == year.Value)
+                .Where(x => expenseStatus == null || x.Status == expenseStatus.Value)
+                .OrderByDescending(x => x.CreatedAt)
+                .Take(limit)
                 .Select(x => new
                 {
                     x.Name,
                     x.Amount,
                     x.Status,
-                    x.ReferenceNumber
+                    x.ReferenceNumber,
+                    x.CreatedAt
                 });
 
             return JsonSerializer.Serialize(result);
         }
 
-        private string ExecuteGetTaxObligationsByYear(JsonElement args, CachedToolData data)
+        private string ExecuteGetTaxObligationList(JsonElement args, CachedToolData data)
         {
-            var year = GetRequiredInt(args, "year");
+            var year = GetOptionalInt(args, "year");
+            var taxStatus = ParseEnum<TaxObligationStatus>(args, "taxStatus") ?? ParseEnum<TaxObligationStatus>(args, "status");
+            var taxType = GetOptionalString(args, "taxType");
+            var overdueOnly = GetOptionalBool(args, "overdueOnly") ?? false;
+            var limit = GetOptionalInt(args, "limit") ?? int.MaxValue;
+            var now = DateTime.UtcNow;
 
             var result = data.TaxObligations
-                .Where(x => x.Year == year)
+                .Where(x => year == null || x.Year == year.Value)
+                .Where(x => taxStatus == null || x.Status == taxStatus.Value)
+                .Where(x => string.IsNullOrWhiteSpace(taxType) || x.Type.ToString().Equals(taxType, StringComparison.OrdinalIgnoreCase))
+                .Where(x => !overdueOnly || (x.Status == TaxObligationStatus.Pending && x.DueDate < now))
+                .OrderByDescending(x => x.DueDate)
+                .Take(limit)
                 .Select(x => new
                 {
                     x.Year,
@@ -273,26 +312,6 @@ namespace Pausalio.Application.Services.Implementations.AIAssistant
                     x.Type,
                     x.TotalAmount,
                     x.Status,
-                    x.DueDate
-                });
-
-            return JsonSerializer.Serialize(result);
-        }
-
-        private string ExecuteGetTaxObligationsByStatus(JsonElement args, CachedToolData data)
-        {
-            var statusStr = GetRequiredString(args, "status");
-            if (!Enum.TryParse<TaxObligationStatus>(statusStr, true, out var status))
-                return "Nepoznat status poreske obaveze.";
-
-            var result = data.TaxObligations
-                .Where(x => x.Status == status)
-                .Select(x => new
-                {
-                    x.Year,
-                    x.Month,
-                    x.Type,
-                    x.TotalAmount,
                     x.DueDate
                 });
 
@@ -521,14 +540,23 @@ namespace Pausalio.Application.Services.Implementations.AIAssistant
             return JsonSerializer.Serialize(result);
         }
 
-        private string ExecuteGetClientList(CachedToolData data)
+        private string ExecuteGetClientList(JsonElement args, CachedToolData data)
         {
+            var clientType = ParseEnum<ClientType>(args, "clientType");
+            var isActive = GetOptionalBool(args, "isActive");
+            var limit = GetOptionalInt(args, "limit") ?? int.MaxValue;
+
             var clientsList = data.Clients
+                .Where(x => clientType == null || x.ClientType == clientType.Value)
+                .Where(x => isActive == null || x.IsActive == isActive.Value)
+                .OrderBy(x => x.Name)
+                .Take(limit)
                 .Select(x => new
                 {
                     Klijent = x.Name,
                     x.PIB,
-                    x.IsActive
+                    x.IsActive,
+                    x.ClientType
                 })
                 .ToList();
 

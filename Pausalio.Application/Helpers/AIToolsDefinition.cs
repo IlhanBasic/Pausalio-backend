@@ -1,423 +1,551 @@
 ﻿namespace Pausalio.Application.Helpers
 {
-    namespace Pausalio.Application.Helpers
+    public static class AIToolsDefinition
     {
-        public static class AIToolsDefinition
+        public static object[] GetTools() => new object[]
         {
-            public static object[] GetTools() => new object[]
+            // ===== KLIJENTI =====
+            new
             {
-                // ===== KLIJENTI =====
-                new {
-                    type = "function",
-                    function = new {
-                        name = "get_top_clients",
-                        description = "Vraća listu klijenata sortiranih po ukupno fakturisanom iznosu. Koristi kada korisnik pita o najboljim klijentima, najvećim klijentima, najboljoj saradnji ili stranim/domaćim klijentima.",
-                        parameters = new {
-                            type = "object",
-                            properties = new {
-                                top = new {
-                                    type = "integer",
-                                    description = "Koliko klijenata da vrati. Ako korisnik ne kaže broj, koristi 5."
-                                },
-                                clientType = new {
-                                    type = "string",
-                                    description = "Opcioni filter po tipu klijenta. Moguće vrednosti: Individual, Domestic, Foreign. Ako korisnik ne navede tip, ne šalji ovaj parametar."
-                                }
+                type = "function",
+                function = new
+                {
+                    name = "get_top_clients",
+                    description = "Use this tool only when the user asks for the highest-value clients ranked by total invoiced amount. Do not use it for a general client directory, a single client detail lookup, or a service breakdown. For a list of all clients use get_client_list. For one client's service mix use get_client_service_breakdown.",
+                    parameters = new
+                    {
+                        type = "object",
+                        properties = new
+                        {
+                            top = new
+                            {
+                                type = "integer",
+                                description = "How many clients to return. Example: 5. If the user does not specify a number, use 5."
                             },
-                            required = new[] { "top" }
-                        }
-                    }
-                },
-
-                // ===== FAKTURE =====
-                new {
-                    type = "function",
-                    function = new {
-                        name = "get_invoices_by_status",
-                        description = "Vraća fakture filtrirane po statusu fakture.",
-                        parameters = new {
-                            type = "object",
-                            properties = new {
-                                status = new {
-                                    type = "string",
-                                    description = "Moguće vrednosti: Draft, Sent, Finished, Cancelled, Archived"
-                                }
-                            },
-                            required = new[] { "status" }
-                        }
-                    }
-                },
-                new {
-                    type = "function",
-                    function = new {
-                        name = "get_invoices_by_payment_status",
-                        description = "Vraća fakture filtrirane po statusu plaćanja. Koristi kada korisnik pita o neplaćenim, plaćenim fakturama ili naplati.",
-                        parameters = new {
-                            type = "object",
-                            properties = new {
-                                paymentStatus = new {
-                                    type = "string",
-                                    description = "Moguće vrednosti: Unpaid, Paid, PartiallyPaid"
-                                }
-                            },
-                            required = new[] { "paymentStatus" }
-                        }
-                    }
-                },
-                new {
-                    type = "function",
-                    function = new {
-                        name = "get_invoices_by_year",
-                        description = "Vraća sve fakture za određenu godinu. Koristi kada korisnik pita o fakturama u određenoj godini ili periodu.",
-                        parameters = new {
-                            type = "object",
-                            properties = new {
-                                year = new {
-                                    type = "integer",
-                                    description = "Godina za koju se traže fakture. Ako nije navedena koristi tekuću godinu."
-                                }
-                            },
-                            required = new[] { "year" }
-                        }
-                    }
-                },
-                new {
-                    type = "function",
-                    function = new {
-                        name = "get_overdue_invoices",
-                        description = "Vraća sve fakture kojima je prošao rok plaćanja a još nisu plaćene. Koristi kada korisnik pita o zakasnelim fakturama, dugovima klijenata ili nenaplaćenim potraživanjima.",
-                        parameters = new {
-                            type = "object",
-                            properties = new { },
-                            required = new string[] { }
-                        }
-                    }
-                },
-                new {
-                    type = "function",
-                    function = new {
-                        name = "get_invoice_summary",
-                        description = "Vraća sumarni pregled svih faktura — ukupno fakturisano, naplaćeno, nenaplaćeno, broj faktura po statusu. Koristi kada korisnik traži pregled ili statistiku faktura.",
-                        parameters = new {
-                            type = "object",
-                            properties = new { },
-                            required = new string[] { }
-                        }
-                    }
-                },
-
-                // ===== TROŠKOVI =====
-                new {
-                    type = "function",
-                    function = new {
-                        name = "get_expenses_by_status",
-                        description = "Vraća troškove filtrirane po statusu.",
-                        parameters = new {
-                            type = "object",
-                            properties = new {
-                                status = new {
-                                    type = "string",
-                                    description = "Moguće vrednosti: Pending, Paid, Archived"
-                                }
-                            },
-                            required = new[] { "status" }
-                        }
-                    }
-                },
-                new {
-                    type = "function",
-                    function = new {
-                        name = "get_expense_summary",
-                        description = "Vraća sumarni pregled troškova — ukupno, plaćeno, na čekanju, arhivirano. Koristi kada korisnik pita o ukupnim troškovima ili finansijskom stanju troškova.",
-                        parameters = new {
-                            type = "object",
-                            properties = new { },
-                            required = new string[] { }
-                        }
-                    }
-                },
-
-                // ===== POREZI =====
-                new {
-                    type = "function",
-                    function = new {
-                        name = "get_tax_obligations_by_year",
-                        description = "Vraća poreske obaveze za određenu godinu.",
-                        parameters = new {
-                            type = "object",
-                            properties = new {
-                                year = new {
-                                    type = "integer",
-                                    description = "Godina za koju se traže poreske obaveze. Ako nije navedena koristi tekuću godinu."
-                                }
-                            },
-                            required = new[] { "year" }
-                        }
-                    }
-                },
-                new {
-                    type = "function",
-                    function = new {
-                        name = "get_tax_obligations_by_status",
-                        description = "Vraća poreske obaveze filtrirane po statusu. Koristi kada korisnik pita o neplaćenim ili plaćenim porezima.",
-                        parameters = new {
-                            type = "object",
-                            properties = new {
-                                status = new {
-                                    type = "string",
-                                    description = "Moguće vrednosti: Pending, Paid, Archived"
-                                }
-                            },
-                            required = new[] { "status" }
-                        }
-                    }
-                },
-                new {
-                    type = "function",
-                    function = new {
-                        name = "get_overdue_taxes",
-                        description = "Vraća poreske obaveze kojima je prošao rok a još nisu plaćene. Koristi kada korisnik pita o zakasnelim porezima ili poreskim dugovima.",
-                        parameters = new {
-                            type = "object",
-                            properties = new { },
-                            required = new string[] { }
-                        }
-                    }
-                },
-                new {
-                    type = "function",
-                    function = new {
-                        name = "get_tax_summary",
-                        description = "Vraća sumarni pregled poreskih obaveza — ukupno neplaćeno, plaćeno, zakasnelo. Koristi kada korisnik pita o poreskom stanju ili dugovima.",
-                        parameters = new {
-                            type = "object",
-                            properties = new {
-                                year = new {
-                                    type = "integer",
-                                    description = "Opciona godina. Ako nije navedena vraća sve."
-                                }
-                            },
-                            required = new string[] { }
-                        }
-                    }
-                },
-
-                // ===== PRIHODI =====
-                new {
-                    type = "function",
-                    function = new {
-                        name = "get_monthly_income",
-                        description = "Vraća ukupan fakturisani prihod po mesecima za određenu godinu. Koristi kada korisnik pita o mesečnim prihodima, trendu prihoda ili poređenju meseci.",
-                        parameters = new {
-                            type = "object",
-                            properties = new {
-                                year = new {
-                                    type = "integer",
-                                    description = "Godina za koju se traži mesečni prihod. Ako nije navedena koristi tekuću godinu."
-                                }
-                            },
-                            required = new[] { "year" }
-                        }
-                    }
-                },
-                new {
-                    type = "function",
-                    function = new {
-                        name = "get_income_vs_expenses",
-                        description = "Vraća poređenje ukupnih prihoda i troškova za određenu godinu. Koristi kada korisnik pita o profitabilnosti, neto prihodu ili odnosu prihoda i rashoda.",
-                        parameters = new {
-                            type = "object",
-                            properties = new {
-                                year = new {
-                                    type = "integer",
-                                    description = "Godina za poređenje. Ako nije navedena koristi tekuću godinu."
-                                }
-                            },
-                            required = new[] { "year" }
-                        }
-                    }
-                },
-                new {
-                    type = "function",
-                    function = new {
-                        name = "get_top_services",
-                        description = "Vraća najprodavanije usluge ili proizvode sortirane po ukupnom prihodu. Koristi kada korisnik pita koje usluge najviše zarađuje, šta najviše prodaje ili koje stavke su najpopularnije.",
-                        parameters = new {
-                            type = "object",
-                            properties = new {
-                                top = new {
-                                    type = "integer",
-                                    description = "Koliko usluga da vrati. Ako korisnik ne kaže broj, koristi 5."
-                                },
-                                itemType = new {
-                                    type = "string",
-                                    description = "Opcioni filter. Moguće vrednosti: Product, Service. Ako nije navedeno, vraća sve."
-                                },
-                                year = new {
-                                    type = "integer",
-                                    description = "Opciona godina. Ako nije navedena, uzima sve fakture."
-                                },
-                                clientId = new {
-                                    type = "string",
-                                    description = "Opcioni filter po klijentu (GUID). Koristi samo ako korisnik pita za određenog klijenta."
-                                }
-                            },
-                            required = new[] { "top" }
-                        }
-                    }
-                },
-
-                new {
-                    type = "function",
-                    function = new {
-                        name = "get_actual_cashflow",
-                        description = "Vraća stvarno naplaćen novac po mesecima na osnovu datuma plaćanja, ne datuma fakture. Koristi kada korisnik pita koliko je novca stvarno ušlo, o likvidnosti ili stvarnom cash flowu.",
-                        parameters = new {
-                            type = "object",
-                            properties = new {
-                                year = new {
-                                    type = "integer",
-                                    description = "Godina za koju se traži cash flow. Ako nije navedena koristi tekuću godinu."
-                                },
-                                month = new {
-                                    type = "integer",
-                                    description = "Opcioni mesec (1-12). Ako nije naveden, vraća sve mesece za godinu."
-                                }
-                            },
-                            required = new[] { "year" }
-                        }
-                    }
-                },
-
-                new {
-                    type = "function",
-                    function = new {
-                        name = "get_avg_payment_delay_by_client",
-                        description = "Vraća prosečno kašnjenje plaćanja po klijentu. Koristi kada korisnik pita koji klijenti kasne sa plaćanjem, ko je najpouzdaniji ili najsporiji platiša.",
-                        parameters = new {
-                            type = "object",
-                            properties = new {
-                                top = new {
-                                    type = "integer",
-                                    description = "Koliko klijenata da vrati. Ako nije navedeno, koristi 5."
-                                }
-                            },
-                            required = new string[] { }
-                        }
-                    }
-                },
-                new {
-                    type = "function",
-                    function = new {
-                        name = "get_tax_delay_analysis",
-                        description = "Vraća analizu kašnjenja plaćanja poreza po tipu — koliko puta je kasnjeno, prosečno dana kašnjenja. Koristi kada korisnik pita o disciplini plaćanja poreza ili koji porezi mu najčešće kasne.",
-                        parameters = new {
-                            type = "object",
-                            properties = new { },
-                            required = new string[] { }
-                        }
-                    }
-                },
-                new {
-                    type = "function",
-                    function = new {
-                        name = "get_client_service_breakdown",
-                        description = "Vraća detaljan pregled koje usluge određeni klijent kupuje, koliko često i ukupno potrošeno. Koristi kada korisnik pita šta određeni klijent kupuje ili kako izgleda saradnja sa njim.",
-                        parameters = new {
-                            type = "object",
-                            properties = new {
-                                clientName = new {
-                                    type = "string",
-                                    description = "Ime klijenta. Koristi partial match — ako korisnik kaže 'ABC', traži klijenta čije ime sadrži 'ABC'."
-                                }
-                            },
-                            required = new[] { "clientName" }
-                        }
-                    }
-                },
-                new {
-                    type = "function",
-                    function = new {
-                        name = "get_client_list",
-                        description = "Vraća osnovni pregled svih klijenata (ime/klijent, PIB, da li je aktivan). Koristi kada korisnik traži spisak svih klijenata ili pita koje sve klijente ima.",
-                        parameters = new {
-                            type = "object",
-                            properties = new { },
-                            required = new string[] { }
-                        }
-                    }
-                },
-                new {
-                    type = "function",
-                    function = new {
-                        name = "get_invoice_by_number",
-                        description = "Vraća detaljne informacije o jednoj fakturi na osnovu broja fakture (uključujući stavke fakture). Koristi kada korisnik pita šta piše na konkretnoj fakturi, traži detalje ili stavke konkretne fakture.",
-                        parameters = new {
-                            type = "object",
-                            properties = new {
-                                invoiceNumber = new {
-                                    type = "string",
-                                    description = "Broj fakture za pretragu."
-                                }
-                            },
-                            required = new[] { "invoiceNumber" }
-                        }
-                    }
-                },
-                new {
-                    type = "function",
-                    function = new {
-                        name = "get_upcoming_reminders",
-                        description = "Vraća predstojeće podsetnike i zadatke korisnika. Koristi kada korisnik pita šta je sledeće na listi zadataka ili traži svoje podsetnike.",
-                        parameters = new {
-                            type = "object",
-                            properties = new { },
-                            required = new string[] { }
-                        }
-                    }
-                },
-                new {
-                    type = "function",
-                    function = new {
-                        name = "get_expenses_by_year",
-                        description = "Vraća sve troškove za određenu godinu. Koristi za filtriranje i analizu troškova po godinama.",
-                        parameters = new {
-                            type = "object",
-                            properties = new {
-                                year = new {
-                                    type = "integer",
-                                    description = "Godina za koju se traže troškovi."
-                                }
-                            },
-                            required = new[] { "year" }
-                        }
-                    }
-                },
-                new {
-                    type = "function",
-                    function = new {
-                        name = "get_business_profile_info",
-                        description = "Vraća statičke detalje o profilu firme (PIB, MB, adresa, šifra delatnosti i njen opis). Koristi kada korisnik pita za PIB, MB, adresu ili šifru svoje delatnosti.",
-                        parameters = new {
-                            type = "object",
-                            properties = new { },
-                            required = new string[] { }
-                        }
-                    }
-                },
-                new {
-                    type = "function",
-                    function = new {
-                        name = "get_bank_accounts",
-                        description = "Vraća listu bankovnih računa sa informacijom koji je podrazumevani (default) račun za plaćanje.",
-                        parameters = new {
-                            type = "object",
-                            properties = new { },
-                            required = new string[] { }
-                        }
+                            clientType = new
+                            {
+                                type = "string",
+                                description = "Optional client type filter. Allowed values: Individual, Domestic, Foreign. Example: Domestic. Leave it out when the user asks for all clients."
+                            }
+                        },
+                        required = new[] { "top" },
+                        additionalProperties = false
                     }
                 }
-            };
-        }
+            },
+            new
+            {
+                type = "function",
+                function = new
+                {
+                    name = "get_client_list",
+                    description = "Use this tool only when the user asks for a registry or directory of clients, such as 'show me all clients', 'who are my clients', or 'list clients with PIB'. Do not use it for a ranked top-client list, invoice analysis, or one client's service composition. For top clients use get_top_clients. For a single client's purchased services use get_client_service_breakdown.",
+                    parameters = new
+                    {
+                        type = "object",
+                        properties = new
+                        {
+                            clientType = new
+                            {
+                                type = "string",
+                                description = "Optional client type filter. Allowed values: Individual, Domestic, Foreign. Example: Foreign."
+                            },
+                            isActive = new
+                            {
+                                type = "boolean",
+                                description = "Optional active/inactive filter. Example: true."
+                            },
+                            limit = new
+                            {
+                                type = "integer",
+                                description = "Optional maximum number of records to return. Example: 25."
+                            }
+                        },
+                        required = Array.Empty<string>(),
+                        additionalProperties = false
+                    }
+                }
+            },
+            new
+            {
+                type = "function",
+                function = new
+                {
+                    name = "get_client_service_breakdown",
+                    description = "Use this tool only when the user asks what products or services a specific client bought, how much they spent, or how their purchasing pattern looks. Do not use it for a client directory, top-client ranking, or a general invoice list. For a list of all clients use get_client_list. For ranking clients by revenue use get_top_clients.",
+                    parameters = new
+                    {
+                        type = "object",
+                        properties = new
+                        {
+                            clientName = new
+                            {
+                                type = "string",
+                                description = "Client name or a partial name fragment. Example: 'ABC'. The tool performs a case-insensitive partial match."
+                            }
+                        },
+                        required = new[] { "clientName" },
+                        additionalProperties = false
+                    }
+                }
+            },
+
+            // ===== FAKTURE =====
+            new
+            {
+                type = "function",
+                function = new
+                {
+                    name = "get_invoices",
+                    description = "Use this tool only when the user asks for invoice records or wants invoices filtered by year, invoice status, payment status, or overdue state. Do not use this tool for totals, invoice summaries, or a single invoice lookup by invoice number; use get_invoice_summary for totals and get_invoice_by_number for one exact invoice. Example questions: 'Show invoices for 2026', 'List unpaid invoices', 'Which invoices are overdue?'.",
+                    parameters = new
+                    {
+                        type = "object",
+                        properties = new
+                        {
+                            year = new
+                            {
+                                type = "integer",
+                                description = "Optional invoice year filter. Example: 2026."
+                            },
+                            invoiceStatus = new
+                            {
+                                type = "string",
+                                description = "Optional invoice status filter. Allowed values: Draft, Sent, Finished, Cancelled, Archived. Example: Sent."
+                            },
+                            paymentStatus = new
+                            {
+                                type = "string",
+                                description = "Optional payment status filter. Allowed values: Unpaid, Paid, PartiallyPaid. Example: Unpaid."
+                            },
+                            overdueOnly = new
+                            {
+                                type = "boolean",
+                                description = "If true, return only invoices that are unpaid, past due, and not cancelled. Example: true."
+                            },
+                            limit = new
+                            {
+                                type = "integer",
+                                description = "Optional maximum number of invoice records to return. Example: 25."
+                            }
+                        },
+                        required = Array.Empty<string>(),
+                        additionalProperties = false
+                    }
+                }
+            },
+            new
+            {
+                type = "function",
+                function = new
+                {
+                    name = "get_overdue_invoices",
+                    description = "Use this tool only when the user asks for overdue unpaid invoices that are past their due date. Do not use it for a general invoice list, invoice summary, or a single invoice lookup. For filtered invoice records use get_invoices. For one exact invoice use get_invoice_by_number. Example questions: 'Show overdue invoices', 'Which customers have overdue invoices?'.",
+                    parameters = new
+                    {
+                        type = "object",
+                        properties = new { },
+                        required = Array.Empty<string>(),
+                        additionalProperties = false
+                    }
+                }
+            },
+            new
+            {
+                type = "function",
+                function = new
+                {
+                    name = "get_invoice_summary",
+                    description = "Use this tool only when the user asks for an aggregate invoice overview, such as total issued amount, total paid, total unpaid, or invoice status distribution. Do not use it for a list of individual invoice rows or for one exact invoice lookup. For invoice records use get_invoices. For one invoice by number use get_invoice_by_number. Example questions: 'What is the invoice summary?', 'How much is unpaid?', 'Give me invoice totals by status'.",
+                    parameters = new
+                    {
+                        type = "object",
+                        properties = new { },
+                        required = Array.Empty<string>(),
+                        additionalProperties = false
+                    }
+                }
+            },
+            new
+            {
+                type = "function",
+                function = new
+                {
+                    name = "get_invoice_by_number",
+                    description = "Use this tool only when the user asks for one exact invoice by its invoice number, such as 'show me invoice INV-1024' or 'what is on invoice 2026-001'. Do not use it for a yearly filtered invoice list, a summary, or an overdue invoice search. For filtered invoice record sets use get_invoices. For overall totals use get_invoice_summary. Example questions: 'Show invoice INV-1024', 'What does invoice 2026-001 contain?'.",
+                    parameters = new
+                    {
+                        type = "object",
+                        properties = new
+                        {
+                            invoiceNumber = new
+                            {
+                                type = "string",
+                                description = "Exact invoice number to look up. Example: INV-1024."
+                            }
+                        },
+                        required = new[] { "invoiceNumber" },
+                        additionalProperties = false
+                    }
+                }
+            },
+
+            // ===== TROŠKOVI =====
+            new
+            {
+                type = "function",
+                function = new
+                {
+                    name = "get_expenses",
+                    description = "Use this tool only when the user asks for expense records or wants expense rows filtered by year or expense status. Do not use this tool for totals or an expense overview; use get_expense_summary for aggregates. Example questions: 'List expenses for 2026', 'Show paid expenses', 'Which expenses are pending?'.",
+
+                    parameters = new
+                    {
+                        type = "object",
+                        properties = new
+                        {
+                            year = new
+                            {
+                                type = "integer",
+                                description = "Optional expense year filter. Example: 2026."
+                            },
+                            expenseStatus = new
+                            {
+                                type = "string",
+                                description = "Optional expense status filter. Allowed values: Pending, Paid, Archived. Example: Paid."
+                            },
+                            limit = new
+                            {
+                                type = "integer",
+                                description = "Optional maximum number of expense records to return. Example: 25."
+                            }
+                        },
+                        required = Array.Empty<string>(),
+                        additionalProperties = false
+                    }
+                }
+            },
+            new
+            {
+                type = "function",
+                function = new
+                {
+                    name = "get_expense_summary",
+                    description = "Use this tool only when the user asks for an expense overview or totals, such as total expenses, paid amount, pending amount, or yearly expense totals. Do not use it for a list of individual expense rows. For expense records use get_expenses. Example questions: 'What are total expenses?', 'Give me the expense summary for this year'.",
+                    parameters = new
+                    {
+                        type = "object",
+                        properties = new { },
+                        required = Array.Empty<string>(),
+                        additionalProperties = false
+                    }
+                }
+            },
+
+            // ===== POREZI =====
+            new
+            {
+                type = "function",
+                function = new
+                {
+                    name = "get_tax_obligations",
+                    description = "Use this tool only when the user asks for tax obligation records or wants tax obligations filtered by year, status, type, or overdue state. Do not use this tool for a total tax overview or tax-payment delay analysis; use get_tax_summary for totals and get_tax_delay_analysis for late-payment behavior. Example questions: 'Show tax obligations for 2026', 'List pending taxes', 'Which taxes are overdue?'.",
+
+                    parameters = new
+                    {
+                        type = "object",
+                        properties = new
+                        {
+                            year = new
+                            {
+                                type = "integer",
+                                description = "Optional obligation year filter. Example: 2026."
+                            },
+                            taxStatus = new
+                            {
+                                type = "string",
+                                description = "Optional tax obligation status filter. Allowed values: Pending, Paid, Archived. Example: Pending."
+                            },
+                            taxType = new
+                            {
+                                type = "string",
+                                description = "Optional tax type filter. Example: VAT, IncomeTax, SocialContribution."
+                            },
+                            overdueOnly = new
+                            {
+                                type = "boolean",
+                                description = "If true, return only obligations whose due date is in the past and are still pending. Example: true."
+                            },
+                            limit = new
+                            {
+                                type = "integer",
+                                description = "Optional maximum number of tax obligation records to return. Example: 25."
+                            }
+                        },
+                        required = Array.Empty<string>(),
+                        additionalProperties = false
+                    }
+                }
+            },
+            new
+            {
+                type = "function",
+                function = new
+                {
+                    name = "get_overdue_taxes",
+                    description = "Use this tool only when the user asks for overdue pending tax obligations whose due date has passed. Do not use it for a general tax summary, tax delay analysis, or a record list of all obligations. For obligation records use get_tax_obligations. For aggregate totals use get_tax_summary. Example questions: 'Show overdue taxes', 'Which taxes are past due?'.",
+                    parameters = new
+                    {
+                        type = "object",
+                        properties = new { },
+                        required = Array.Empty<string>(),
+                        additionalProperties = false
+                    }
+                }
+            },
+            new
+            {
+                type = "function",
+                function = new
+                {
+                    name = "get_tax_summary",
+                    description = "Use this tool only when the user asks for a tax overview or total amounts, such as total obligations, paid amount, unpaid amount, or a yearly tax summary. Do not use it for a list of individual tax obligations, overdue-only filtering, or late-payment analysis. For obligation records use get_tax_obligations. For delay analysis by tax type use get_tax_delay_analysis. Example questions: 'What is the total tax summary?', 'How much is still unpaid this year?'.",
+                    parameters = new
+                    {
+                        type = "object",
+                        properties = new
+                        {
+                            year = new
+                            {
+                                type = "integer",
+                                description = "Optional tax year filter. Example: 2026. If omitted, the tool returns totals across all available obligations."
+                            }
+                        },
+                        required = Array.Empty<string>(),
+                        additionalProperties = false
+                    }
+                }
+            },
+            new
+            {
+                type = "function",
+                function = new
+                {
+                    name = "get_tax_delay_analysis",
+                    description = "Use this tool only when the user asks about delayed tax payments, such as average delay, longest delay, or how often a tax type was paid late. Do not use it for a general tax summary, overdue obligation list, or status-based filtering. For tax obligation records use get_tax_obligations. For total tax amounts use get_tax_summary. Example questions: 'Which taxes are usually paid late?', 'What is the average delay for VAT payments?'.",
+                    parameters = new
+                    {
+                        type = "object",
+                        properties = new { },
+                        required = Array.Empty<string>(),
+                        additionalProperties = false
+                    }
+                }
+            },
+
+            // ===== PRIHODI I CASH FLOW =====
+            new
+            {
+                type = "function",
+                function = new
+                {
+                    name = "get_monthly_income",
+                    description = "Use this tool only when the user asks for invoice-based monthly revenue grouped by month for one year. Do not use it for cash-flow analysis from payment dates, service rankings, or overall income-vs-expense comparisons. For actual paid cash by month use get_actual_cashflow. For income versus expenses use get_income_vs_expenses.",
+                    parameters = new
+                    {
+                        type = "object",
+                        properties = new
+                        {
+                            year = new
+                            {
+                                type = "integer",
+                                description = "Year for which monthly invoice income should be grouped. Example: 2026."
+                            }
+                        },
+                        required = new[] { "year" },
+                        additionalProperties = false
+                    }
+                }
+            },
+            new
+            {
+                type = "function",
+                function = new
+                {
+                    name = "get_income_vs_expenses",
+                    description = "Use this tool only when the user asks for a profitability snapshot comparing total income and total expenses for a specific year. Do not use it for monthly income breakdowns, cash-flow by payment date, or service rankings. For monthly invoiced income use get_monthly_income. For actual money collected by payment date use get_actual_cashflow.",
+                    parameters = new
+                    {
+                        type = "object",
+                        properties = new
+                        {
+                            year = new
+                            {
+                                type = "integer",
+                                description = "Year to compare. Example: 2026."
+                            }
+                        },
+                        required = new[] { "year" },
+                        additionalProperties = false
+                    }
+                }
+            },
+            new
+            {
+                type = "function",
+                function = new
+                {
+                    name = "get_top_services",
+                    description = "Use this tool only when the user asks which products or services generate the most revenue, or which items are most frequently sold. Do not use it for general invoice lists, client directory lookups, or profitability snapshots. For a single client's purchased services use get_client_service_breakdown. For overall income vs expenses use get_income_vs_expenses.",
+                    parameters = new
+                    {
+                        type = "object",
+                        properties = new
+                        {
+                            top = new
+                            {
+                                type = "integer",
+                                description = "How many services/products to return. Example: 5. If the user does not specify, use 5."
+                            },
+                            itemType = new
+                            {
+                                type = "string",
+                                description = "Optional item category filter. Allowed values: Product, Service. Example: Service."
+                            },
+                            year = new
+                            {
+                                type = "integer",
+                                description = "Optional year filter. Example: 2026."
+                            },
+                            clientId = new
+                            {
+                                type = "string",
+                                description = "Optional client GUID filter. Example: 3a8e6d31-4d70-4c8f-9d1b-7ac32bee2dd6. Use only when the user explicitly asks about one client."
+                            }
+                        },
+                        required = new[] { "top" },
+                        additionalProperties = false
+                    }
+                }
+            },
+            new
+            {
+                type = "function",
+                function = new
+                {
+                    name = "get_actual_cashflow",
+                    description = "Use this tool only when the user asks about actual money collected by payment date, monthly cash receipts, or payment timing. Do not use it for invoiced monthly income or an invoice summary. For invoice-based monthly revenue by issue date use get_monthly_income. For overall income vs expenses use get_income_vs_expenses.",
+                    parameters = new
+                    {
+                        type = "object",
+                        properties = new
+                        {
+                            year = new
+                            {
+                                type = "integer",
+                                description = "Year for the cash-flow report. Example: 2026."
+                            },
+                            month = new
+                            {
+                                type = "integer",
+                                description = "Optional month filter from 1 to 12. Example: 6."
+                            }
+                        },
+                        required = new[] { "year" },
+                        additionalProperties = false
+                    }
+                }
+            },
+            new
+            {
+                type = "function",
+                function = new
+                {
+                    name = "get_client_payment_delay_analysis",
+                    description = "Use this tool only when the user asks which clients are late in paying, average payment delay by client, or the longest delay by client. Do not use it for a single invoice lookup, client directory, or tax-payment delay analysis. For tax-payment delay analysis use get_tax_delay_analysis. For overdue invoice records use get_overdue_invoices or get_invoices with overdueOnly=true. Example questions: 'Which clients pay the latest?', 'Show average payment delay by client'.",
+                    parameters = new
+                    {
+                        type = "object",
+                        properties = new
+                        {
+                            top = new
+                            {
+                                type = "integer",
+                                description = "Optional number of clients to return. Example: 5. If omitted, use 5."
+                            }
+                        },
+                        required = Array.Empty<string>(),
+                        additionalProperties = false
+                    }
+                }
+            },
+
+            new
+            {
+                type = "function",
+                function = new
+                {
+                    name = "get_business_financial_health",
+                    description = "Use this tool only when the user asks for a single business-health snapshot combining income, expenses, profitability, unpaid invoices, and pending tax obligations. Do not use it for invoice lists, expense lists, tax obligation records, or detailed client analysis. For invoice records use get_invoices. For expense records use get_expenses. For tax records use get_tax_obligations. Example questions: 'How healthy is the business financially?', 'Give me a business financial health overview'.",
+                    parameters = new
+                    {
+                        type = "object",
+                        properties = new { },
+                        required = Array.Empty<string>(),
+                        additionalProperties = false
+                    }
+                }
+            },
+
+            // ===== OSTALO =====
+            new
+            {
+                type = "function",
+                function = new
+                {
+                    name = "get_upcoming_reminders",
+                    description = "Use this tool only when the user asks for pending reminders, upcoming tasks, or the next scheduled reminders. Do not use it for invoices, expenses, taxes, or business profile details. For business profile metadata use get_business_profile_info.",
+                    parameters = new
+                    {
+                        type = "object",
+                        properties = new { },
+                        required = Array.Empty<string>(),
+                        additionalProperties = false
+                    }
+                }
+            },
+            new
+            {
+                type = "function",
+                function = new
+                {
+                    name = "get_business_profile_info",
+                    description = "Use this tool only when the user asks for static company profile information such as PIB, MB, address, activity code, or business contact details. Do not use it for client lists, invoice data, tax records, or reminders. For financial records use dedicated invoice, expense, and tax tools instead.",
+                    parameters = new
+                    {
+                        type = "object",
+                        properties = new { },
+                        required = Array.Empty<string>(),
+                        additionalProperties = false
+                    }
+                }
+            },
+            new
+            {
+                type = "function",
+                function = new
+                {
+                    name = "get_bank_accounts",
+                    description = "Use this tool only when the user asks for bank account information, such as account list, default account, iban, or bank details. Do not use it for payments analysis, financial summaries, or client data. For payment timing and cash collection use get_actual_cashflow.",
+                    parameters = new
+                    {
+                        type = "object",
+                        properties = new { },
+                        required = Array.Empty<string>(),
+                        additionalProperties = false
+                    }
+                }
+            }
+        };
     }
 }

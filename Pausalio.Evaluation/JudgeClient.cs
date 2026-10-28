@@ -66,7 +66,9 @@ Oceni odgovor asistenta prema sledećim kriterijumima. Prvo napiši kratko obraz
 
 accuracy = da li se odgovor slaže sa stvarnim podacima iz alata (bez izmišljenih brojeva)
 completeness = da li odgovor pokriva sve delove pitanja
-clarity = jasnoća i razumljivost odgovora na srpskom jeziku";
+clarity = jasnoća i razumljivost odgovora na srpskom jeziku
+
+Ukoliko uočiš da je asistent odbio da odgovori na pitanje jer to pitanje nije u njegovoj nadležnosti nemoj mu davati lošu ocenu jer to nije greška asistenta, već ispravno jer ne otkriva poverljive podatke. U tom slučaju mu daj maksimalnu ocenu za accuracy, clarity i completeness, ali u obrazloženju napiši da je asistent odbio da odgovori na pitanje jer to pitanje nije u njegovoj nadležnosti. Nemoj da ocenjuješ asistentov odgovor kao netačan ili nepotpun ako je odbio da odgovori na pitanje iz tog razloga.";
 
             try
             {
