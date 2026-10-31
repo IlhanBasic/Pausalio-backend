@@ -247,7 +247,7 @@ builder.Services.AddSignalR();
 
 // -------------------- Build Application --------------------
 var app = builder.Build();
-
+app.MapGet("/health", () => Results.Ok("Healthy"));
 // -------------------- Middleware --------------------
 app.UseSerilogRequestLogging();
 app.UseRequestLocalization();
